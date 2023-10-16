@@ -1,0 +1,45 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Oct 16, 2023, 2:54:16 PM
+    Author     : tranp
+*/
+.login{
+    -fx-effect: innershadow(gaussian, #333, 10, 0.5, 0, 0);
+}
+.login-tittle{
+     -fx-padding: 10px
+}
+.login-input{
+    -fx-background-color:#1A2226;
+    -fx-border-style:none;
+    -fx-border-color:#0DB8DE;
+    -fx-border-width:0 0 2 0;
+    -fx-background-radius:0px;
+    -fx-font-weight:bold;
+    -fx-focus-color: transparent;
+    -fx-text-fill:#ECF0F5;
+}
+.login-input:focus{
+    -fx-border-color:inherit;
+-fx-focus-color:transparent;
+-fx-border-color:#0DB8DE;
+    -fx-border-width:0 0 2 0;
+    -fx-border-style:solid;
+    -fx-background-color:#1A2226;
+    -fx-text-fill:#ECF0F5;
+}
+.btn-outline-primary{
+    -fx-border-color:#0DB8DE;
+    -fx-text-fill:#0DB8DE;
+    -fx-background-radius:0px;
+    -fx-font-weight:bold;
+    -fx-background-color: transparent;
+    -fx-padding: 8 16;
+}
+.btn-outline-primary:hover{
+    -fx-background-color:#0DB8DE;
+    -fx-text-fill:white;
+}
