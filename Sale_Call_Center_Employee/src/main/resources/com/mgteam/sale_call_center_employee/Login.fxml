@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.LoginController">
+   <children>
+      <ImageView fitHeight="600.0" fitWidth="800.0" pickOnBounds="true">
+         <image>
+            <Image url="@asset/image_login.jpeg" />
+         </image>
+      </ImageView>
+      <AnchorPane layoutX="234.0" layoutY="119.0" opacity="0.8" prefHeight="363.0" prefWidth="333.0" style="-fx-background-color: rgba(0,0,0,0.665); -fx-background-radius: 25px;">
+         <children>
+            <AnchorPane prefHeight="363.0" prefWidth="333.0">
+               <children>
+                  <Label layoutX="129.0" layoutY="39.0" text="LOGIN" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="UsernameField" layoutX="60.0" layoutY="116.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="213.0" promptText="Username" style="-fx-background-color: tranparent;" styleClass="button_bottom_inline" stylesheets="@css/application.css">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </TextField>
+                  <PasswordField fx:id="PasswordField" layoutX="60.0" layoutY="191.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="213.0" promptText="Password" style="-fx-background-color: tranparent;" styleClass="button_bottom_inline" stylesheets="@css/application.css">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </PasswordField>
+                  <Button layoutX="133.0" layoutY="274.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#login" prefHeight="43.0" prefWidth="66.0" style="-fx-background-color: EF5B0C;" text="Login" textAlignment="CENTER" textFill="WHITE">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

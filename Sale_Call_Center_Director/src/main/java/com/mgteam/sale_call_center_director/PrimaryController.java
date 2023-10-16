@@ -1,4 +1,4 @@
-package com.mgteam.sale_call_center_employee;
+package com.mgteam.sale_call_center_director;
 
 import java.io.IOException;
 import javafx.fxml.FXML;
