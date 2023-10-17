@@ -38,8 +38,71 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-font-weight:bold;
     -fx-background-color: transparent;
     -fx-padding: 8 16;
+    -fx-cursor:hand;
 }
 .btn-outline-primary:hover{
     -fx-background-color:#0DB8DE;
     -fx-text-fill:white;
+}
+
+.mfx-combo-box .caret .mfx-ripple-generator {
+	-mfx-ripple-color: rgba(98, 0, 238, 0.1);
+	-mfx-ripple-radius: 14;
+}
+
+.mfx-combo-box:focus-within .caret .mfx-font-icon {
+	-mfx-color: -mfx-main;
+}
+
+.mfx-combo-box .combo-popup .virtual-flow {
+	-fx-background-radius: 5;
+	-fx-border-color: #ebebeb;
+	-fx-border-radius: 5;
+}
+
+.mfx-combo-box:disabled .caret .mfx-font-icon {
+	-mfx-color: #bcbcbc;
+}
+.white-form{
+    -fx-background-color:#fff;
+    -fx-background-radius:8px;
+}
+.border{
+    -fx-border-color: linear-gradient(to right, lightblue, lightblue);
+    -fx-border-width:1px;
+    -fx-border-radius:8px;
+}
+.btn{
+    -fx-background-color:linear-gradient(to right, lightblue, lightblue);
+    -fx-text-fill:#fff;
+    -fx-font-size:14px;
+    -fx-cursor:hand;
+    -fx-font-weight:bold;
+}
+.btn:hover{
+     -fx-background-color:linear-gradient(to right, #ADD8E6, #87CEEB);
+}
+.table-view{
+    -fx-padding:0px;
+    -fx-background-color:transparent;
+    -fx-border-color:linear-gradient(to right, lightblue, lightblue);
+    -fx-border-radius:9px;
+    -fx-border-width:2px;
+}
+.table-view .column-header-background{
+    -fx-background-color:linear-gradient(to right, #ADD8E6, #87CEEB);
+    -fx-background-radius:8px 8px 0 0;
+    -fx-background-inset:0 0 0 0;
+}
+.table-view .column-header,.filter{
+    -fx-background-color:transparent;
+    -fx-size:50px;
+}
+.table-view .column-header .label{
+    -fx-text-fill:#fff;
+    -fx-font-family:arial;
+}
+.combo-box {
+    -fx-background-color: #E0E0E0; /* Màu nền */
+    -fx-text-fill: #333333; /* Màu chữ */
 }
