@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.LoginController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.LoginController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="800.0" pickOnBounds="true">
          <image>
@@ -26,12 +25,12 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="UsernameField" layoutX="60.0" layoutY="116.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="213.0" promptText="Username" style="-fx-background-color: tranparent;" styleClass="button_bottom_inline" stylesheets="@css/application.css">
+                  <TextField fx:id="UsernameField" layoutX="60.0" layoutY="116.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="213.0" promptText="Username" style="-fx-background-color: tranparent; -fx-text-fill: white;" styleClass="button_bottom_inline" stylesheets="@css/application.css">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </TextField>
-                  <PasswordField fx:id="PasswordField" layoutX="60.0" layoutY="191.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="213.0" promptText="Password" style="-fx-background-color: tranparent;" styleClass="button_bottom_inline" stylesheets="@css/application.css">
+                  <PasswordField fx:id="PasswordField" layoutX="60.0" layoutY="191.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="213.0" promptText="Password" style="-fx-background-color: tranparent; -fx-text-fill: white;" styleClass="button_bottom_inline" stylesheets="@css/application.css">
                      <font>
                         <Font size="13.0" />
                      </font>
