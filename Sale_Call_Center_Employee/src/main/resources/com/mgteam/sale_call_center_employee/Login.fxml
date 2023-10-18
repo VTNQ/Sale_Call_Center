@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -20,6 +21,7 @@
          <children>
             <AnchorPane prefHeight="363.0" prefWidth="333.0">
                <children>
+                  <Hyperlink alignment="CENTER" focusTraversable="false" layoutX="118.0" layoutY="325.0" onAction="#forgotPassword" style="-fx-border-style: none;" text="Forget Password" textAlignment="CENTER" />
                   <Label layoutX="129.0" layoutY="39.0" text="LOGIN" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="24.0" />

@@ -9,8 +9,13 @@ import com.mongodb.client.model.Filters;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -55,6 +60,20 @@ public class LoginController {
             }else{
                 DialogAlert.DialogError("Account not exist");
             }
+        }
+    }
+    @FXML
+    void forgotPassword(ActionEvent event) {
+        try {
+            FXMLLoader loader=new FXMLLoader(App.class.getResource("view/ForgetPassword.fxml"));
+            AnchorPane anchorPane=loader.load();
+            Stage stage =new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(anchorPane,400,300));
+            stage.showAndWait();
+            stage.setResizable(false);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }
