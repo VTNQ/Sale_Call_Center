@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.LoginController">
+   <children>
+      <AnchorPane prefHeight="600.0" prefWidth="354.0" style="-fx-background-color: #404040;">
+         <children>
+            <Label alignment="CENTER" layoutX="14.0" layoutY="104.0" prefHeight="80.0" prefWidth="299.0" text="Call Center" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="54.0" />
+               </font>
+            </Label>
+            <Label layoutX="89.0" layoutY="184.0" text="Company Slogan" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <AnchorPane fx:id="maindisplay" layoutX="354.0" prefHeight="600.0" prefWidth="446.0">
+         <children>
+            <Label layoutX="168.0" layoutY="108.0" text="User Login" textFill="#404040">
+               <font>
+                  <Font size="27.0" />
+               </font>
+            </Label>
+            <TextField fx:id="username" layoutX="65.0" layoutY="172.0" prefHeight="46.0" prefWidth="354.0" promptText="Username" style="-fx-background-color: transparent; -fx-border-color: #404040; -fx-border-width: 0px 0px 2px 0px;" />
+            <PasswordField fx:id="password" layoutX="65.0" layoutY="251.0" prefHeight="39.0" prefWidth="354.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #404040; -fx-border-width: 0px 0px 2px 0px;" />
+            <Button layoutX="213.0" layoutY="344.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="76.0" style="-fx-background-color: #404040; -fx-background-radius: 0px;" text="Login" textFill="WHITE">
+               <cursor>
+                  <Cursor fx:constant="OPEN_HAND" />
+               </cursor>
+            </Button>
+            <Text fill="#404040" layoutX="165.0" layoutY="416.0" onMouseClicked="#showRegisterStage" strokeType="OUTSIDE" strokeWidth="0.0" text="Don't have an account? Register">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Text>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
