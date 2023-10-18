@@ -27,4 +27,10 @@ public class validate {
        }
        return matcher.matches();
     }
+    public static boolean validateUsername(String username){
+        String regex="^[a-zA-Z0-9_]{6,15}$";
+        Pattern pattern=Pattern.compile(regex);
+        Matcher matcher=pattern.matcher(username);
+        return matcher.matches();
+    }
 }

@@ -33,7 +33,15 @@ public class daodb {
                String formattedSince=sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                String username=document.getString("Username");
                String email=document.getString("Email");
-               employees.add(new Employee(name, email, formattedSince, phone,username));
+               int usertype=document.getInteger("usertype");
+               int empMgr=document.getInteger("empMgr");
+               String position=null;
+               if(usertype==0 && empMgr==1){
+                   position="Manager";
+               }else if(usertype==3 && empMgr==0){
+                   position="Director";
+               }
+               employees.add(new Employee(name, email, formattedSince, phone,username,position));
             }
         } catch (Exception e) {
             e.printStackTrace();
