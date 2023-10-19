@@ -127,11 +127,11 @@ public class LoginController implements Initializable {
 
     private String GetOTP() {
         Random r = new Random();
-        int otp = 10000 + r.nextInt(900000);
+        int otp = 100000 + r.nextInt(900000);
         return String.valueOf(otp);
     }
 
-    private void sendConfirmationEmailTeacher(String otp, String email) {
+    private void sendConfirmationEmail(String otp, String email) {
 
         String username = "votannamquoc@gmail.com";
         String password = "whrn lkpj vpyt nyjb";
@@ -169,7 +169,7 @@ public class LoginController implements Initializable {
             Bson update = Updates.set("OTP", otp);
             UpdateResult updateResult = EmailEmployee.updateOne(filter, update);
             for (Document document : result) {
-                sendConfirmationEmailTeacher(otp, document.getString("Email"));
+                sendConfirmationEmail(otp, document.getString("Email"));
                 DialogAlert.DialogSuccess("Please get OTP in your Email");
             }
         } else {
