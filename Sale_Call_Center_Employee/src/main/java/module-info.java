@@ -7,6 +7,7 @@ module com.mgteam.sale_call_center_employee {
     requires java.base;
     requires MaterialFX;
     requires VirtualizedFX;
+    requires java.mail;
 
     opens com.mgteam.sale_call_center_employee to javafx.fxml;
     exports com.mgteam.sale_call_center_employee;
