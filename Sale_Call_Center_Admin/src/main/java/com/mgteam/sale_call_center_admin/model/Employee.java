@@ -12,6 +12,23 @@ public class Employee {
 private String name;
 private String Email;
 private String since;
+private String position;
+private boolean isReset;
+
+    public boolean isIsReset() {
+        return isReset;
+    }
+
+    public void setIsReset(boolean isReset) {
+        this.isReset = isReset;
+    }
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
 private String phone;
 private String username;
 
@@ -22,12 +39,14 @@ private String username;
     public void setUsername(String username) {
         this.username = username;
     }
-    public Employee(String name, String Email, String since, String phone,String username) {
+    public Employee(String name, String Email, String since, String phone,String username,String position) {
         this.name = name;
         this.Email = Email;
         this.since = since;
         this.phone = phone;
         this.username=username;
+        this.position=position;
+        this.isReset=true;
     }
 
     public String getName() {
