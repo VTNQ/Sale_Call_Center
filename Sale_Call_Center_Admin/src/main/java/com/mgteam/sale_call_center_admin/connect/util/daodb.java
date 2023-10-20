@@ -6,8 +6,10 @@ package com.mgteam.sale_call_center_admin.connect.util;
 
 import com.mgteam.sale_call_center_admin.connect.DBConnect;
 import com.mgteam.sale_call_center_admin.model.Employee;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import static com.mongodb.client.model.Filters.eq;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,33 +21,76 @@ import org.bson.Document;
  * @author tranp
  */
 public class daodb {
-    public static List<Employee> getAccoutEmployee(){
-        List<Employee>employees=new ArrayList<>();
-        MongoCollection<Document> collection=DBConnect.getdatabase().getCollection("Employee");
-        MongoCursor<Document>cursor=collection.find().iterator();
+    public static List<Employee>getAcccountwithKey(String key){
+          List<Employee>emp=new ArrayList<>();
         try {
-            while(cursor.hasNext()){
-                Document document=cursor.next();
-                String name=document.getString("name");
-                String phone=document.getString("Phone");
-               String sinceString=document.getString("Since");
-               LocalDate sinceDate=LocalDate.parse(sinceString,DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-               String formattedSince=sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-               String username=document.getString("Username");
-               String email=document.getString("Email");
-               int usertype=document.getInteger("usertype");
-               int empMgr=document.getInteger("empMgr");
-               String position=null;
-               if(usertype==0 && empMgr==1){
-                   position="Manager";
-               }else if(usertype==3 && empMgr==0){
-                   position="Director";
-               }
-               employees.add(new Employee(name, email, formattedSince, phone,username,position));
+          
+            MongoCollection<Document>collection=DBConnect.getdatabase().getCollection("Employee");
+            MongoCollection<Document> requestCollection = DBConnect.getdatabase().getCollection("Request");
+            Document query=new Document("Name",new Document("$regex",".*"+key+".*"));
+            FindIterable<Document>cursor=collection.find(query);
+            for (Document document : cursor) {
+                int usertype = document.getInteger("usertype");
+            int empMgr = document.getInteger("empMgr");
+
+            if ((usertype == 0 && empMgr == 1) || (usertype == 3 && empMgr == 0)) {
+                String name = document.getString("Name");
+                String phone = document.getString("Phone");
+                String sinceString = document.getString("Since");
+                LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                String username = document.getString("Username");
+                String email = document.getString("Email");
+                
+                // Tìm trạng thái từ bảng Request
+                Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                int  status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                String value=(requestDocument!=null)?String.valueOf(status):"";
+                String position = (usertype == 0 && empMgr == 1) ? "Manager" : "Director";
+                emp.add(new Employee(name, email, formattedSince, phone, username, position,value));
             }
+            }
+              
         } catch (Exception e) {
             e.printStackTrace();
+            
         }
-        return employees;
+      return emp;
     }
+   public static List<Employee> getAccountEmployee() {
+    List<Employee> employees = new ArrayList<>();
+    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Employee");
+    MongoCollection<Document> requestCollection = DBConnect.getdatabase().getCollection("Request");
+    MongoCursor<Document> cursor = collection.find().iterator();
+    
+    try {
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+
+            int usertype = document.getInteger("usertype");
+            int empMgr = document.getInteger("empMgr");
+
+            if ((usertype == 0 && empMgr == 1) || (usertype == 3 && empMgr == 0)) {
+                String name = document.getString("Name");
+                String phone = document.getString("Phone");
+                String sinceString = document.getString("Since");
+                LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                String username = document.getString("Username");
+                String email = document.getString("Email");
+                
+               
+                Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                int  status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                String value=(requestDocument!=null)?String.valueOf(status):"";
+                String position = (usertype == 0 && empMgr == 1) ? "Manager" : "Director";
+                employees.add(new Employee(name, email, formattedSince, phone, username, position,value));
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return employees;
+}
 }

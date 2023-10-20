@@ -10,14 +10,15 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="599.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_admin.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="508.0" prefWidth="793.0" stylesheets="@css/login.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_admin.MainController">
    <children>
-      <AnchorPane layoutY="27.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="368.0" prefWidth="211.0" stylesheets="@css/login.css">
+      <AnchorPane layoutY="27.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="473.0" prefWidth="211.0" stylesheets="@css/login.css">
          <styleClass>
             <String fx:value="white-form" />
             <String fx:value="border" />
@@ -66,30 +67,33 @@
             <ComboBox fx:id="Position" layoutX="3.0" layoutY="281.0" prefWidth="150.0" />
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="212.0" layoutY="30.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="362.0" prefWidth="386.0" stylesheets="@css/login.css" AnchorPane.topAnchor="30.0">
+      <AnchorPane layoutX="216.0" layoutY="35.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="576.0" stylesheets="@css/login.css" AnchorPane.topAnchor="35.0">
          <styleClass>
             <String fx:value="white-form" />
             <String fx:value="border" />
          </styleClass>
          <children>
-            <TableView fx:id="tblAccount" layoutX="5.0" layoutY="10.0" prefHeight="348.0" prefWidth="382.0">
+            <TableView fx:id="tblAccount" layoutX="35.0" layoutY="40.0" prefHeight="384.0" prefWidth="532.0">
               <columns>
-                <TableColumn fx:id="colName" prefWidth="52.80000305175781" text="Name" />
-                  <TableColumn fx:id="colEmail" prefWidth="64.00006103515625" text="Email" />
-                  <TableColumn fx:id="colSince" prefWidth="63.20001220703125" text="Since" />
-                  <TableColumn fx:id="colphone" prefWidth="58.4000244140625" text="Phone" />
-                  <TableColumn fx:id="colPostion" prefWidth="58.4000244140625" text="Position" />
-                  <TableColumn fx:id="isreset" prefWidth="83.99993896484375" text="Reset pass" />
+                <TableColumn fx:id="colName" prefWidth="78.39996337890625" text="Name" />
+                  <TableColumn fx:id="colEmail" prefWidth="69.60003662109375" text="Email" />
+                  <TableColumn fx:id="colSince" prefWidth="75.99993896484375" text="Since" />
+                  <TableColumn fx:id="colphone" prefWidth="72.79998779296875" text="Phone" />
+                  <TableColumn fx:id="colPostion" minWidth="0.0" prefWidth="62.4000244140625" text="Position" />
+                  <TableColumn fx:id="isreset" prefWidth="76.800048828125" text="Approve" />
+                  <TableColumn fx:id="colCancel" minWidth="0.0" prefWidth="92.7999267578125" text="Cancle" />
               </columns>
             </TableView>
+            <Label layoutX="35.0" layoutY="5.0" text="Search" />
+            <TextField fx:id="txtName" layoutX="86.0" layoutY="1.0" promptText="Name" />
          </children>
       </AnchorPane>
-      <Label layoutX="171.0" text="Manager Account Employee">
+      <Label layoutX="242.0" text="Management staff account">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <MenuButton layoutX="510.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+      <MenuButton layoutX="753.0" layoutY="9.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
         <items>
           <MenuItem mnemonicParsing="false">
                <graphic>
@@ -105,13 +109,11 @@
                </graphic>
             </MenuItem>
         </items>
-         <graphic>
-            <ImageView fitHeight="27.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@asset/account.png" />
-               </image>
-            </ImageView>
-         </graphic>
       </MenuButton>
+      <ImageView fitHeight="27.0" fitWidth="27.0" layoutX="742.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@asset/account.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>

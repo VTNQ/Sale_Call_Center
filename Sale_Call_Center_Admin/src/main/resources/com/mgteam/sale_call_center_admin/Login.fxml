@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #222D32;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_admin.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="508.0" prefWidth="793.0" style="-fx-background-color: #222D32;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_admin.LoginController">
    <children>
-      <AnchorPane layoutX="151.0" layoutY="44.0" prefHeight="312.0" prefWidth="315.0" style="-fx-background-color: #1A2226;" styleClass="login" stylesheets="@css/login.css">
+      <AnchorPane layoutX="247.0" layoutY="65.0" prefHeight="312.0" prefWidth="315.0" style="-fx-background-color: #1A2226;" styleClass="login" stylesheets="@css/login.css">
          <children>
             <ImageView fitHeight="77.0" fitWidth="102.0" layoutX="111.0" pickOnBounds="true" preserveRatio="true">
                <image>

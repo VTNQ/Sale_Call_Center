@@ -13,13 +13,13 @@ private String name;
 private String Email;
 private String since;
 private String position;
-private boolean isReset;
+private String isReset;
 
-    public boolean isIsReset() {
+    public String isIsReset() {
         return isReset;
     }
 
-    public void setIsReset(boolean isReset) {
+    public void setIsReset(String isReset) {
         this.isReset = isReset;
     }
     public String getPosition() {
@@ -39,14 +39,14 @@ private String username;
     public void setUsername(String username) {
         this.username = username;
     }
-    public Employee(String name, String Email, String since, String phone,String username,String position) {
+    public Employee(String name, String Email, String since, String phone,String username,String position,String isReset) {
         this.name = name;
         this.Email = Email;
         this.since = since;
         this.phone = phone;
         this.username=username;
         this.position=position;
-        this.isReset=true;
+       this.isReset=isReset;
     }
 
     public String getName() {

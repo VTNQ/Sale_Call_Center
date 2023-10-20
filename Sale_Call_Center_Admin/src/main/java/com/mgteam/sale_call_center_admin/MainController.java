@@ -7,9 +7,11 @@ import com.mgteam.sale_call_center_admin.connect.util.validate;
 import com.mgteam.sale_call_center_admin.model.Employee;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +31,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javax.mail.Session;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -49,7 +52,8 @@ public class MainController implements Initializable {
     private ComboBox<String> Position;
     @FXML
     private TableColumn<Employee, String> colName;
-
+    @FXML
+    private TextField txtName;
     @FXML
     private TableColumn<Employee, String> colEmail;
 
@@ -60,7 +64,7 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<Employee, String> colphone;
     @FXML
-    private TableColumn<Employee, Boolean> isreset;
+    private TableColumn<Employee, String> isreset;
     @FXML
     private TableView<Employee> tblAccount;
 
@@ -73,6 +77,8 @@ public class MainController implements Initializable {
     @FXML
     private MFXTextField username;
     private String reset_username;
+    @FXML
+    private TableColumn<Employee, String> colCancel;
 
     @FXML
     void Addsubmit(ActionEvent event) {
@@ -90,7 +96,7 @@ public class MainController implements Initializable {
                                     DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                     String since = Since.getValue().format(local);
                                     if (Position.getValue().equals("Manager")) {
-                                        Document doc1 = new Document("name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("usertype", 0).append("empMgr", 1).append("status", 0);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("usertype", 0).append("empMgr", 1).append("status", 0);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee successfully");
                                         displayrecord();
@@ -101,7 +107,7 @@ public class MainController implements Initializable {
                                         Phone.setText("");
                                         Email.setText("");
                                     } else if (Position.getValue().equals("Director")) {
-                                        Document doc1 = new Document("name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("usertype", 3).append("empMgr", 0).append("status", 0);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("usertype", 3).append("empMgr", 0).append("status", 0);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee successfully");
                                         displayrecord();
@@ -157,43 +163,106 @@ public class MainController implements Initializable {
 
     }
 
-    private void displayrecord() {
-        List<Employee> resulist = daodb.getAccoutEmployee();
-        ObservableList<Employee> observableList = FXCollections.observableArrayList(resulist);
+    private void searchdisplay(String search) {
+        List<Employee> listAccout = daodb.getAcccountwithKey(search);
+        ObservableList<Employee> observableList = FXCollections.observableArrayList(listAccout);
         tblAccount.setItems(observableList);
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         isreset.setCellValueFactory(new PropertyValueFactory<>("isReset"));
-        isreset.setCellFactory(column -> new TableCell<Employee, Boolean>() {
-            private final Button sumit = new Button("Reset");
+        isreset.setCellFactory(column -> new TableCell<Employee, String>() {
+            private final MFXButton sumit = new MFXButton("Approve");
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                sumit.getStyleClass().add("button-success");
+                {
+                    sumit.setOnAction(event -> {
+                        Employee emp = getTableView().getItems().get(getIndex());
+                        MongoCollection<Document> employy = DBConnect.getdatabase().getCollection("Employee");
+                        MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
+                        Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 1);
+                        Document result = collection.find(query).first();
+                        if (result != null) {
+                            Alert.Dialogerror("Approved");
+                        } else {
+                            Document requestDocument = collection.find(eq("EmailEmployee", emp.getEmail())).first();
+                            if (requestDocument != null) {
+                                Bson Filter = Filters.eq("EmailEmployee", emp.getEmail());
+                                Bson updates = Updates.set("status", 1);
+                                UpdateResult update = collection.updateOne(Filter, updates);
+                                Bson filteremp = Filters.eq("Email", emp.getEmail());
+                                Bson updatepass = Updates.set("Password", emp.getUsername());
+                                UpdateResult up = employy.updateOne(filteremp, updatepass);
+
+                                Alert.DialogSuccess("Update successfully");
+                                displayrecord();
+                            }
+                        }
+
+                    });
+                }
+                if (!empty || item != null) {
+                    setGraphic(sumit);
+                    if (item == null) {
+                        setGraphic(null);
+                    } else if (item.equals("")) {
+                        setGraphic(null);
+                    } else if (item.equals("2")) {
+                        setGraphic(sumit);
+                        sumit.setDisable(true);
+                    } else {
+                        setGraphic(sumit);
+                    }
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+        colCancel.setCellValueFactory(new PropertyValueFactory<>("isReset"));
+        colCancel.setCellFactory(column -> new TableCell<Employee, String>() {
+            private final MFXButton sumit = new MFXButton("Cancel");
 
             {
-                sumit.setOnAction(event -> {
-                    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Employee");
-                    Bson filter = Filters.and(
-                            Filters.eq("username", reset_username),
-                            Filters.eq("status", 1)
-                    );
-                    Bson update = Updates.combine(
-                            Updates.set("Password", reset_username),
-                            Updates.set("Status", 0)
-                    );
-
-                    UpdateResult result = collection.updateOne(filter, update);
-                    if (result.getModifiedCount() > 0) {
-                        Alert.DialogSuccess("reset password successfully");
+                sumit.setOnAction(even -> {
+                    Employee emp = getTableView().getItems().get(getIndex());
+                    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
+                    Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 2);
+                    Document result = collection.find(query).first();
+                    if (result != null) {
+                        Alert.Dialogerror("Canceled");
                     } else {
-                        Alert.Dialogerror("reset password failed");
+                        Bson Filter = Filters.eq("EmailEmployee", emp.getEmail());
+                        Bson updates = Updates.set("status", 2);
+                        UpdateResult update = collection.updateOne(Filter, updates);
+                        if (update.getModifiedCount() > 0) {
+                            Alert.DialogSuccess("Update successfully");
+                            displayrecord();
+                        }
                     }
+
                 });
             }
 
             @Override
-            protected void updateItem(Boolean item, boolean empty) {
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
+                sumit.getStyleClass().add("button-error");
+                if (!empty || item != null) {
                     setGraphic(sumit);
+                    if (item == null) {
+                        setGraphic(null);
+                    } else if (item.equals("")) {
+                        setGraphic(null);
+                    } else if (item.equals("1")) {
+                        setGraphic(sumit);
+                        sumit.setDisable(true);
+                    } else {
+                        setGraphic(sumit);
+                    }
+                } else {
+                    setGraphic(null);
                 }
             }
 
@@ -202,12 +271,118 @@ public class MainController implements Initializable {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
         colSince.setCellValueFactory(new PropertyValueFactory<>("since"));
         colphone.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        tblAccount.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1) {
-                Employee ex = tblAccount.getSelectionModel().getSelectedItem();
-                reset_username = ex.getUsername();
+
+    }
+
+    private void displayrecord() {
+        List<Employee> resulist = daodb.getAccountEmployee();
+        ObservableList<Employee> observableList = FXCollections.observableArrayList(resulist);
+        tblAccount.setItems(observableList);
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        isreset.setCellValueFactory(new PropertyValueFactory<>("isReset"));
+        isreset.setCellFactory(column -> new TableCell<Employee, String>() {
+            private final MFXButton sumit = new MFXButton("Approve");
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                sumit.getStyleClass().add("button-success");
+                {
+                    sumit.setOnAction(event -> {
+                        Employee emp = getTableView().getItems().get(getIndex());
+                        MongoCollection<Document> employy = DBConnect.getdatabase().getCollection("Employee");
+                        MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
+                        Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 1);
+                        Document result = collection.find(query).first();
+                        if (result != null) {
+                            Alert.Dialogerror("Approved");
+                        } else {
+                            Document requestDocument = collection.find(eq("EmailEmployee", emp.getEmail())).first();
+                            if (requestDocument != null) {
+                                Bson Filter = Filters.eq("EmailEmployee", emp.getEmail());
+                                Bson updates = Updates.set("status", 1);
+                                UpdateResult update = collection.updateOne(Filter, updates);
+                                Bson filteremp = Filters.eq("Email", emp.getEmail());
+                                Bson updatepass = Updates.set("Password", emp.getUsername());
+                                UpdateResult up = employy.updateOne(filteremp, updatepass);
+
+                                Alert.DialogSuccess("Update successfully");
+                                displayrecord();
+                            }
+                        }
+
+                    });
+                }
+                if (!empty || item != null) {
+                    setGraphic(sumit);
+                    if (item == null) {
+                        setGraphic(null);
+                    } else if (item.equals("")) {
+                        setGraphic(null);
+                    } else if (item.equals("2")) {
+                        setGraphic(sumit);
+                        sumit.setDisable(true);
+                    } else {
+                        setGraphic(sumit);
+                    }
+                } else {
+                    setGraphic(null);
+                }
             }
+
         });
+        colCancel.setCellValueFactory(new PropertyValueFactory<>("isReset"));
+        colCancel.setCellFactory(column -> new TableCell<Employee, String>() {
+            private final MFXButton sumit = new MFXButton("Cancel");
+
+            {
+                sumit.setOnAction(even -> {
+                    Employee emp = getTableView().getItems().get(getIndex());
+                    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
+                    Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 2);
+                    Document result = collection.find(query).first();
+                    if (result != null) {
+                        Alert.Dialogerror("Canceled");
+                    } else {
+                        Bson Filter = Filters.eq("EmailEmployee", emp.getEmail());
+                        Bson updates = Updates.set("status", 2);
+                        UpdateResult update = collection.updateOne(Filter, updates);
+                        if (update.getModifiedCount() > 0) {
+                            Alert.DialogSuccess("Update successfully");
+                            displayrecord();
+                        }
+                    }
+
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                sumit.getStyleClass().add("button-error");
+                if (!empty || item != null) {
+                    setGraphic(sumit);
+                    if (item == null) {
+                        setGraphic(null);
+                    } else if (item.equals("")) {
+                        setGraphic(null);
+                    } else if (item.equals("1")) {
+                        setGraphic(sumit);
+                        sumit.setDisable(true);
+                    } else {
+                        setGraphic(sumit);
+                    }
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+        colPostion.setCellValueFactory(new PropertyValueFactory<>("position"));
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
+        colSince.setCellValueFactory(new PropertyValueFactory<>("since"));
+        colphone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+
     }
 
     private void sendConfirmationEmailEmployee(String email) {
@@ -263,5 +438,8 @@ public class MainController implements Initializable {
         ObservableList<String> data = FXCollections.observableArrayList("Manager", "Director");
         Position.setItems(data);
         Position.setValue("Manager");
+        txtName.textProperty().addListener((observable, oldvalue, newvalue) -> {
+            searchdisplay(newvalue);
+        });
     }
 }
