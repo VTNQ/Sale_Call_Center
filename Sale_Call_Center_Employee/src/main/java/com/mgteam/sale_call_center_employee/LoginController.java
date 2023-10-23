@@ -92,11 +92,11 @@ public class LoginController implements Initializable {
             for (Document result : results) {
                 isFound = true;
                 try {
-                    if (result.getString("UserType").equals(1)) {
+                    if (result.getInteger("usertype")==1) {
                         DialogAlert.DialogSuccess("Login Success");
                         App.setRoot("WarehouseStaff");
                     }
-                    if (result.getString("UserType").equals(2)) {
+                    if (result.getInteger("usertype")==2) {
                         DialogAlert.DialogSuccess("Login Success");
                         App.setRoot("SalePerson");
                     }
@@ -163,7 +163,7 @@ public class LoginController implements Initializable {
     void checkEmail(ActionEvent event) {
         if (!Email.getText().isEmpty()) {
             MongoCollection<Document> EmailEmployee = DBConnection.getConnection().getCollection("Employee");
-            Bson filter = Filters.or(Filters.eq("Email", Email.getText()), Filters.eq("username", Email.getText()));
+            Bson filter = Filters.or(Filters.eq("Email", Email.getText()), Filters.eq("Username", Email.getText()));
             MongoIterable<Document> result = EmailEmployee.find(filter).projection(Projections.fields(Projections.include("Email")));
             String otp = GetOTP();
             Bson update = Updates.set("OTP", otp);
@@ -186,8 +186,9 @@ public class LoginController implements Initializable {
             String otp=otp1.getText()+otp2.getText()+otp3.getText()+otp4.getText()+otp5.getText()+otp6.getText();
             Document employee=employees.find(Filters.and(Filters.eq("Email", Email.getText()),Filters.eq("OTP", otp))).first();
             if(employee!=null){
-                Document request=new Document("EmailEmployee", Email.getText());
-                InsertOneResult insertOneResult=employees.insertOne(request);
+             MongoCollection<Document> Reports = DBConnection.getConnection().getCollection("Request");
+                Document request=new Document("EmailEmployee", Email.getText()).append("status", 0);
+                InsertOneResult insertOneResult=Reports.insertOne(request);
                 DialogAlert.DialogSuccess("Send Success");
             }
         }
@@ -235,22 +236,39 @@ public class LoginController implements Initializable {
             }
         }));
         otp1.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE));
+            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+            otp1.clear();
+            }
         });
         otp2.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE));
+            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+                otp2.clear();
+                otp1.requestFocus();
+            }
         });
         otp3.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE));
+            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+                otp3.clear();
+                otp2.requestFocus();
+            }
         });
         otp4.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE));
+            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+                otp4.clear();
+                otp3.requestFocus();
+            }
         });
         otp5.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE));
+            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+                otp5.clear();
+                otp4.requestFocus();
+            }
         });
         otp6.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE));
+            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+                otp6.clear();
+                otp5.requestFocus();
+            }
         });
     }
 }

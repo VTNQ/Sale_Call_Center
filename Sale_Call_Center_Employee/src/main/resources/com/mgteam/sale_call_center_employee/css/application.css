@@ -294,4 +294,8 @@ Popup
 	-fx-text-fill: -mfx-text-he;
 	-fx-padding: 0 0 5 0;
 }
-
+.top-form{
+    -fx-background-color:#fff;
+    -fx-border-color:#000;
+    -fx-border-width:.4px .4px .2px .4px;
+}
