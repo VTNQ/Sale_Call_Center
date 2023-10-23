@@ -23,7 +23,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -86,7 +85,7 @@ public class MainController implements Initializable {
             if (validate.validateEmail(Email.getText())) {
                 if (validate.validatePhoneNumber(Phone.getText())) {
                     if (validate.validateUsername(username.getText())) {
-                        MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Employee");
+                        MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Admin");
                         Document existingUser = collection.find(Filters.eq("Username", MD5.encryPassword(username.getText()))).first();
                         Document existingEmail = collection.find(Filters.eq("Email", Email.getText())).first();
                         Document existPhone = collection.find(Filters.eq("Phone", Phone.getText())).first();
@@ -96,7 +95,7 @@ public class MainController implements Initializable {
                                     DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                     String since = Since.getValue().format(local);
                                     if (Position.getValue().equals("Manager")) {
-                                        Document doc1 = new Document("Name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("usertype", 0).append("empMgr", 1).append("status", 0);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("Usertype", 2).append("status",0);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee successfully");
                                         displayrecord();
@@ -107,7 +106,7 @@ public class MainController implements Initializable {
                                         Phone.setText("");
                                         Email.setText("");
                                     } else if (Position.getValue().equals("Director")) {
-                                        Document doc1 = new Document("Name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("usertype", 3).append("empMgr", 0).append("status", 0);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Username", MD5.encryPassword(username.getText())).append("Since", since).append("Phone", Phone.getText()).append("Email", Email.getText()).append("Password", MD5.encryPassword(username.getText())).append("Usertype", 3).append("status", 0);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee successfully");
                                         displayrecord();
@@ -179,7 +178,7 @@ public class MainController implements Initializable {
                 {
                     sumit.setOnAction(event -> {
                         Employee emp = getTableView().getItems().get(getIndex());
-                        MongoCollection<Document> employy = DBConnect.getdatabase().getCollection("Employee");
+                        MongoCollection<Document> employy = DBConnect.getdatabase().getCollection("Admin");
                         MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
                         Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 1);
                         Document result = collection.find(query).first();
@@ -273,7 +272,58 @@ public class MainController implements Initializable {
         colphone.setCellValueFactory(new PropertyValueFactory<>("phone"));
 
     }
+    private void sendApproved(String email){
+         String username = "tranp6648@gmail.com";
+        String password = "zmaa lqss pbup xpwm";
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
 
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new javax.mail.PasswordAuthentication(username, password);
+            }
+        });
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("Account Information");
+            String body = "Hello,"+email+"\nYour request has been accepted";
+            message.setText(body);
+            Transport.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+     private void sendCancel(String email){
+         String username = "tranp6648@gmail.com";
+        String password = "zmaa lqss pbup xpwm";
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new javax.mail.PasswordAuthentication(username, password);
+            }
+        });
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("Account Information");
+            String body = "Hello,"+email+"\nYour request has been rejected";
+            message.setText(body);
+            Transport.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void displayrecord() {
         List<Employee> resulist = daodb.getAccountEmployee();
         ObservableList<Employee> observableList = FXCollections.observableArrayList(resulist);
@@ -308,6 +358,7 @@ public class MainController implements Initializable {
 
                                 Alert.DialogSuccess("Update successfully");
                                 displayrecord();
+                                sendApproved(emp.getEmail());
                             }
                         }
 
@@ -350,6 +401,7 @@ public class MainController implements Initializable {
                         if (update.getModifiedCount() > 0) {
                             Alert.DialogSuccess("Update successfully");
                             displayrecord();
+                            sendCancel(emp.getEmail());
                         }
                     }
 
@@ -411,7 +463,10 @@ public class MainController implements Initializable {
             e.printStackTrace();
         }
     }
-
+ @FXML
+    void findName(ActionEvent event) {
+        searchdisplay(txtName.getText());
+    }
     @FXML
     void LogOut(ActionEvent event) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
@@ -438,8 +493,6 @@ public class MainController implements Initializable {
         ObservableList<String> data = FXCollections.observableArrayList("Manager", "Director");
         Position.setItems(data);
         Position.setValue("Manager");
-        txtName.textProperty().addListener((observable, oldvalue, newvalue) -> {
-            searchdisplay(newvalue);
-        });
+       
     }
 }

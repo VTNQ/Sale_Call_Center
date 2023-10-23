@@ -25,15 +25,15 @@ public class daodb {
           List<Employee>emp=new ArrayList<>();
         try {
           
-            MongoCollection<Document>collection=DBConnect.getdatabase().getCollection("Employee");
+            MongoCollection<Document>collection=DBConnect.getdatabase().getCollection("Admin");
             MongoCollection<Document> requestCollection = DBConnect.getdatabase().getCollection("Request");
             Document query=new Document("Name",new Document("$regex",".*"+key+".*"));
             FindIterable<Document>cursor=collection.find(query);
             for (Document document : cursor) {
-                int usertype = document.getInteger("usertype");
-            int empMgr = document.getInteger("empMgr");
+                int usertype = document.getInteger("Usertype");
+                
 
-            if ((usertype == 0 && empMgr == 1) || (usertype == 3 && empMgr == 0)) {
+            if ((usertype == 2) || (usertype == 3 )) {
                 String name = document.getString("Name");
                 String phone = document.getString("Phone");
                 String sinceString = document.getString("Since");
@@ -41,12 +41,10 @@ public class daodb {
                 String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 String username = document.getString("Username");
                 String email = document.getString("Email");
-                
-                // Tìm trạng thái từ bảng Request
                 Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
                 int  status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
                 String value=(requestDocument!=null)?String.valueOf(status):"";
-                String position = (usertype == 0 && empMgr == 1) ? "Manager" : "Director";
+                String position = (usertype == 2) ? "Manager" : "Director";
                 emp.add(new Employee(name, email, formattedSince, phone, username, position,value));
             }
             }
@@ -59,7 +57,7 @@ public class daodb {
     }
    public static List<Employee> getAccountEmployee() {
     List<Employee> employees = new ArrayList<>();
-    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Employee");
+    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Admin");
     MongoCollection<Document> requestCollection = DBConnect.getdatabase().getCollection("Request");
     MongoCursor<Document> cursor = collection.find().iterator();
     
@@ -67,10 +65,10 @@ public class daodb {
         while (cursor.hasNext()) {
             Document document = cursor.next();
 
-            int usertype = document.getInteger("usertype");
-            int empMgr = document.getInteger("empMgr");
+            int usertype = document.getInteger("Usertype");
+           
 
-            if ((usertype == 0 && empMgr == 1) || (usertype == 3 && empMgr == 0)) {
+            if ((usertype == 2) || (usertype == 3 )) {
                 String name = document.getString("Name");
                 String phone = document.getString("Phone");
                 String sinceString = document.getString("Since");
@@ -83,7 +81,7 @@ public class daodb {
                 Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
                 int  status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
                 String value=(requestDocument!=null)?String.valueOf(status):"";
-                String position = (usertype == 0 && empMgr == 1) ? "Manager" : "Director";
+                String position = (usertype == 2) ? "Manager" : "Director";
                 employees.add(new Employee(name, email, formattedSince, phone, username, position,value));
             }
         }

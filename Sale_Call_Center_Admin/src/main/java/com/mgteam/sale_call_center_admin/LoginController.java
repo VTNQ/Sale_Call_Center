@@ -26,7 +26,8 @@ public class LoginController {
             MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Admin");
             Bson filter = Filters.and(
                     Filters.eq("Username", MD5.encryPassword(field_user.getText())),
-                    Filters.eq("Password", MD5.encryPassword(field_pass.getText()))
+                    Filters.eq("Password", MD5.encryPassword(field_pass.getText())),
+                    Filters.eq("Usertype",1)
             );
             
             Document result = collection.find(filter).first();
