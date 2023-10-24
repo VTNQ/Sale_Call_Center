@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.MainOrderController">
+   <children>
+      <MFXButton prefHeight="53.0" prefWidth="103.0" text="Add New Order" />
+      <AnchorPane layoutX="3.0" layoutY="54.0" prefHeight="347.0" prefWidth="600.0">
+         <children>
+            <Label layoutX="233.0" text="LIST ORDER">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <TableView layoutY="35.0" prefHeight="198.0" prefWidth="600.0">
+              <columns>
+                <TableColumn prefWidth="75.0" text="Customer" />
+                <TableColumn prefWidth="75.0" text="Employee" />
+                  <TableColumn prefWidth="75.0" text="Order Day" />
+                  <TableColumn prefWidth="75.0" text="Ship Day" />
+                  <TableColumn prefWidth="75.0" text="Product" />
+                  <TableColumn prefWidth="75.0" text="Column X" />
+              </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
+      <MFXTextField layoutX="195.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer" />
+      <MFXButton layoutX="429.0" layoutY="12.0" text="Search" />
+   </children>
+</AnchorPane>

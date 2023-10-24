@@ -94,18 +94,18 @@ public class LoginController implements Initializable {
                 try {
                     if (result.getInteger("usertype")==1) {
                         DialogAlert.DialogSuccess("Login Success");
-                        App.setRoot("WarehouseStaff");
+                        App.setRoot("SalePerson");
                     }
                     if (result.getInteger("usertype")==2) {
                         DialogAlert.DialogSuccess("Login Success");
-                        App.setRoot("SalePerson");
+                        App.setRoot("WarehouseStaff");
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
             if (isFound == false) {
-                DialogAlert.DialogError("Account not exist");
+                DialogAlert.DialogError("Account not exist Or Username/Password Incorrect");
             }
         }
     }
