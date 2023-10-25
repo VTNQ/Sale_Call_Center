@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.MainOrderController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainOrderController">
    <children>
       <MFXButton prefHeight="53.0" prefWidth="103.0" text="Add New Order" />
       <AnchorPane layoutX="3.0" layoutY="54.0" prefHeight="347.0" prefWidth="600.0">
@@ -19,13 +18,13 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <TableView layoutY="35.0" prefHeight="198.0" prefWidth="600.0">
+            <TableView fx:id="tblOrder" layoutY="35.0" prefHeight="198.0" prefWidth="600.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="Customer" />
-                <TableColumn prefWidth="75.0" text="Employee" />
-                  <TableColumn prefWidth="75.0" text="Order Day" />
-                  <TableColumn prefWidth="75.0" text="Ship Day" />
-                  <TableColumn prefWidth="75.0" text="Product" />
+                <TableColumn fx:id="NameCustomer" prefWidth="75.0" text="Customer" />
+                <TableColumn fx:id="NameEmployee" prefWidth="75.0" text="Employee" />
+                  <TableColumn fx:id="OrderDay" prefWidth="75.0" text="Order Day" />
+                  <TableColumn fx:id="ShipDay" prefWidth="75.0" text="Ship Day" />
+                  <TableColumn fx:id="ListProduct" prefWidth="75.0" text="Product" />
                   <TableColumn prefWidth="75.0" text="Column X" />
               </columns>
             </TableView>

@@ -15,7 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.bson.Document;
-import org.bson.conversions.Bson;
+
 
 public class MainController implements Initializable{
 
@@ -31,7 +31,7 @@ public class MainController implements Initializable{
     @FXML
     private Label TotalOrder;
     
-    public static Integer id_employee;
+
 
     @FXML
     void changePassword(ActionEvent event) {
@@ -66,7 +66,7 @@ public class MainController implements Initializable{
 
     @FXML
     void order(ActionEvent event) {
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("/MainOrder"));
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("MainOrder.fxml"));
         try {
             AnchorPane HomeOrder=loader.load();
             MainDisplay.getChildren().clear();

@@ -7,12 +7,30 @@ public class Order {
     private ObjectId id_Customer; 
     private ObjectId id_Employee;
     private String Order_date;
+    private String NameCustomer;
+    private String NameEmployee;
+
+    public String getNameCustomer() {
+        return NameCustomer;
+    }
+
+    public void setNameCustomer(String NameCustomer) {
+        this.NameCustomer = NameCustomer;
+    }
+
+    public String getNameEmployee() {
+        return NameEmployee;
+    }
+
+    public void setNameEmployee(String NameEmployee) {
+        this.NameEmployee = NameEmployee;
+    }
     private String Ship_date;
 
     public Order() {
     }
 
-    public Order(ObjectId _id, ObjectId id_Customer, ObjectId id_Employee, String Order_date, String Ship_date, Integer status, Object DetailOrder) {
+    public Order(ObjectId _id, ObjectId id_Customer, ObjectId id_Employee, String Order_date, String Ship_date, Integer status, Object DetailOrder,String nameCustomer,String nameEmployee) {
         this._id = _id;
         this.id_Customer = id_Customer;
         this.id_Employee = id_Employee;
@@ -20,6 +38,8 @@ public class Order {
         this.Ship_date = Ship_date;
         this.status = status;
         this.DetailOrder = DetailOrder;
+        this.NameCustomer=nameCustomer;
+        this.NameEmployee=nameEmployee;
     }
     
     

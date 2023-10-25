@@ -13,7 +13,6 @@ import com.mongodb.client.result.UpdateResult;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -38,12 +37,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 public class LoginController implements Initializable {
 
     @FXML
     private PasswordField PasswordField;
-
+    public static ObjectId id_employee;
     @FXML
     private TextField UsernameField;
 
@@ -92,11 +92,13 @@ public class LoginController implements Initializable {
             for (Document result : results) {
                 isFound = true;
                 try {
-                    if (result.getInteger("usertype")==1) {
+                    if (result.getInteger("usertype") == 1) {
                         DialogAlert.DialogSuccess("Login Success");
+                         id_employee = result.getObjectId("_id");
+                        
                         App.setRoot("SalePerson");
                     }
-                    if (result.getInteger("usertype")==2) {
+                    if (result.getInteger("usertype") == 2) {
                         DialogAlert.DialogSuccess("Login Success");
                         App.setRoot("WarehouseStaff");
                     }
@@ -183,12 +185,12 @@ public class LoginController implements Initializable {
     void sendReport(ActionEvent event) {
         if (!otp1.getText().isEmpty() && !otp2.getText().isEmpty() && !otp3.getText().isEmpty() && !otp4.getText().isEmpty() && !otp5.getText().isEmpty() && !otp6.getText().isEmpty()) {
             MongoCollection<Document> employees = DBConnection.getConnection().getCollection("Employee");
-            String otp=otp1.getText()+otp2.getText()+otp3.getText()+otp4.getText()+otp5.getText()+otp6.getText();
-            Document employee=employees.find(Filters.and(Filters.eq("Email", Email.getText()),Filters.eq("OTP", otp))).first();
-            if(employee!=null){
-             MongoCollection<Document> Reports = DBConnection.getConnection().getCollection("Request");
-                Document request=new Document("EmailEmployee", Email.getText()).append("status", 0);
-                InsertOneResult insertOneResult=Reports.insertOne(request);
+            String otp = otp1.getText() + otp2.getText() + otp3.getText() + otp4.getText() + otp5.getText() + otp6.getText();
+            Document employee = employees.find(Filters.and(Filters.eq("Email", Email.getText()), Filters.eq("OTP", otp))).first();
+            if (employee != null) {
+                MongoCollection<Document> Reports = DBConnection.getConnection().getCollection("Request");
+                Document request = new Document("EmailEmployee", Email.getText()).append("status", 0);
+                InsertOneResult insertOneResult = Reports.insertOne(request);
                 DialogAlert.DialogSuccess("Send Success");
             }
         }
@@ -236,36 +238,36 @@ public class LoginController implements Initializable {
             }
         }));
         otp1.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE)){
-            otp1.clear();
+            if (event.getCode().equals(KeyCode.BACK_SPACE)) {
+                otp1.clear();
             }
         });
         otp2.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+            if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 otp2.clear();
                 otp1.requestFocus();
             }
         });
         otp3.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+            if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 otp3.clear();
                 otp2.requestFocus();
             }
         });
         otp4.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+            if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 otp4.clear();
                 otp3.requestFocus();
             }
         });
         otp5.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+            if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 otp5.clear();
                 otp4.requestFocus();
             }
         });
         otp6.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.BACK_SPACE)){
+            if (event.getCode().equals(KeyCode.BACK_SPACE)) {
                 otp6.clear();
                 otp5.requestFocus();
             }

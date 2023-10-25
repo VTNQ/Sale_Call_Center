@@ -10,5 +10,6 @@ module com.mgteam.sale_call_center_employee {
     requires java.mail;
 
     opens com.mgteam.sale_call_center_employee to javafx.fxml;
+    opens com.mgteam.sale_call_center_employee.model to javafx.base;
     exports com.mgteam.sale_call_center_employee;
 }
