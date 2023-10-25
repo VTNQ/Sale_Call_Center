@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="440.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_manager.Change_passController">
+   <children>
+      <AnchorPane prefHeight="176.0" prefWidth="600.0" styleClass="top-panel" stylesheets="@css/Employee.css">
+         <children>
+            <ImageView fitHeight="158.0" fitWidth="176.0" layoutX="-2.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@asset/reset-password%20(2).png" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" layoutX="175.0" layoutY="37.0" prefHeight="67.0" prefWidth="297.0" text="Change Password" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Label alignment="CENTER" layoutX="79.0" layoutY="190.0" prefHeight="46.0" prefWidth="137.0" text="old Password">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="oldpass" layoutX="225.0" layoutY="200.0" promptText="Old Password" />
+      <Label alignment="CENTER" layoutX="87.0" layoutY="235.0" prefHeight="46.0" prefWidth="137.0" text="New Password">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="newpass" layoutX="225.0" layoutY="246.0" promptText="New Password" />
+      <Label alignment="CENTER" layoutX="72.0" layoutY="281.0" prefHeight="46.0" prefWidth="150.0" text="Re_New Password">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="renewpass" layoutX="225.0" layoutY="291.0" promptText="Re_New Password" />
+      <Button layoutX="241.0" layoutY="342.0" mnemonicParsing="false" onAction="#change" prefHeight="46.0" prefWidth="82.0" styleClass="btn-design" stylesheets="@css/Employee.css" text="Change" />
+   </children>
+</AnchorPane>

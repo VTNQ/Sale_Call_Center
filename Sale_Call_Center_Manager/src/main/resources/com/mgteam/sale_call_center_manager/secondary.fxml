@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.SecondaryController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.MainController">
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="191.0" stylesheets="@css/Employee.css">
          <children>
@@ -28,12 +28,12 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <Label layoutX="100.0" layoutY="76.0" prefHeight="38.0" prefWidth="74.0" text="Admin">
+            <Label fx:id="User" layoutX="100.0" layoutY="76.0" prefHeight="38.0" prefWidth="74.0">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <Button layoutY="159.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="Dashboard">
+            <Button layoutY="159.0" mnemonicParsing="false" onAction="#Home" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="Dashboard">
                <graphic>
                   <ImageView fitHeight="36.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -52,13 +52,58 @@
                </graphic>
             </Button>
             <Label layoutX="71.0" layoutY="559.0" text="Logout" textFill="WHITE" />
+            <Button layoutY="213.0" mnemonicParsing="false" onAction="#Employee" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="Employee">
+               <graphic>
+                  <ImageView fitHeight="36.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@asset/Add%20user.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutY="269.0" mnemonicParsing="false" onAction="#change_pass" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="Change Password">
+               <graphic>
+                  <ImageView fitHeight="36.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@asset/reset-password%20(2).png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutY="322.0" mnemonicParsing="false" onAction="#Order" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="Order">
+               <graphic>
+                  <ImageView fitHeight="36.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@asset/order.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutY="375.0" mnemonicParsing="false" onAction="#Customer" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="Customer">
+               <graphic>
+                  <ImageView fitHeight="36.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@asset/service.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutY="437.0" mnemonicParsing="false" onAction="#Inventory" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/Employee.css" text="inventory">
+               <graphic>
+                  <ImageView fitHeight="36.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@asset/warehouse.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
          <styleClass>
             <String fx:value="nav" />
             <String fx:value="shadow" />
          </styleClass>
       </AnchorPane>
-      <AnchorPane layoutX="200.0" prefHeight="600.0" prefWidth="600.0">
+      <AnchorPane fx:id="maindisplay" layoutX="200.0" prefHeight="600.0" prefWidth="600.0">
          <children>
             <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="126.0" prefWidth="574.0" stylesheets="@css/Employee.css" AnchorPane.bottomAnchor="459.6" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.600000000000023" AnchorPane.topAnchor="14.0">
                <styleClass>
