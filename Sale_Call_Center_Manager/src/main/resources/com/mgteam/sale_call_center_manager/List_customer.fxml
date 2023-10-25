@@ -39,9 +39,9 @@
             <Label layoutX="139.0" layoutY="83.0" prefHeight="18.0" prefWidth="66.0" styleClass="font" stylesheets="@css/Employee.css" text="Search" />
             <MFXTextField fx:id="txtfind" layoutX="216.0" layoutY="80.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="110.0" />
             <Label layoutX="82.0" layoutY="121.0" prefHeight="18.0" prefWidth="45.0" text="Filter" />
-            <Button layoutX="196.0" layoutY="116.0" mnemonicParsing="false" onAction="#FilternotYet" prefHeight="27.0" prefWidth="151.0" styleClass="button-Employee" stylesheets="@css/Employee.css" text="Order not yet processed" />
-            <Button layoutX="121.0" layoutY="116.0" mnemonicParsing="false" onAction="#AllCustomer" prefHeight="27.0" prefWidth="65.0" styleClass="button-Employee" stylesheets="@css/Employee.css" text="All" />
-            <Button layoutX="350.0" layoutY="116.0" mnemonicParsing="false" onAction="#FilternYet" prefHeight="27.0" prefWidth="180.0" styleClass="button-Employee" stylesheets="@css/Employee.css" text="The order has been processed" />
+            <Button layoutX="196.0" layoutY="116.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="151.0" styleClass="button-Employee" stylesheets="@css/Employee.css" text="Order not yet processed" />
+            <Button layoutX="121.0" layoutY="116.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="65.0" styleClass="button-Employee" stylesheets="@css/Employee.css" text="All" />
+            <Button layoutX="350.0" layoutY="116.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="180.0" styleClass="button-Employee" stylesheets="@css/Employee.css" text="The order has been processed" />
             <MFXButton layoutX="340.0" layoutY="76.0" onAction="#find" styleClass="btn-find" stylesheets="@css/Employee.css" text="Find" />
          </children>
       </AnchorPane>

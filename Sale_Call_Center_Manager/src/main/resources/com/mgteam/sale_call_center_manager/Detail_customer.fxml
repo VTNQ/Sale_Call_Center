@@ -27,7 +27,7 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <TableView layoutX="156.0" layoutY="172.0" prefHeight="244.0" prefWidth="340.0" styleClass="table-view1" stylesheets="@css/Employee.css">
+      <TableView fx:id="tblDetailPushedCustomer" layoutX="156.0" layoutY="172.0" prefHeight="244.0" prefWidth="340.0" styleClass="table-view1" stylesheets="@css/Employee.css">
         <columns>
           <TableColumn fx:id="colidorder" prefWidth="92.79998779296875" text="ID_Order" />
           <TableColumn fx:id="colDemand" prefWidth="112.00004577636719" text="Demand" />

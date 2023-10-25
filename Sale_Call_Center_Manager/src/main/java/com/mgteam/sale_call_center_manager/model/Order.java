@@ -15,6 +15,15 @@ public class Order {
     private String Employee;
     private String Demand;
     private String status;
+    private int IdOrder;
+
+    public int getIdOrder() {
+        return IdOrder;
+    }
+
+    public void setIdOrder(int IdOrder) {
+        this.IdOrder = IdOrder;
+    }
     private String Email;
     private Integer Quality;
     private String Price;
@@ -98,13 +107,14 @@ public class Order {
         this.Detail = Detail;
     }
 
-    public Order(String name, String Day, String Employee, String status,String Email) {
+    public Order(String name, String Day, String Employee, String status,String Email,int id_order) {
         this.name = name;
         this.Day = Day;
         this.Employee = Employee;
         this.status = status;
         this.Detail=true;
         this.Email=Email;
+        this.IdOrder=id_order;
     }
 
 }

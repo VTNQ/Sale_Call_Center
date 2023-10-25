@@ -4,23 +4,16 @@
  */
 package com.mgteam.sale_call_center_manager;
 
-import com.mgteam.sale_call_center_manager.connect.DBconnect;
 import com.mgteam.sale_call_center_manager.connect.util.daodb;
 import com.mgteam.sale_call_center_manager.model.Order;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Filters;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javax.mail.Authenticator;
@@ -43,9 +37,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 /**
  *
@@ -69,6 +60,8 @@ public class Order_Customer implements Initializable {
     @FXML
     private Label customer = new Label();
     @FXML
+    private TableColumn<?, ?> colid = new TableColumn<>();
+    @FXML
     private TableColumn<?, ?> colProduct;
     private String Email;
     private String Employee;
@@ -86,25 +79,30 @@ public class Order_Customer implements Initializable {
     private TableColumn<Order, Boolean> colRequest = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colstatus = new TableColumn<>();
+    private TableColumn<Order, String> colstatus = new TableColumn<>();
     @FXML
     private TableView<Order> tblOrder = new TableView<>();
 
     private void setcustomer(String customer) {
         this.customer.setText(customer);
     }
-    private void setEmail(String Email){
-        this.Email=Email;
+
+    private void setEmail(String Email) {
+        this.Email = Email;
     }
-    private String getEmail(){
+
+    private String getEmail() {
         return Email;
     }
-    private void setEmployee(String Employee){
-        this.Employee=Employee;
+
+    private void setEmployee(String Employee) {
+        this.Employee = Employee;
     }
-    private String getEmployee(){
+
+    private String getEmployee() {
         return Employee;
     }
+
     private void detailorder(String name) {
         List<Order> detailorder = daodb.getdetailCustomer(name);
         ObservableList<Order> observableList = FXCollections.observableArrayList(detailorder);
@@ -112,8 +110,8 @@ public class Order_Customer implements Initializable {
         colProduct.setCellValueFactory(new PropertyValueFactory<>("name"));
         colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("Price"));
-    }
 
+    }
 
     @FXML
     void Findsearch(ActionEvent event) {
@@ -131,18 +129,129 @@ public class Order_Customer implements Initializable {
             {
                 button.setOnAction(event -> {
                     Order order = getTableView().getItems().get(getIndex());
-                   FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/create_request.fxml"));
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/create_request.fxml"));
                     try {
                         AnchorPane newpopup = loader.load();
                         Stage popupStage = new Stage();
-                       Order_Customer Order=loader.getController();
-                       Order.setEmail(order.getEmail());
-                       Order.setEmployee(order.getEmployee());
+                        Order_Customer Order = loader.getController();
+                        Order.setEmail(order.getEmail());
+                        Order.setEmployee(order.getEmployee());
                         popupStage.initModality(Modality.APPLICATION_MODAL);
                         popupStage.setScene(new Scene(newpopup));
                         popupStage.setResizable(false);
                         popupStage.showAndWait();
-                        
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                button.getStyleClass().add("btn-design");
+                super.updateItem(item, empty);
+                if (item != null || !empty) {
+                    setGraphic(button);
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+        coldetail.setCellValueFactory(new PropertyValueFactory<>("Detail"));
+        coldetail.setCellFactory(column -> new TableCell<Order, Boolean>() {
+            private final MFXButton button = new MFXButton("Detail");
+
+            {
+                button.setOnAction(event -> {
+                    Order order = getTableView().getItems().get(getIndex());
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/Detail_order.fxml"));
+                    try {
+                        AnchorPane newpopup = loader.load();
+                        Order_Customer Order = loader.getController();
+                        Stage popupStage = new Stage();
+                        popupStage.initModality(Modality.APPLICATION_MODAL);
+                        popupStage.setScene(new Scene(newpopup));
+                        Order.setcustomer(order.getName());
+                        Order.detailorder(order.getName());
+                        List<Order> orders = daodb.getdetailCustomer(order.getName());
+                        int totalprice = daodb.calculateTotalPrice(orders);
+                        DecimalFormat formatter = new DecimalFormat("#,### $");
+                        String formatterprice = formatter.format(totalprice);
+                        Order.total.setText(formatterprice);
+                        popupStage.setResizable(false);
+                        popupStage.showAndWait();
+
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                button.getStyleClass().add("btn-design");
+                super.updateItem(item, empty);
+                if (item != null || !empty) {
+                    setGraphic(button);
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+    }
+
+    @FXML
+    void All(ActionEvent event) {
+        displayorder();
+    }
+
+    @FXML
+    void OrderNotYet(ActionEvent event) {
+        List<Order> orderList = daodb.OrderCustomerNotYet();
+        ObservableList<Order> obserableList = FXCollections.observableArrayList(orderList);
+        tblOrder.setItems(obserableList);
+        colcustomer.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
+        colDay.setCellValueFactory(new PropertyValueFactory<>("Day"));
+        colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colstatus.setCellFactory(tc -> new TableCell<Order, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colstatus.widthProperty()); // Set the wrapping width to the column width
+                    setGraphic(text);
+                }
+            }
+        });
+        colid.setCellValueFactory(new PropertyValueFactory<>("IdOrder"));
+        colRequest.setCellValueFactory(new PropertyValueFactory<>("Detail"));
+        colRequest.setCellFactory(column -> new TableCell<Order, Boolean>() {
+            private final MFXButton button = new MFXButton("Request");
+
+            {
+                button.setOnAction(event -> {
+                    Order order = getTableView().getItems().get(getIndex());
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/create_request.fxml"));
+                    try {
+                        AnchorPane newpopup = loader.load();
+                        Stage popupStage = new Stage();
+                        Order_Customer Order = loader.getController();
+                        Order.setEmail(order.getEmail());
+                        Order.setEmployee(order.getEmployee());
+                        popupStage.initModality(Modality.APPLICATION_MODAL);
+                        popupStage.setScene(new Scene(newpopup));
+                        popupStage.setResizable(false);
+                        popupStage.showAndWait();
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -214,6 +323,21 @@ public class Order_Customer implements Initializable {
         colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
         colDay.setCellValueFactory(new PropertyValueFactory<>("Day"));
         colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colstatus.setCellFactory(tc -> new TableCell<Order, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colstatus.widthProperty()); // Set the wrapping width to the column width
+                    setGraphic(text);
+                }
+            }
+        });
+        colid.setCellValueFactory(new PropertyValueFactory<>("IdOrder"));
         colRequest.setCellValueFactory(new PropertyValueFactory<>("Detail"));
         colRequest.setCellFactory(column -> new TableCell<Order, Boolean>() {
             private final MFXButton button = new MFXButton("Request");
@@ -225,14 +349,14 @@ public class Order_Customer implements Initializable {
                     try {
                         AnchorPane newpopup = loader.load();
                         Stage popupStage = new Stage();
-                       Order_Customer Order=loader.getController();
-                       Order.setEmail(order.getEmail());
-                       Order.setEmployee(order.getEmployee());
+                        Order_Customer Order = loader.getController();
+                        Order.setEmail(order.getEmail());
+                        Order.setEmployee(order.getEmployee());
                         popupStage.initModality(Modality.APPLICATION_MODAL);
                         popupStage.setScene(new Scene(newpopup));
                         popupStage.setResizable(false);
                         popupStage.showAndWait();
-                        
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -315,7 +439,7 @@ public class Order_Customer implements Initializable {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getEmail()));
             message.setSubject("processing request");
-            String body = "Hello," + getEmployee() +"\n" +AreaRequest.getText();
+            String body = "Hello," + getEmployee() + "\n" + AreaRequest.getText();
             message.setText(body);
             Transport.send(message);
             Alert.DialogSuccess("request sent successfully");

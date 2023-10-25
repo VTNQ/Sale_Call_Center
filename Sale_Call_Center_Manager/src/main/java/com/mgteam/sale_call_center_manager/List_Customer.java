@@ -39,8 +39,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.bson.Document;
-import org.bson.types.ObjectId;
 
 /**
  *
@@ -49,31 +47,53 @@ import org.bson.types.ObjectId;
 public class List_Customer implements Initializable {
 
     @FXML
-    private TableColumn<?, ?> colEndorder=new TableColumn<>();
+    private TableColumn<?, ?> colEndorder = new TableColumn<>();
+    @FXML
+    private TableColumn<?, ?> colDemand = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colName=new TableColumn<>();
+    private TableColumn<?, ?> colEmployee = new TableColumn<>();
+
+    @FXML
+    private TableColumn<?, ?> colidorder = new TableColumn<>();
+
+    @FXML
+    private TableView<Customer> tblDetailPushedCustomer = new TableView<>();
+    @FXML
+    private TableColumn<?, ?> colName = new TableColumn<>();
     @FXML
     private Label Customer;
     @FXML
-    private TableColumn<Customer, Boolean> colOrder=new TableColumn<>();
+    private TableColumn<Customer, Boolean> colOrder = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colStartOrder=new TableColumn<>();
+    private TableColumn<?, ?> colStartOrder = new TableColumn<>();
 
     @FXML
-    private TableView<Customer> tblCustomer=new TableView<>();
+    private TableView<Customer> tblCustomer = new TableView<>();
     @FXML
     private MFXTextField txtfind;
 
     @FXML
     void find(ActionEvent event) {
+        List<Customer> customerAll = daodb.SearchListCustomer(txtfind.getText());
+        ObservableList<Customer> obserable = FXCollections.observableArrayList(customerAll);
+        tblCustomer.setItems(obserable);
+        colName.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        colStartOrder.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        colEndorder.setCellValueFactory(new PropertyValueFactory<>("EndDate"));
+        colOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
+    }
 
+    private void DetailpurchasedOrder(String Name) {
+        List<Customer> CutomerAll = daodb.getdetailpushedCustomer(Name);
+        ObservableList<Customer> obserable = FXCollections.observableArrayList(CutomerAll);
+        tblDetailPushedCustomer.setItems(obserable);
+        colidorder.setCellValueFactory(new PropertyValueFactory<>("id_order"));
+        colDemand.setCellValueFactory(new PropertyValueFactory<>("Demand"));
+        colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
     }
-    private void DetailpurchasedOrder(String Name){
-        List<Customer>CutomerAll=daodb.getdetailpushedCustomer(Name);
-        
-    }
+
     private void List_Customer() {
         List<Customer> CustomerAll = daodb.ListCustomer();
         ObservableList<Customer> observable = FXCollections.observableArrayList(CustomerAll);
@@ -88,14 +108,15 @@ public class List_Customer implements Initializable {
             {
                 button.setOnAction(event -> {
                     try {
-                        Customer customer=getTableView().getItems().get(getIndex());
+                        Customer customer = getTableView().getItems().get(getIndex());
                         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/Detail_customer.fxml"));
                         AnchorPane pane = loader.load();
                         FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), pane);
                         fadeTransition.setFromValue(0);
                         fadeTransition.setToValue(1);
-                        List_Customer list=loader.getController();
+                        List_Customer list = loader.getController();
                         list.Customer.setText(customer.getName());
+                        list.DetailpurchasedOrder(customer.getName());
                         Stage popupStage = new Stage();
                         popupStage.initModality(Modality.APPLICATION_MODAL);
                         popupStage.setScene(new Scene(pane));

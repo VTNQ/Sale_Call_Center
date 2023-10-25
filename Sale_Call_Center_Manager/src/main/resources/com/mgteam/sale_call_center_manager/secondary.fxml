@@ -103,7 +103,7 @@
             <String fx:value="shadow" />
          </styleClass>
       </AnchorPane>
-      <AnchorPane fx:id="maindisplay" layoutX="200.0" prefHeight="600.0" prefWidth="600.0">
+      <AnchorPane fx:id="maindisplay" layoutX="200.0" prefHeight="602.0" prefWidth="610.0">
          <children>
             <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="126.0" prefWidth="574.0" stylesheets="@css/Employee.css" AnchorPane.bottomAnchor="459.6" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.600000000000023" AnchorPane.topAnchor="14.0">
                <styleClass>
