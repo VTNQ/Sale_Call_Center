@@ -44,6 +44,11 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField PasswordField;
     public static ObjectId id_employee;
+    public static String username;
+    public static String name;
+    public static String email;
+    public static String phone;
+    public static String since;
     @FXML
     private TextField UsernameField;
 
@@ -94,12 +99,22 @@ public class LoginController implements Initializable {
                 try {
                     if (result.getInteger("usertype") == 1) {
                         DialogAlert.DialogSuccess("Login Success");
-                         id_employee = result.getObjectId("_id");
-                        
+                        id_employee = result.getObjectId("_id");
+                        username=UsernameField.getText();
+                        name=result.getString("Name");
+                        email=result.getString("Email");
+                        phone=result.getString("Phone");
+                        since=result.getString("Since");
                         App.setRoot("SalePerson");
                     }
                     if (result.getInteger("usertype") == 2) {
                         DialogAlert.DialogSuccess("Login Success");
+                        id_employee = result.getObjectId("_id");
+                        username=UsernameField.getText();
+                        name=result.getString("Name");
+                        email=result.getString("Email");
+                        phone=result.getString("Phone");
+                        since=result.getString("Since");
                         App.setRoot("WarehouseStaff");
                     }
                 } catch (IOException ex) {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ProfileController">
+   <children>
+      <Label layoutX="171.0" text="INFORMATION">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+      <TextField fx:id="username" alignment="CENTER" editable="false" layoutX="226.0" layoutY="54.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css">
+         <font>
+            <Font name="System Bold Italic" size="13.0" />
+         </font>
+      </TextField>
+      <Label layoutX="166.0" layoutY="81.0" text="Name" />
+      <TextField fx:id="name" alignment="CENTER" editable="false" layoutX="226.0" layoutY="77.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="168.0" layoutY="128.0" text="Email" />
+      <TextField fx:id="email" alignment="CENTER" editable="false" layoutX="226.0" layoutY="124.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="168.0" layoutY="178.0" text="Phone" />
+      <TextField fx:id="phone" editable="false" layoutX="225.0" layoutY="174.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="168.0" layoutY="225.0" text="Since" />
+      <TextField fx:id="since" editable="false" layoutX="225.0" layoutY="221.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <MFXButton layoutX="274.0" layoutY="292.0" onAction="#Edit" text="Edit" />
+   </children>
+</AnchorPane>

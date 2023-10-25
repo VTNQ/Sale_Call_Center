@@ -95,7 +95,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </MFXButton>
-            <MFXButton layoutX="1.0" layoutY="379.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#report" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Profile">
+            <MFXButton layoutX="1.0" layoutY="379.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#profile" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Profile">
                <styleClass>
                   <String fx:value="mfx-button" />
                   <String fx:value="bg_tranparent" />

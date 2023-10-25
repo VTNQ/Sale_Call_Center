@@ -3,7 +3,6 @@ package com.mgteam.sale_call_center_employee;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
-import com.mongodb.client.model.Filters;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -11,6 +10,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -30,8 +31,7 @@ public class MainController implements Initializable{
     
     @FXML
     private Label TotalOrder;
-    
-
+   
 
     @FXML
     void changePassword(ActionEvent event) {
@@ -40,7 +40,7 @@ public class MainController implements Initializable{
 
     @FXML
     void customer(ActionEvent event) {
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("/MainCustomer"));
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("MainCustomer.fxml"));
         try {
             AnchorPane HomeCustomer=loader.load();
             MainDisplay.getChildren().clear();
@@ -61,7 +61,23 @@ public class MainController implements Initializable{
 
     @FXML
     void logout(ActionEvent event) {
-        
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("CONFIRMATION");
+        alert.setHeaderText(null);
+        alert.setContentText("Are You Logout?");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.CANCEL) {
+                alert.close();
+            }
+            if (response == ButtonType.OK) {
+                try {
+                    LoginController.username="";
+                    App.setRoot("login");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     @FXML
@@ -80,6 +96,18 @@ public class MainController implements Initializable{
     void report(ActionEvent event) {
 
     }
+    
+    @FXML
+    void profile(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("Profile.fxml"));
+        try {
+            AnchorPane Profile=loader.load();
+            MainDisplay.getChildren().clear();
+            MainDisplay.getChildren().setAll(Profile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private int TotalCustomer(){
         int count=0;
@@ -92,8 +120,9 @@ public class MainController implements Initializable{
     }
     
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) {   
         TotalCustomer.setText(String.valueOf(TotalCustomer()));
+        username.setText(LoginController.username);
     }
     
 }
