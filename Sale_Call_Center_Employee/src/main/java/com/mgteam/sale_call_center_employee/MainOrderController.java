@@ -10,7 +10,9 @@ import io.github.palexdev.materialfx.controls.MFXPagination;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,7 +33,7 @@ import org.bson.types.ObjectId;
 
 public class MainOrderController implements Initializable {
     
-    private ObjectId id_order;
+    private static ObjectId id_order;
 
     @FXML
     private TableColumn<Order, Boolean> ListProduct = new TableColumn<>();
@@ -135,8 +137,31 @@ public class MainOrderController implements Initializable {
     }
 
     public static List<com.mgteam.sale_call_center_employee.model.Product> ListProduct() {
+        Map<String, Integer> productQuantityMap = new HashMap<>();
         List<com.mgteam.sale_call_center_employee.model.Product>ArrayProduct=new ArrayList<>();
-        
+        MongoCollection<Document>OrderCollection=DBConnection.getConnection().getCollection("Order");
+        MongoCollection<Document>ProductCollection=DBConnection.getConnection().getCollection("Product");
+        FindIterable<Document>result=OrderCollection.find(Filters.eq("_id",id_order));
+        for (Document document : result) {
+            Document detailOrder=(Document)document.get("DetailOrder");
+            List<Object>idProducts=(List<Object>)detailOrder.get("id_Product");
+            for (Object id_product : idProducts) {
+                if(id_product instanceof String){
+                    ObjectId id=new ObjectId((String)id_product);
+                    Document product_collection=ProductCollection.find(new Document("_id",id)).first();
+                    if(product_collection!=null){
+                        String productName=product_collection.getString("Name");
+                        if (productQuantityMap.containsKey(productName)) {
+                                    int existingQuantity = productQuantityMap.get(productName);
+                                    productQuantityMap.put(productName, existingQuantity + 1);
+                                } else {
+                                    productQuantityMap.put(productName, 1);
+                                }
+                    }
+                }
+            }
+        }
+        return ArrayProduct;
     }
 
     @Override
