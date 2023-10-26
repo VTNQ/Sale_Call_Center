@@ -5,6 +5,7 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import io.github.palexdev.materialfx.controls.MFXPagination;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -41,6 +43,9 @@ public class MainOrderController  implements Initializable {
     private TableColumn<?, ?> StatusOrder;
      @FXML
     private TableView<Order> tblOrder;
+     
+    @FXML
+    private MFXPagination pagination;
     
     public static List<com.mgteam.sale_call_center_employee.model.Order>ListOrder(){
         List<com.mgteam.sale_call_center_employee.model.Order>ArrayOrder=new ArrayList<>();
@@ -79,7 +84,8 @@ public class MainOrderController  implements Initializable {
         NameEmployee.setCellValueFactory(new PropertyValueFactory<>("NameEmployee"));
         OrderDay.setCellValueFactory(new PropertyValueFactory<>("Order_date"));
         ShipDay.setCellValueFactory(new PropertyValueFactory<>("Ship_date"));
-        
+        pagination.setCurrentPage(0);
+        pagination.setMaxPage(OrderCustomer.size());
     }
     @Override
     public void initialize(URL url, ResourceBundle rb) {

@@ -29,7 +29,7 @@
                   <TableColumn prefWidth="120.0" text="Status" />
               </columns>
             </TableView>
-            <MFXPagination layoutX="256.0" layoutY="233.0" />
+            <MFXPagination fx:id="pagination" layoutX="255.0" layoutY="233.0" />
          </children>
       </AnchorPane>
       <MFXTextField layoutX="195.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer" />
