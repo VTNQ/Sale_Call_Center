@@ -4,6 +4,15 @@ import org.bson.types.ObjectId;
 
 public class Order {
     private ObjectId _id;
+    private boolean Product;
+
+    public boolean isProduct() {
+        return Product;
+    }
+
+    public void setProduct(boolean Product) {
+        this.Product = Product;
+    }
     private ObjectId id_Customer; 
     private ObjectId id_Employee;
     private String Order_date;
@@ -40,6 +49,7 @@ public class Order {
         this.DetailOrder = DetailOrder;
         this.NameCustomer=nameCustomer;
         this.NameEmployee=nameEmployee;
+        this.Product=true;
     }
     
     

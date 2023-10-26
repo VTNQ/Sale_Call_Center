@@ -5,6 +5,7 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXPagination;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import org.bson.types.ObjectId;
 public class MainOrderController  implements Initializable {
     
     @FXML
-    private TableColumn<?, ?> ListProduct;
+    private TableColumn<Order, Boolean> ListProduct;
 
     @FXML
     private TableColumn<?, ?> NameCustomer;
@@ -84,6 +85,25 @@ public class MainOrderController  implements Initializable {
         NameEmployee.setCellValueFactory(new PropertyValueFactory<>("NameEmployee"));
         OrderDay.setCellValueFactory(new PropertyValueFactory<>("Order_date"));
         ShipDay.setCellValueFactory(new PropertyValueFactory<>("Ship_date"));
+        ListProduct.setCellValueFactory(new PropertyValueFactory<>("Product"));
+        ListProduct.setCellFactory(column->new TableCell<Order,Boolean>(){
+        private MFXButton button=new MFXButton("Detail");
+                {
+                button.setOnAction(event->{
+                
+                });
+                }
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty); 
+                if(item!=null || !empty){
+                    setGraphic(button);
+                }else{
+                    setGraphic(null);
+                }
+            }
+        
+        });
         pagination.setCurrentPage(0);
         pagination.setMaxPage(OrderCustomer.size());
     }
