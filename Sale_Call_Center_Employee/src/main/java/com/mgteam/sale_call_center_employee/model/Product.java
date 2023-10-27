@@ -7,6 +7,30 @@ public class Product {
     private String Name;
     private ObjectId id_category;
     private Integer Price;
+    private int Quality;
+    private int Id_product;
+
+    public Product(String Name, int Quality, int Id_product) {
+        this.Name = Name;
+        this.Quality = Quality;
+        this.Id_product = Id_product;
+    }
+
+    public int getQuality() {
+        return Quality;
+    }
+
+    public void setQuality(int Quality) {
+        this.Quality = Quality;
+    }
+
+    public int getId_product() {
+        return Id_product;
+    }
+
+    public void setId_product(int Id_product) {
+        this.Id_product = Id_product;
+    }
 
     public Product() {
     }
