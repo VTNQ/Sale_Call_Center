@@ -41,8 +41,8 @@
                   </ImageView>
                </graphic>
             </MFXButton>
-            <MFXTextField layoutX="23.0" layoutY="13.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer" />
-            <MFXButton layoutX="245.0" layoutY="13.0" style="-fx-background-color: #e2772f; -fx-text-fill: white;" text="Search" />
+            <MFXTextField layoutX="31.0" layoutY="9.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer" />
+            <MFXButton layoutX="245.0" layoutY="10.0" style="-fx-background-color: #e2772f; -fx-text-fill: white;" text="Search" AnchorPane.rightAnchor="332.0" />
          </children>
       </AnchorPane>
       <AnchorPane layoutY="-3.0" prefHeight="54.0" prefWidth="641.0" style="-fx-background-color: #e2772f;" stylesheets="@css/application.css">
