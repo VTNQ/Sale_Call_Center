@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.InventoryController">
    <children>
-      <Pane layoutX="174.0" layoutY="43.0" prefHeight="5.0" prefWidth="200.0" style="-fx-background-color: black;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <TableView fx:id="tblInventory" layoutX="34.0" layoutY="89.0" prefHeight="298.0" prefWidth="544.0" styleClass="table-view2" stylesheets="@css/Employee.css">
+      <ImageView fitHeight="68.0" fitWidth="156.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@asset/warehouse.png" />
+         </image>
+      </ImageView>
+      <Pane layoutY="63.0" prefHeight="8.0" prefWidth="683.0" style="-fx-background-color: black;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <TableView fx:id="tblInventory" layoutX="26.0" layoutY="128.0" prefHeight="326.0" prefWidth="632.0" styleClass="table-view1" stylesheets="@css/Employee.css">
         <columns>
           <TableColumn fx:id="ID_Iventory" prefWidth="75.0" text="ID Iventory" />
-          <TableColumn fx:id="NameProduct" prefWidth="127.20001220703125" text="Product" />
+          <TableColumn fx:id="IDproduct" prefWidth="105.59998321533203" text="ID Product" />
+            <TableColumn fx:id="NameProduct" prefWidth="151.20001220703125" text="Product" />
             <TableColumn fx:id="colQuality" prefWidth="127.20001220703125" text="Quality" />
-            <TableColumn fx:id="colDate" prefWidth="127.20001220703125" text="Date" />
-            <TableColumn fx:id="colPrice" prefWidth="85.60009765625" text="Price" />
+            <TableColumn fx:id="colDate" prefWidth="94.39993286132812" text="Date" />
+            <TableColumn fx:id="colPrice" prefWidth="74.39996337890625" text="Price" />
         </columns>
       </TableView>
-      <Text layoutX="26.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="inventory" wrappingWidth="205.33673095703125">
+      <Text layoutX="86.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="inventory" wrappingWidth="205.33673095703125">
          <font>
             <Font name="Arial Black" size="32.0" />
          </font>
       </Text>
+      <Label layoutX="199.0" layoutY="79.0" text="Search">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <MFXTextField fx:id="txtfind" layoutX="276.0" layoutY="85.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="130.0" />
+      <Button layoutX="413.0" layoutY="79.0" mnemonicParsing="false" onAction="#findInventory" styleClass="btn-find" stylesheets="@css/Employee.css" text="Find" />
+      <Pagination fx:id="pagination" layoutX="227.0" layoutY="472.0" prefHeight="45.0" prefWidth="194.0" />
    </children>
 </AnchorPane>

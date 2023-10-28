@@ -6,6 +6,7 @@ package com.mgteam.sale_call_center_manager.connect.util;
 
 import com.mgteam.sale_call_center_manager.connect.DBconnect;
 import com.mgteam.sale_call_center_manager.model.Customer;
+import com.mgteam.sale_call_center_manager.model.Iventory;
 import com.mgteam.sale_call_center_manager.model.Manager;
 import com.mgteam.sale_call_center_manager.model.Order;
 import com.mongodb.client.FindIterable;
@@ -13,6 +14,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.eq;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Projections;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -33,6 +36,55 @@ import org.bson.types.ObjectId;
  * @author tranp
  */
 public class daodb {
+
+    public static List<Order> getdateOrder(String date) {
+        List<Order> Listorder = new ArrayList<>();
+        try {
+            MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
+            MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
+            MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate searchDate = LocalDate.parse(date, formatter);
+            FindIterable<Document> orders = Order.find(Filters.eq("Order_date", searchDate.toString()));
+            for (Document order : orders) {
+                ObjectId idCustomer = order.getObjectId("id_Customer");
+                ObjectId idEmployee = order.getObjectId("id_Employee");
+                Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
+                Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
+                if (customerDocument != null && EmployeeDocument != null) {
+                    String customerName = customerDocument.getString("Name");
+                    int id_order = order.getObjectId("_id").hashCode();
+                    String EmployeeName = EmployeeDocument.getString("Name");
+                    String dayOrder = order.getString("Order_date");
+                    LocalDate sincedate = LocalDate.parse(dayOrder, formatter);
+                    String formattedSince = sincedate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    int status = order.getInteger("status");
+                    String Email = EmployeeDocument.getString("Email");
+                    String statusString = "";
+                    switch (status) {
+                        case 0:
+                            statusString = "Importing goods";
+                            break;
+                        case 1:
+                            statusString = "Delivering";
+                            break;
+                        case 2:
+                            statusString = "Cancelled";
+                            break;
+                        case 3:
+                            statusString = "delivered";
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                    Listorder.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Listorder;
+    }
 
     public static Map<ObjectId, Date[]> getdateOrder() {
         MongoCollection<Document> Employee = DBconnect.getdatabase().getCollection("Employee");
@@ -92,8 +144,65 @@ public class daodb {
         }
         return Array;
     }
+    public static List<Iventory>SearchInventory(String Name){
+        ArrayList<Iventory>Inventory=new ArrayList<>();
+         Pattern regexPattern = Pattern.compile(".*" + Name + ".*", Pattern.CASE_INSENSITIVE);
+        MongoCollection<Document>Warehouse=DBconnect.getdatabase().getCollection("WareHouse");
+        MongoCollection<Document>Product=DBconnect.getdatabase().getCollection("Product");
+        Warehouse.createIndex(Indexes.ascending("ID_Product"));
+        Product.createIndex(Indexes.ascending("_id"));
+        Warehouse.createIndex(Indexes.ascending("Date"));
+        FindIterable<Document>Ware_house=Warehouse.find();
+        for (Document document : Ware_house) {
+            ObjectId idProduct=document.getObjectId("ID_Product");
+            Document product=Product.find(Filters.and(Filters.eq("_id",idProduct),Filters.regex("Name", regexPattern))).first();
+            if(product!=null){
+                int id_Iventory=document.getObjectId("_id").hashCode();
+                ObjectId idProductcode=product.getObjectId("_id");
+                int id_Productint=Math.abs(idProductcode.hashCode());
+                String nameProduct=product.getString("Name");
+                int Quality=document.getInteger("Quality");
+                String dayorder=document.getString("Date");
+                LocalDate sinceDate=LocalDate.parse(dayorder,DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                String formattedSince=sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                DecimalFormat formatter=new DecimalFormat("#,### $");
+                int price=product.getInteger("Price");
+                String formatPrice=formatter.format(price);
+                Inventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, nameProduct));
+            }
+        }
+        return Inventory;
+    }
+    public static List<Iventory> getIventory() {
+        ArrayList<Iventory> Iventory = new ArrayList<>();
+        MongoCollection<Document> Warehouse = DBconnect.getdatabase().getCollection("WareHouse");
+        MongoCollection<Document> Product = DBconnect.getdatabase().getCollection("Product");
+        Warehouse.createIndex(Indexes.ascending("ID_Product"));
+        Product.createIndex(Indexes.ascending("_id"));
+        Warehouse.createIndex(Indexes.ascending("Date"));
+        FindIterable<Document> Ware_house = Warehouse.find();
+        for (Document document : Ware_house) {
+            ObjectId idProduct = document.getObjectId("ID_Product");
+            Document product = Product.find(new Document("_id", idProduct)).first();
+            if (product != null) {
+                int id_Iventory = document.getObjectId("_id").hashCode();
+                ObjectId IdProductcode = product.getObjectId("_id");
+                int id_Productint = Math.abs(IdProductcode.hashCode());
+                String name_product = product.getString("Name");
+                int Quality = document.getInteger("Quality");
+                String dayOrder = document.getString("Date");
+                LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                DecimalFormat formatter = new DecimalFormat("#,### $");
+                int price = product.getInteger("Price");
+                String formatPrice = formatter.format(price);
+                Iventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, name_product));
+            }
+        }
+        return Iventory;
+    }
 
-    public static List<Order> getdetailCustomer(String Name) {
+    public static List<Order> getdetailCustomer(String Name, int id_order) {
 
         Map<String, Integer> productQuantityMap = new HashMap<>();
         ArrayList<Order> ordest = new ArrayList<>();
@@ -119,8 +228,9 @@ public class daodb {
                         if (product != null && customer1 != null) {
                             String productName = product.getString("Name");
                             String customerName = customer1.getString("Name");
-
-                            if (customerName.equals(Name)) {
+                            ObjectId idorder = detailOrder.getObjectId("id_Order");
+                            int idorderCustomer = idorder.hashCode();
+                            if (customerName.equals(Name) && idorderCustomer == id_order) {
 
                                 if (productQuantityMap.containsKey(productName)) {
                                     int existingQuantity = productQuantityMap.get(productName);
@@ -174,36 +284,53 @@ public class daodb {
     }
 
     public static List<Customer> SearchListCustomer(String Name) {
-        List<Customer> customer = new ArrayList<>();
-        Map<ObjectId, Date[]> Ordermap = getdateOrder();
-        Set<ObjectId> processedCustomer = new HashSet<>();
+        List<Customer> customerList = new ArrayList<>();
         Pattern regexPattern = Pattern.compile(".*" + Name + ".*", Pattern.CASE_INSENSITIVE);
+
         try {
-            MongoCollection<Document> Employee = DBconnect.getdatabase().getCollection("Employee");
-            MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
-            MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> OrderList = Order.find();
-            for (Document document : OrderList) {
-                ObjectId idCustomer = document.getObjectId("id_Customer");
-                ObjectId idEmployee = document.getObjectId("id_Employee");
-                Document customerDocument = Customer.find(Filters.and(Filters.eq("_id", idCustomer), Filters.regex("Name", regexPattern))).first();
-                Document EmployeeProcess = Employee.find(Filters.eq("_id", idEmployee)).first();
-                if (customerDocument != null && EmployeeProcess != null && !processedCustomer.contains(idCustomer)) {
-                    String nameCustomer = customerDocument.getString("Name");
-                    Date[] orderdate = Ordermap.get(idCustomer);
-                    Date startDate = orderdate[0];
-                    Date EndDate = orderdate[1];
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    String formatStart = sdf.format(startDate);
-                    String formatEnd = sdf.format(EndDate);
-                    customer.add(new Customer(nameCustomer, formatStart, formatEnd));
-                    processedCustomer.add(idCustomer);
+            MongoCollection<Document> employeeCollection = DBconnect.getdatabase().getCollection("Employee");
+            MongoCollection<Document> orderCollection = DBconnect.getdatabase().getCollection("Order");
+            MongoCollection<Document> customerCollection = DBconnect.getdatabase().getCollection("Customer");
+            orderCollection.createIndex(Indexes.ascending("id_Customer"));
+            customerCollection.createIndex(Indexes.text("Name"));
+
+            Map<ObjectId, Date[]> orderDateMap = getdateOrder();
+            Set<ObjectId> processedCustomers = new HashSet<>();
+
+            FindIterable<Document> orderDocuments = orderCollection.find()
+                    .projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+
+            for (Document orderDoc : orderDocuments) {
+                ObjectId idCustomer = orderDoc.getObjectId("id_Customer");
+                ObjectId idEmployee = orderDoc.getObjectId("id_Employee");
+
+                if (!processedCustomers.contains(idCustomer)) {
+                    Document customerDoc = customerCollection.find(Filters.and(
+                            Filters.eq("_id", idCustomer),
+                            Filters.regex("Name", regexPattern)
+                    )).first();
+
+                    Document employeeDoc = employeeCollection.find(Filters.eq("_id", idEmployee)).first();
+
+                    if (customerDoc != null && employeeDoc != null) {
+                        String customerName = customerDoc.getString("Name");
+                        Date[] orderDateRange = orderDateMap.get(idCustomer);
+                        Date startDate = orderDateRange[0];
+                        Date endDate = orderDateRange[1];
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        String formattedStartDate = sdf.format(startDate);
+                        String formattedEndDate = sdf.format(endDate);
+
+                        customerList.add(new Customer(customerName, formattedStartDate, formattedEndDate));
+                        processedCustomers.add(idCustomer);
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return customer;
+
+        return customerList;
     }
 
     public static List<Customer> ListCustomer() {
@@ -214,61 +341,111 @@ public class daodb {
             MongoCollection<Document> Employee = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> OrderList = Order.find();
+            Order.createIndex(Indexes.ascending("id_Customer"));
+            FindIterable<Document> OrderList = Order.find().projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
             for (Document document : OrderList) {
                 ObjectId idCustomer = document.getObjectId("id_Customer");
                 ObjectId idEmployee = document.getObjectId("id_Employee");
-                Document customerAll = Customer.find(Filters.eq("_id", idCustomer)).first();
-                Document EmployeeProcess = Employee.find(Filters.eq("_id", idEmployee)).first();
-                if (customerAll != null && EmployeeProcess != null && !processedCustomer.contains(idCustomer)) {
-                    String nameCustomer = customerAll.getString("Name");
-                    Date[] Orderdate = Ordermap.get(idCustomer);
-                    Date StartDate = Orderdate[0];
-                    Date EndDate = Orderdate[1];
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    String formatStart = sdf.format(StartDate);
-                    String formatEnd = sdf.format(EndDate);
-                    customer.add(new Customer(nameCustomer, formatStart, formatEnd));
-                    processedCustomer.add(idCustomer);
+                if (!processedCustomer.contains(idCustomer)) {
+                    Document customerAll = Customer.find(Filters.eq("_id", idCustomer)).first();
+                    Document EmployeeProcess = Employee.find(Filters.eq("_id", idEmployee)).first();
+                    if (customerAll != null && EmployeeProcess != null) {
+                        String nameCustomer = customerAll.getString("Name");
+                        Date[] Orderdate = Ordermap.get(idCustomer);
+                        Date StartDate = Orderdate[0];
+                        Date EndDate = Orderdate[1];
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        String formatStart = sdf.format(StartDate);
+                        String formatEnd = sdf.format(EndDate);
+                        customer.add(new Customer(nameCustomer, formatStart, formatEnd));
+                        processedCustomer.add(idCustomer);
+                    }
                 }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return customer;
     }
-    public static List<Order>OrderCustomerNotYet(){
-         List<Order> Ordercustomer = new ArrayList<>();
 
+    public static List<Order> OrderCustomerYet() {
+        List<Order> OrderCustomer = new ArrayList<>();
         try {
-           
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find();
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
             for (Document order : orders) {
                 ObjectId idCustomer = order.getObjectId("id_Customer");
                 ObjectId idEmployee = order.getObjectId("id_Employee");
                 Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
                 Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
                 if (customerDocument != null && EmployeeDocument != null) {
-                     int status = order.getInteger("status");
-                     if(status==0){
-                          String customerName = customerDocument.getString("Name");
-                    ObjectId id = order.getObjectId("_id");
-                    int id_order = id.hashCode();
-                    String EmployeeName = EmployeeDocument.getString("Name");
-                    String dayOrder = order.getString("Order_date");
-                    LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                   
-                    String Email = EmployeeDocument.getString("Email");
-                    String statusString = "Importing goods";
-                     Ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
-                     }
-                   
-                   
-                
+                    int status = order.getInteger("status");
+                    if (status != 0) {
+                        String customerName = customerDocument.getString("Name");
+                        int id_order = order.getObjectId("_id").hashCode();
+                        String EmployeeName = EmployeeDocument.getString("Name");
+                        String dayOrder = order.getString("Order_date");
+                        LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        String Email = EmployeeDocument.getString("Email");
+                        String statusString = "";
+                        switch (status) {
+                            case 1:
+                                statusString = "Delivering";
+                                break;
+                            case 2:
+                                statusString = "Cancelled";
+                                break;
+                            case 3:
+                                statusString = "delivered";
+                                break;
+                            default:
+
+                                throw new AssertionError();
+                        }
+                        OrderCustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return OrderCustomer;
+    }
+
+    public static List<Order> OrderCustomerNotYet() {
+        List<Order> Ordercustomer = new ArrayList<>();
+
+        try {
+
+            MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
+            MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
+            MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+            for (Document order : orders) {
+                ObjectId idCustomer = order.getObjectId("id_Customer");
+                ObjectId idEmployee = order.getObjectId("id_Employee");
+                Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
+                Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
+                if (customerDocument != null && EmployeeDocument != null) {
+                    int status = order.getInteger("status");
+                    if (status == 0) {
+                        String customerName = customerDocument.getString("Name");
+                        int id_order = order.getObjectId("_id").hashCode();
+                        String EmployeeName = EmployeeDocument.getString("Name");
+                        String dayOrder = order.getString("Order_date");
+                        LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+                        String Email = EmployeeDocument.getString("Email");
+                        String statusString = "Importing goods";
+
+                        Ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
+                    }
+
                 }
             }
         } catch (Exception e) {
@@ -276,13 +453,14 @@ public class daodb {
         }
         return Ordercustomer;
     }
+
     public static List<Order> SearchorderCustomer(String Name) {
         List<Order> ordercustomer = new ArrayList<>();
         try {
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find();
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
             Pattern regexPattern = Pattern.compile(".*" + Name + ".*", Pattern.CASE_INSENSITIVE);
 
             for (Document order : orders) {
@@ -291,14 +469,13 @@ public class daodb {
 
                 Document customerDocument = Customer.find(Filters.and(Filters.eq("_id", idCustomer), Filters.regex("Name", regexPattern))).first();
 
-                if (customerDocument != null ) {
+                if (customerDocument != null) {
                     String customerName = customerDocument.getString("Name");
 
                     Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
 
                     if (EmployeeDocument != null) {
-                        ObjectId id = order.getObjectId("_id");
-                        int id_order = id.hashCode();
+                        int id_order = order.getObjectId("_id").hashCode();
                         String EmployeeName = EmployeeDocument.getString("Name");
                         String dayOrder = order.getString("Order_date");
                         LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -325,7 +502,7 @@ public class daodb {
                         }
 
                         ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
-                       
+
                     }
                 }
             }
@@ -345,18 +522,35 @@ public class daodb {
             for (Document document : cursor) {
                 int usertype = document.getInteger("usertype");
                 if (usertype == 1 || usertype == 2) {
-                    String name = document.getString("Name");
-                    String phone = document.getString("Phone");
-                    String sinceString = document.getString("Since");
-                    LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                    String username = document.getString("Username");
-                    String email = document.getString("Email");
+                    if (usertype == 1) {
+                        String name = document.getString("Name");
+                        String phone = document.getString("Phone");
+                        String sinceString = document.getString("Since");
+                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        String username = document.getString("Username");
+                        String email = document.getString("Email");
 
-                    Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
-                    int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
-                    String value = (requestDocument != null) ? String.valueOf(status) : "";
-                    MG.add(new Manager(name, email, formattedSince, phone, value, username));
+                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                        String value = (requestDocument != null) ? String.valueOf(status) : "";
+                        String postion = "Warehouse";
+                        MG.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                    } else if (usertype == 2) {
+                        String name = document.getString("Name");
+                        String phone = document.getString("Phone");
+                        String sinceString = document.getString("Since");
+                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        String username = document.getString("Username");
+                        String email = document.getString("Email");
+
+                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                        String value = (requestDocument != null) ? String.valueOf(status) : "";
+                        String postion = "SalePerson";
+                        MG.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                    }
                 }
             }
         } catch (Exception e) {
@@ -369,11 +563,11 @@ public class daodb {
         List<Order> Ordercustomer = new ArrayList<>();
 
         try {
-           
+
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find();
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
             for (Document order : orders) {
                 ObjectId idCustomer = order.getObjectId("id_Customer");
                 ObjectId idEmployee = order.getObjectId("id_Employee");
@@ -381,8 +575,7 @@ public class daodb {
                 Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
                 if (customerDocument != null && EmployeeDocument != null) {
                     String customerName = customerDocument.getString("Name");
-                    ObjectId id = order.getObjectId("_id");
-                    int id_order = id.hashCode();
+                    int id_order = order.getObjectId("_id").hashCode();
                     String EmployeeName = EmployeeDocument.getString("Name");
                     String dayOrder = order.getString("Order_date");
                     LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -408,7 +601,7 @@ public class daodb {
                             throw new AssertionError();
                     }
                     Ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
-                
+
                 }
             }
         } catch (Exception e) {
@@ -427,18 +620,36 @@ public class daodb {
                 Document document = cursor.next();
                 int usertype = document.getInteger("usertype");
                 if (usertype == 1 || usertype == 2) {
-                    String name = document.getString("Name");
-                    String phone = document.getString("Phone");
-                    String sinceString = document.getString("Since");
-                    LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                    String username = document.getString("Username");
-                    String email = document.getString("Email");
+                    if (usertype == 1) {
+                        String name = document.getString("Name");
+                        String phone = document.getString("Phone");
+                        String sinceString = document.getString("Since");
+                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        String username = document.getString("Username");
+                        String email = document.getString("Email");
 
-                    Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
-                    int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
-                    String value = (requestDocument != null) ? String.valueOf(status) : "";
-                    Mg.add(new Manager(name, email, formattedSince, phone, value, username));
+                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                        String value = (requestDocument != null) ? String.valueOf(status) : "";
+                        String postion = "Warehouse";
+                        Mg.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                    } else if (usertype == 2) {
+                        String name = document.getString("Name");
+                        String phone = document.getString("Phone");
+                        String sinceString = document.getString("Since");
+                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        String username = document.getString("Username");
+                        String email = document.getString("Email");
+
+                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                        String value = (requestDocument != null) ? String.valueOf(status) : "";
+                        String postion = "SalePerson";
+                        Mg.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                    }
+
                 }
             }
         } catch (Exception e) {

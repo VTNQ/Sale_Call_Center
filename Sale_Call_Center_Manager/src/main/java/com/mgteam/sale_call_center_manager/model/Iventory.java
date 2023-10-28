@@ -10,9 +10,18 @@ package com.mgteam.sale_call_center_manager.model;
  */
 public class Iventory {
     private int id_Eventory;
-    private String product;
+    private int product;
     private int Qualiry;
     private String Date;
+    private String name_product;
+
+    public String getName_product() {
+        return name_product;
+    }
+
+    public void setName_product(String name_product) {
+        this.name_product = name_product;
+    }
     private String price;
 
     public int getId_Eventory() {
@@ -23,11 +32,11 @@ public class Iventory {
         this.id_Eventory = id_Eventory;
     }
 
-    public String getProduct() {
+    public int getProduct() {
         return product;
     }
 
-    public void setProduct(String product) {
+    public void setProduct(int product) {
         this.product = product;
     }
 
@@ -55,12 +64,13 @@ public class Iventory {
         this.price = price;
     }
 
-    public Iventory(int id_Eventory, String product, int Qualiry, String Date, String price) {
+    public Iventory(int id_Eventory, int product, int Qualiry, String Date, String price,String name_product) {
         this.id_Eventory = id_Eventory;
         this.product = product;
         this.Qualiry = Qualiry;
         this.Date = Date;
         this.price = price;
+        this.name_product=name_product;
     }
     
 }

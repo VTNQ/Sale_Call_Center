@@ -4,23 +4,13 @@
  */
 package com.mgteam.sale_call_center_manager;
 
-import com.mgteam.sale_call_center_manager.connect.DBconnect;
 import com.mgteam.sale_call_center_manager.connect.util.daodb;
 import com.mgteam.sale_call_center_manager.model.Customer;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -31,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -56,6 +47,8 @@ public class List_Customer implements Initializable {
 
     @FXML
     private TableColumn<?, ?> colidorder = new TableColumn<>();
+    @FXML
+    private Pagination detailPagination=new Pagination();
 
     @FXML
     private TableView<Customer> tblDetailPushedCustomer = new TableView<>();
@@ -65,7 +58,13 @@ public class List_Customer implements Initializable {
     private Label Customer;
     @FXML
     private TableColumn<Customer, Boolean> colOrder = new TableColumn<>();
-
+    @FXML
+    private Pagination pagination=new Pagination();
+    private int itemsperPage = 5;
+    private int totalItems;
+    private String Name;
+    private int displaymode = 1;
+    private int currentPageIndex = 0;
     @FXML
     private TableColumn<?, ?> colStartOrder = new TableColumn<>();
 
@@ -74,30 +73,73 @@ public class List_Customer implements Initializable {
     @FXML
     private MFXTextField txtfind;
 
-    @FXML
-    void find(ActionEvent event) {
-        List<Customer> customerAll = daodb.SearchListCustomer(txtfind.getText());
+    private void searchFilter(String name,int pageIndex) {
+        displaymode=2;
+        List<Customer> customerAll = daodb.SearchListCustomer(name);
         ObservableList<Customer> obserable = FXCollections.observableArrayList(customerAll);
-        tblCustomer.setItems(obserable);
+         totalItems = obserable.size();
+        int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCount);
+        if (customerAll.isEmpty()) {
+            pagination.setPageCount(1);
+            tblCustomer.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        int startIndex = pageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+
+        List<Customer> Ass = obserable.subList(startIndex, endIndex);
+        tblCustomer.setItems(FXCollections.observableArrayList(Ass));
         colName.setCellValueFactory(new PropertyValueFactory<>("Name"));
         colStartOrder.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         colEndorder.setCellValueFactory(new PropertyValueFactory<>("EndDate"));
         colOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
     }
 
+    @FXML
+    void find(ActionEvent event) {
+        currentPageIndex=0;
+        searchFilter(txtfind.getText(),currentPageIndex);
+          if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }else if(currentPageIndex==0){
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }
+    }
+
     private void DetailpurchasedOrder(String Name) {
         List<Customer> CutomerAll = daodb.getdetailpushedCustomer(Name);
         ObservableList<Customer> obserable = FXCollections.observableArrayList(CutomerAll);
-        tblDetailPushedCustomer.setItems(obserable);
+        totalItems = obserable.size();
+        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+        detailPagination.setPageCount(pageCounts);
+        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.max(startIndex, 0);
+        List<Customer> as = obserable.subList(startIndex, endIndex);
+        tblDetailPushedCustomer.setItems(FXCollections.observableArrayList(as));
         colidorder.setCellValueFactory(new PropertyValueFactory<>("id_order"));
         colDemand.setCellValueFactory(new PropertyValueFactory<>("Demand"));
         colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
     }
 
     private void List_Customer() {
+        displaymode=1;
         List<Customer> CustomerAll = daodb.ListCustomer();
         ObservableList<Customer> observable = FXCollections.observableArrayList(CustomerAll);
-        tblCustomer.setItems(observable);
+        totalItems = observable.size();
+        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCounts);
+        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.max(startIndex, 0);
+        List<Customer> as = observable.subList(startIndex, endIndex);
+        tblCustomer.setItems(FXCollections.observableArrayList(as));
         colName.setCellValueFactory(new PropertyValueFactory<>("Name"));
         colStartOrder.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         colEndorder.setCellValueFactory(new PropertyValueFactory<>("EndDate"));
@@ -116,6 +158,7 @@ public class List_Customer implements Initializable {
                         fadeTransition.setToValue(1);
                         List_Customer list = loader.getController();
                         list.Customer.setText(customer.getName());
+                        list.Name=customer.getName();
                         list.DetailpurchasedOrder(customer.getName());
                         Stage popupStage = new Stage();
                         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -147,5 +190,18 @@ public class List_Customer implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         List_Customer();
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            currentPageIndex = newIndex.intValue();
+            if(displaymode==1){
+                List_Customer();
+            }else if(displaymode==2){
+                searchFilter(txtfind.getText(),currentPageIndex);
+            }
+            List_Customer();
+        });
+        detailPagination.currentPageIndexProperty().addListener((obs,oldIndex,newIndex)->{
+        currentPageIndex=newIndex.intValue();
+            DetailpurchasedOrder(Name);
+        });
     }
 }

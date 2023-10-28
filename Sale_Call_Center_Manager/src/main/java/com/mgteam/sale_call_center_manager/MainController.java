@@ -15,8 +15,12 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.animation.FadeTransition;
@@ -31,16 +35,22 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import javax.mail.Authenticator;
@@ -55,27 +65,54 @@ import org.bson.conversions.Bson;
 public class MainController implements Initializable {
 
     @FXML
+    private ComboBox<String> FilterMonthorder;
+    @FXML
     private MFXTextField Email;
+    @FXML
+    private ComboBox<String> filterMonth;
+    @FXML
+    private AreaChart<String, Number> customerchart;
+    @FXML
+    private Label inventory;
+    @FXML
+    private BarChart<String, Number> totalInventory;
+    @FXML
+    private ComboBox<String> FilterInventory;
 
     @FXML
+    private Label order;
+    private int itemsperPage = 5;
+    private int totalItems;
+    @FXML
+    private Label customer;
+    private int displaymode = 1;
+    private int currentPageIndex = 0;
+    @FXML
+    private ComboBox<String> postion = new ComboBox<>();
+    @FXML
     private TextField txtsearch = new TextField();
+
     @FXML
     private TableColumn<Manager, String> colApprove = new TableColumn<>();
 
     @FXML
+    private LineChart<String, Number> chartOrder;
+    @FXML
     private TableColumn<Manager, String> colCancle = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colEmail = new TableColumn<>();
+    private TableColumn<Manager, String> colEmail = new TableColumn<>();
+    @FXML
+    private TableColumn<Manager, String> colPostion = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colName = new TableColumn<>();
+    private TableColumn<Manager, String> colName = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colSince = new TableColumn<>();
+    private TableColumn<Manager, String> colSince = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colphone = new TableColumn<>();
+    private TableColumn<Manager, String> colphone = new TableColumn<>();
 
     @FXML
     private TableView<Manager> tblEmp = new TableView<>();
@@ -84,26 +121,117 @@ public class MainController implements Initializable {
 
     @FXML
     private MFXTextField Phone;
+
     @FXML
-    private Label User=new Label();
+    private Label User = new Label();
 
     @FXML
     private DatePicker Since;
-
+    @FXML
+    private Pagination pagination = new Pagination();
     @FXML
     private MFXTextField Username;
 
     @FXML
     private AnchorPane maindisplay;
 
+    private String coutTotalorder() {
+        MongoCollection<Document> orderCollection = DBconnect.getdatabase().getCollection("Order");
+        long totalOrders = orderCollection.countDocuments();
+        return String.valueOf(totalOrders);
+    }
+
     private void searchdiplay(String key) {
+        displaymode = 2;
         List<Manager> resulist = daodb.SearchgetManagerAccount(key);
         ObservableList<Manager> observableList = FXCollections.observableArrayList(resulist);
-        tblEmp.setItems(observableList);
+        totalItems = observableList.size();
+        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCounts);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+        List<Manager> As = observableList.subList(startIndex, endIndex);
+        tblEmp.setItems(FXCollections.observableArrayList(As));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colName.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colName.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
+        colPostion.setCellValueFactory(new PropertyValueFactory<>("position"));
+        colPostion.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colPostion.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
         colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
+        colEmail.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colName.widthProperty());
+                    setGraphic(text);
+                }
+            }
+        });
         colSince.setCellValueFactory(new PropertyValueFactory<>("Since"));
+        colSince.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colSince.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
         colphone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        colphone.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colphone.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
         colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
         colApprove.setCellFactory(column -> new TableCell<Manager, String>() {
             private final MFXButton button = new MFXButton("Approve");
@@ -209,7 +337,7 @@ public class MainController implements Initializable {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/inventory.fxml"));
         try {
             AnchorPane classpane = loader.load();
-            ScaleTransition scaleTransition=new ScaleTransition(Duration.seconds(0.5),classpane);
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(0.5), classpane);
             scaleTransition.setFromX(0.5);
             scaleTransition.setFromX(0.5);
             scaleTransition.setToX(1);
@@ -224,66 +352,65 @@ public class MainController implements Initializable {
 
     @FXML
 
-void Order(ActionEvent event) {
-   try {
-    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/order_customer.fxml"));
-    AnchorPane classpane = loader.load();
-
-    TranslateTransition transition = new TranslateTransition(Duration.seconds(2.5), maindisplay);
-    transition.setFromX(0);
-    transition.setToX(maindisplay.getWidth());
-   TranslateTransition reverstation = new TranslateTransition(Duration.seconds(2.5), maindisplay);
-    reverstation.setFromX(maindisplay.getWidth());
-    reverstation.setToX(0);
-    transition.setOnFinished(e -> {
+    void Order(ActionEvent event) {
         try {
-            maindisplay.getChildren().clear();
-            maindisplay.getChildren().addAll(classpane);
-     
-            reverstation.play();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/order_customer.fxml"));
+            AnchorPane classpane = loader.load();
+
+            TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), maindisplay);
+            transition.setFromX(0);
+            transition.setToX(maindisplay.getWidth());
+            TranslateTransition reverstation = new TranslateTransition(Duration.seconds(0.5), maindisplay);
+            reverstation.setFromX(maindisplay.getWidth());
+            reverstation.setToX(0);
+            transition.setOnFinished(e -> {
+                try {
+                    maindisplay.getChildren().clear();
+                    maindisplay.getChildren().addAll(classpane);
+
+                    reverstation.play();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            });
+
+            transition.play();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        
-    });
-
-    transition.play();
-
-} catch (Exception e) {
-    e.printStackTrace();
-}
-}
-
- @FXML
-void change_pass(ActionEvent event) {
-     try {
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/Change_pass.fxml"));
-        AnchorPane classpane = loader.load();
-
-        // Đặt hiệu ứng RotateTransition
-        RotateTransition rotateOut = new RotateTransition(Duration.seconds(0.5), maindisplay);
-        rotateOut.setAxis(Rotate.Y_AXIS);
-        rotateOut.setFromAngle(0);
-        rotateOut.setToAngle(90);
-
-        rotateOut.setOnFinished(e -> {
-            maindisplay.getChildren().clear();
-            maindisplay.getChildren().addAll(classpane);
-
-            RotateTransition rotateIn = new RotateTransition(Duration.seconds(0.5), maindisplay);
-            rotateIn.setAxis(Rotate.Y_AXIS);
-            rotateIn.setFromAngle(90);
-            rotateIn.setToAngle(0);
-            rotateIn.play();
-        });
-
-        rotateOut.play();
-
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
 
+    @FXML
+    void change_pass(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/Change_pass.fxml"));
+            AnchorPane classpane = loader.load();
+
+            // Đặt hiệu ứng RotateTransition
+            RotateTransition rotateOut = new RotateTransition(Duration.seconds(0.5), maindisplay);
+            rotateOut.setAxis(Rotate.Y_AXIS);
+            rotateOut.setFromAngle(0);
+            rotateOut.setToAngle(90);
+
+            rotateOut.setOnFinished(e -> {
+                maindisplay.getChildren().clear();
+                maindisplay.getChildren().addAll(classpane);
+
+                RotateTransition rotateIn = new RotateTransition(Duration.seconds(0.5), maindisplay);
+                rotateIn.setAxis(Rotate.Y_AXIS);
+                rotateIn.setFromAngle(90);
+                rotateIn.setToAngle(0);
+                rotateIn.play();
+            });
+
+            rotateOut.play();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     void logout(ActionEvent event) {
@@ -305,13 +432,97 @@ void change_pass(ActionEvent event) {
     }
 
     private void AccountEmployee() {
+        displaymode = 1;
         List<Manager> resulist = daodb.getManagerAccount();
         ObservableList<Manager> observableList = FXCollections.observableArrayList(resulist);
-        tblEmp.setItems(observableList);
+        totalItems = observableList.size();
+        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCounts);
+        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.max(startIndex, 0);
+        List<Manager> As = observableList.subList(startIndex, endIndex);;
+        tblEmp.setItems(FXCollections.observableArrayList(As));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colName.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colName.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
+        colPostion.setCellValueFactory(new PropertyValueFactory<>("position"));
+        colPostion.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colPostion.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
         colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
+        colEmail.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colName.widthProperty());
+                    setGraphic(text);
+                }
+            }
+        });
         colSince.setCellValueFactory(new PropertyValueFactory<>("Since"));
+        colSince.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colSince.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
         colphone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        colphone.setCellFactory(column -> new TableCell<Manager, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colphone.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
         colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
         colApprove.setCellFactory(column -> new TableCell<Manager, String>() {
             private final MFXButton button = new MFXButton("Approve");
@@ -410,28 +621,44 @@ void change_pass(ActionEvent event) {
             }
 
         });
+
+    }
+
+    @FXML
+    void Find(ActionEvent event) {
+        searchdiplay(txtsearch.getText());
+        if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }
+    }
+
+    private String totalCustomer() {
+        MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
+        long totalorders = Customer.countDocuments();
+        return String.valueOf(totalorders);
     }
 
     @FXML
     void Customer(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/List_customer.fxml"));
         try {
-             AnchorPane classpane = loader.load();
+            AnchorPane classpane = loader.load();
 
-        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), maindisplay);
-        fadeOut.setFromValue(1);
-        fadeOut.setToValue(0);
-        fadeOut.setOnFinished(e -> {
-            maindisplay.getChildren().clear();
-            maindisplay.getChildren().addAll(classpane);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), maindisplay);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(e -> {
+                maindisplay.getChildren().clear();
+                maindisplay.getChildren().addAll(classpane);
 
-            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), maindisplay);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
-            fadeIn.play();
-        });
+                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), maindisplay);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
 
-        fadeOut.play();
+            fadeOut.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -442,10 +669,10 @@ void change_pass(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/Create_Employee.fxml"));
         try {
             AnchorPane classpane = loader.load();
-            RotateTransition rotateTransition=new RotateTransition(Duration.seconds(1),classpane);
-  rotateTransition.setFromAngle(-90);
-  rotateTransition.setToAngle(0);
-            SequentialTransition sequentialTransition=new SequentialTransition(classpane,rotateTransition);
+            RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), classpane);
+            rotateTransition.setFromAngle(-90);
+            rotateTransition.setToAngle(0);
+            SequentialTransition sequentialTransition = new SequentialTransition(classpane, rotateTransition);
             maindisplay.getChildren().clear();
             maindisplay.getChildren().addAll(classpane);
             sequentialTransition.play();
@@ -494,17 +721,32 @@ void change_pass(ActionEvent event) {
                         if (existingUser == null) {
                             if (existingEmail == null) {
                                 if (existPhone == null) {
-                                    DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                                    String since = Since.getValue().format(local);
-                                    Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 1).append("empMgr", 0).append("status", 0).append("Phone", Phone.getText());
-                                    InsertOneResult result = collection.insertOne(doc1);
-                                    Alert.DialogSuccess("Add Employee Successfully");
-                                    sendConfirmationEmailEmployee(Email.getText());
-                                    Name.setText("");
-                                    Since.setValue(null);
-                                    Username.setText("");
-                                    Phone.setText("");
-                                    Email.setText("");
+                                    if (postion.getValue().equals("Warehouse")) {
+                                        DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                        String since = Since.getValue().format(local);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 1).append("status", 0).append("Phone", Phone.getText());
+                                        InsertOneResult result = collection.insertOne(doc1);
+                                        Alert.DialogSuccess("Add Employee Successfully");
+                                        sendConfirmationEmailEmployee(Email.getText());
+                                        Name.setText("");
+                                        Since.setValue(null);
+                                        Username.setText("");
+                                        Phone.setText("");
+                                        Email.setText("");
+                                    } else if (postion.getValue().equals("SalePerson")) {
+                                        DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                        String since = Since.getValue().format(local);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 2).append("status", 0).append("Phone", Phone.getText());
+                                        InsertOneResult result = collection.insertOne(doc1);
+                                        Alert.DialogSuccess("Add Employee Successfully");
+                                        sendConfirmationEmailEmployee(Email.getText());
+                                        Name.setText("");
+                                        Since.setValue(null);
+                                        Username.setText("");
+                                        Phone.setText("");
+                                        Email.setText("");
+                                    }
+
                                 } else {
                                     Alert.Dialogerror("Phone is Exists");
                                     Name.setText("");
@@ -593,6 +835,12 @@ void change_pass(ActionEvent event) {
         }
     }
 
+    private String totalIventory() {
+        MongoCollection<Document> Inventory = DBconnect.getdatabase().getCollection("WareHouse");
+        long totalInventory = Inventory.countDocuments();
+        return String.valueOf(totalInventory);
+    }
+
     @FXML
     void Home(ActionEvent event) {
         try {
@@ -602,12 +850,167 @@ void change_pass(ActionEvent event) {
         }
     }
 
+    public void countCustomerIdByOrderDate(String selectedMonth, AreaChart<String, Number> aeachart) {
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
+        Month month = Month.from(monthFormatter.parse(selectedMonth));
+        int monthValue = month.getValue();
+        String formattedMonth = String.format("%02d", monthValue);
+
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), monthValue, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("Order");
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+
+        List<String> dateStrings = new ArrayList<>();
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            dateStrings.add(date.format(formatter));
+        }
+
+        List<Bson> filters = new ArrayList<>();
+        filters.add(Filters.in("Order_date", dateStrings));
+        filters.add(Filters.exists("id_Customer"));
+
+        long[] counts = new long[dateStrings.size()];
+        int index = 0;
+
+        for (String dateString : dateStrings) {
+            filters.set(0, Filters.eq("Order_date", dateString));
+            long count = orders.countDocuments(Filters.and(filters));
+            counts[index++] = count;
+        }
+
+        for (int i = 0; i < dateStrings.size(); i++) {
+            series.getData().add(new XYChart.Data<>(dateStrings.get(i), counts[i]));
+        }
+
+        if (aeachart != null) {
+            aeachart.getData().clear();
+            aeachart.getData().add(series);
+        }
+    }
+
+    private void countorderIDbyorderDate(String selectedMonth, LineChart<String, Number> chartOrder) {
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
+        Month month = Month.from(monthFormatter.parse(selectedMonth));
+        int monthvalue = month.getValue();
+        String formattedMonth = String.format("%02d", monthvalue);
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), monthvalue, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("Order");
+        XYChart.Series<String, Number> seris = new XYChart.Series<>();
+
+        List<String> dateStrings = new ArrayList<>();
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            dateStrings.add(date.format(formatter));
+        }
+
+        List<Bson> filters = new ArrayList<>();
+        filters.add(Filters.in("Order_date", dateStrings));
+        filters.add(Filters.exists("_id"));
+
+        long[] counts = new long[dateStrings.size()];
+        int index = 0;
+
+        for (String dateString : dateStrings) {
+            filters.set(0, Filters.eq("Order_date", dateString));
+            long count = orders.countDocuments(Filters.and(filters));
+            counts[index++] = count;
+        }
+
+        for (int i = 0; i < dateStrings.size(); i++) {
+            seris.getData().add(new XYChart.Data<>(dateStrings.get(i), counts[i]));
+        }
+
+        if (chartOrder != null) {
+            chartOrder.getData().clear();
+            chartOrder.getData().add(seris);
+        }
+    }
+
+    private void displaytotalInventoryData(String selectedMonth, BarChart<String, Number> totalInventoryChart) {
+        DateTimeFormatter monthformatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
+        Month month = Month.from(monthformatter.parse(selectedMonth));
+        int monthvalue = month.getValue();
+        String formattedMonth = String.format("%02d", monthvalue);
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), monthvalue, 1);
+        LocalDate Enddate = startDate.plusMonths(1).minusDays(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("WareHouse");
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+
+        List<String> dateStrings = new ArrayList<>();
+        for (LocalDate date = startDate; !date.isAfter(Enddate); date = date.plusDays(1)) {
+            dateStrings.add(date.format(formatter));
+        }
+
+        List<Bson> filters = new ArrayList<>();
+        filters.add(Filters.in("Date", dateStrings));
+        filters.add(Filters.exists("_id"));
+
+        long[] counts = new long[dateStrings.size()];
+        int index = 0;
+
+        for (String dateString : dateStrings) {
+            filters.set(0, Filters.eq("Date", dateString));
+            long count = orders.countDocuments(Filters.and(filters));
+            counts[index++] = count;
+        }
+
+        for (int i = 0; i < dateStrings.size(); i++) {
+            series.getData().add(new XYChart.Data<>(dateStrings.get(i), counts[i]));
+        }
+
+        if (totalInventoryChart != null) {
+            totalInventoryChart.getData().clear();
+            totalInventoryChart.getData().add(series);
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        customer.setText(totalCustomer());
+        order.setText(coutTotalorder());
+        inventory.setText(totalIventory());
         AccountEmployee();
-        txtsearch.textProperty().addListener((observable, oldvalue, newvalue) -> {
-            searchdiplay(newvalue);
-        });
         User.setText(LoginController.user);
+        ObservableList<String> data = FXCollections.observableArrayList("SalePerson", "Warehouse");
+        postion.setItems(data);
+        postion.setValue("SalePerson");
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            currentPageIndex = newIndex.intValue();
+            if (displaymode == 1) {
+                AccountEmployee();
+            } else {
+                searchdiplay(txtsearch.getText());
+            }
+            AccountEmployee();
+        });
+        ObservableList<String> months = FXCollections.observableArrayList(
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December");
+        filterMonth.setItems(months);
+        filterMonth.setValue("January");
+        String selectedMonth = filterMonth.getValue();
+        countCustomerIdByOrderDate(selectedMonth, customerchart);
+        filterMonth.setOnAction(event -> {
+            String selectedmonth = filterMonth.getValue();
+            countCustomerIdByOrderDate(selectedmonth, customerchart);
+        });
+        FilterMonthorder.setItems(months);
+        FilterMonthorder.setValue("January");
+        countorderIDbyorderDate(FilterMonthorder.getValue(), chartOrder);
+        FilterMonthorder.setOnAction(event -> {
+            countorderIDbyorderDate(FilterMonthorder.getValue(), chartOrder);
+        });
+        FilterInventory.setItems(months);
+        FilterInventory.setValue("January");
+        displaytotalInventoryData(FilterInventory.getValue(), totalInventory);
+        FilterInventory.setOnAction(event -> {
+            displaytotalInventoryData(FilterInventory.getValue(), totalInventory);
+        });
     }
+
 }

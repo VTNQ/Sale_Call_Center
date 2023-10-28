@@ -8,10 +8,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="440.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_manager.Change_passController">
+<AnchorPane id="AnchorPane" prefHeight="440.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.Change_passController">
    <children>
-      <AnchorPane prefHeight="176.0" prefWidth="600.0" styleClass="top-panel" stylesheets="@css/Employee.css">
+      <AnchorPane prefHeight="176.0" prefWidth="670.0" styleClass="top-panel" stylesheets="@css/Employee.css">
          <children>
             <ImageView fitHeight="158.0" fitWidth="176.0" layoutX="-2.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -25,24 +24,24 @@
             </Label>
          </children>
       </AnchorPane>
-      <Label alignment="CENTER" layoutX="79.0" layoutY="190.0" prefHeight="46.0" prefWidth="137.0" text="old Password">
+      <Label alignment="CENTER" layoutX="160.0" layoutY="187.0" prefHeight="46.0" prefWidth="137.0" text="old Password" AnchorPane.rightAnchor="372.79999999999995">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <PasswordField fx:id="oldpass" layoutX="225.0" layoutY="200.0" promptText="Old Password" />
-      <Label alignment="CENTER" layoutX="87.0" layoutY="235.0" prefHeight="46.0" prefWidth="137.0" text="New Password">
+      <PasswordField fx:id="oldpass" layoutX="298.0" layoutY="198.0" promptText="Old Password" />
+      <Label alignment="CENTER" layoutX="150.0" layoutY="233.0" prefHeight="46.0" prefWidth="137.0" text="New Password">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <PasswordField fx:id="newpass" layoutX="225.0" layoutY="246.0" promptText="New Password" />
-      <Label alignment="CENTER" layoutX="72.0" layoutY="281.0" prefHeight="46.0" prefWidth="150.0" text="Re_New Password">
+      <PasswordField fx:id="newpass" layoutX="298.0" layoutY="243.0" promptText="New Password" />
+      <Label alignment="CENTER" layoutX="130.0" layoutY="279.0" prefHeight="46.0" prefWidth="150.0" text="Re_New Password">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <PasswordField fx:id="renewpass" layoutX="225.0" layoutY="291.0" promptText="Re_New Password" />
-      <Button layoutX="241.0" layoutY="342.0" mnemonicParsing="false" onAction="#change" prefHeight="46.0" prefWidth="82.0" styleClass="btn-design" stylesheets="@css/Employee.css" text="Change" />
+      <PasswordField fx:id="renewpass" layoutX="298.0" layoutY="289.0" promptText="Re_New Password" />
+      <Button layoutX="256.0" layoutY="338.0" mnemonicParsing="false" onAction="#change" prefHeight="46.0" prefWidth="82.0" styleClass="btn-design" stylesheets="@css/Employee.css" text="Change" AnchorPane.rightAnchor="328.0" />
    </children>
 </AnchorPane>

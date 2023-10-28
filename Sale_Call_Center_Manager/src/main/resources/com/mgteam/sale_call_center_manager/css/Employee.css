@@ -11,6 +11,42 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 .nav{
     -fx-background-color:linear-gradient(to bottom right,#4694bb,#2a5178);
 }
+.pagination {
+    
+    -fx-border-radius: 5px; /* Đây là giá trị border radius */
+}
+
+.pagination-button {
+
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px; /* Đây là giá trị border radius */
+}
+
+.pagination-arrow {
+
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+   -fx-background-radius: 5px; /* Đây là giá trị border radius */
+}
+.pagination .page-link {
+    -fx-background-radius: 5px; /* Đây là giá trị border radius */
+
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.pagination .page-link:hover {
+    -fx-background-radius: 5px; /* Đây là giá trị border radius */
+
+}
+
+.pagination .current-page {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5px; /* Đây là giá trị border radius */
+}
 .button-error{
     -fx-text-fill: #fff;
     -fx-background-color: #D2122E;
@@ -137,6 +173,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-background-color:transparent;
     -fx-size:50px;
 }
+
 .table-view .column-header .label{
     -fx-text-fill:#fff;
     -fx-font-family:arial;
@@ -271,4 +308,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-font-family: 'Sedgwick Ave Display', cursive;
     -fx-font-weight:bold;
 ;
+}
+.combox-box{
+    -fx-background-color:#F0F0F0;
+}
+.combox-box .list-view{
+    -fx-background-color:#F0F0F0;
+}
+.combox-box .list-view .list-cell:filled:selected{
+    -fx-text-fill:#fff;
+}
+.combox-box-popup .list-view .list-cell:filled:selected{
+    -fx-background-color:#007bff;
+}
+.combox-box-popup .list-view .list-cell{
+    -fx-text-fill:#000;
 }

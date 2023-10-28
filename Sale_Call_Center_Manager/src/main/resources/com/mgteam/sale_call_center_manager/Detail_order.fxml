@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="428.0" prefWidth="630.0" styleClass="table-view1" stylesheets="@css/Employee.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.Order_Customer">
+<AnchorPane id="AnchorPane" prefHeight="485.0" prefWidth="681.0" styleClass="table-view1" stylesheets="@css/Employee.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.Order_Customer">
    <children>
       <TableView fx:id="tblDetail" layoutX="128.0" layoutY="124.0" prefHeight="250.0" prefWidth="383.0" styleClass="table-view1" stylesheets="@css/Employee.css">
         <columns>
@@ -15,13 +18,18 @@
             <TableColumn fx:id="colPrice" prefWidth="138.39996337890625" text="Price" />
         </columns>
       </TableView>
-      <AnchorPane layoutX="1.0" prefHeight="86.0" prefWidth="637.0" styleClass="top-card" stylesheets="@css/Employee.css">
+      <AnchorPane layoutX="1.0" prefHeight="86.0" prefWidth="686.0" styleClass="top-card" stylesheets="@css/Employee.css">
          <children>
-            <Label layoutX="25.0" layoutY="18.0" prefHeight="43.0" prefWidth="285.0" text="Detail Order" textFill="WHITE">
+            <Label layoutX="100.0" layoutY="19.0" prefHeight="43.0" prefWidth="285.0" text="Detail Order" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
+            <ImageView fitHeight="88.0" fitWidth="118.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@asset/detail-order.png" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
       <Label layoutX="128.0" layoutY="81.0" prefHeight="43.0" prefWidth="118.0" text="Customer:">
@@ -34,15 +42,16 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Label layoutX="134.0" layoutY="374.0" prefHeight="43.0" prefWidth="206.0" text="Total order price:">
+      <Label layoutX="128.0" layoutY="427.0" prefHeight="43.0" prefWidth="206.0" text="Total order price:">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Label fx:id="total" layoutX="329.0" layoutY="374.0" prefHeight="43.0" prefWidth="206.0">
+      <Label fx:id="total" layoutX="320.0" layoutY="427.0" prefHeight="43.0" prefWidth="206.0">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
+      <Pagination fx:id="detailPagination" layoutX="205.0" layoutY="383.0" prefHeight="27.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

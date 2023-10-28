@@ -8,9 +8,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="868.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_manager.LoginController">
    <children>
-      <AnchorPane prefHeight="600.0" prefWidth="354.0" style="-fx-background-color: #404040;">
+      <AnchorPane prefHeight="608.0" prefWidth="354.0" style="-fx-background-color: #404040;">
          <children>
             <Label alignment="CENTER" layoutX="14.0" layoutY="104.0" prefHeight="80.0" prefWidth="299.0" text="Call Center" textFill="WHITE">
                <font>
@@ -23,17 +23,17 @@
                </font>
             </Label>
          </children></AnchorPane>
-      <AnchorPane fx:id="maindisplay" layoutX="354.0" prefHeight="600.0" prefWidth="446.0">
+      <AnchorPane fx:id="maindisplay" layoutX="354.0" prefHeight="600.0" prefWidth="514.0">
          <children>
-            <Label layoutX="168.0" layoutY="108.0" text="User Login" textFill="#404040">
+            <Label layoutX="193.0" layoutY="107.0" text="User Login" textFill="#404040">
                <font>
                   <Font size="27.0" />
                </font>
             </Label>
-            <TextField fx:id="username" layoutX="65.0" layoutY="172.0" prefHeight="46.0" prefWidth="354.0" promptText="Username" style="-fx-background-color: transparent; -fx-border-color: #404040; -fx-border-width: 0px 0px 2px 0px;" styleClass="font" stylesheets="@css/Employee.css" />
-            <PasswordField fx:id="password" layoutX="65.0" layoutY="251.0" prefHeight="39.0" prefWidth="354.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #404040; -fx-border-width: 0px 0px 2px 0px;" />
-            <Button layoutX="213.0" layoutY="344.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="76.0" style="-fx-background-color: #404040; -fx-background-radius: 0px; -fx-cursor: hand;" text="Login" textFill="WHITE" />
-            <Text fill="#404040" layoutX="204.0" layoutY="414.0" onMouseClicked="#showRegisterStage" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-cursor: hand;" text="Forgot Password?">
+            <TextField fx:id="username" layoutX="93.0" layoutY="170.0" prefHeight="46.0" prefWidth="354.0" promptText="Username" style="-fx-background-color: transparent; -fx-border-color: #404040; -fx-border-width: 0px 0px 2px 0px;" styleClass="font" stylesheets="@css/Employee.css" />
+            <PasswordField fx:id="password" layoutX="93.0" layoutY="250.0" prefHeight="39.0" prefWidth="354.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #404040; -fx-border-width: 0px 0px 2px 0px;" />
+            <Button layoutX="219.0" layoutY="310.0" mnemonicParsing="false" onAction="#login" prefHeight="32.0" prefWidth="76.0" style="-fx-background-color: #404040; -fx-background-radius: 0px; -fx-cursor: hand;" text="Login" textFill="WHITE" />
+            <Text fill="#404040" layoutX="210.0" layoutY="383.0" onMouseClicked="#showRegisterStage" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-cursor: hand;" text="Forgot Password?">
     
             </Text>
          </children>

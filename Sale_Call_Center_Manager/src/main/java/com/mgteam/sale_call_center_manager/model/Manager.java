@@ -15,6 +15,15 @@ public class Manager {
     private String phone;
     private String status;
     private String username;
+    private String position;
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
     public String getUsername() {
         return username;
@@ -63,13 +72,14 @@ public class Manager {
         this.status = status;
     }
 
-    public Manager(String name, String Email, String Since, String phone, String status,String username) {
+    public Manager(String name, String Email, String Since, String phone, String status,String username,String position) {
         this.name = name;
         this.Email = Email;
         this.Since = Since;
         this.phone = phone;
         this.status = status;
         this.username=username;
+        this.position=position;
     }
     
 }
