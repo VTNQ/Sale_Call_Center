@@ -6,7 +6,6 @@ package com.mgteam.sale_call_center_manager;
 
 import com.mgteam.sale_call_center_manager.connect.util.daodb;
 import com.mgteam.sale_call_center_manager.model.Iventory;
-import com.mgteam.sale_call_center_manager.model.Order;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.net.URL;
 import java.util.List;
