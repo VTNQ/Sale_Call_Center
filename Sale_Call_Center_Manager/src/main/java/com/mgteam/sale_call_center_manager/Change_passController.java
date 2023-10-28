@@ -45,14 +45,17 @@ public class Change_passController implements Initializable {
             Bson filter = Filters.and(Filters.eq("Password", MD5.encryPassword(oldpass.getText())), Filters.eq("Username", LoginController.userName));
             Document result = collection.find(filter).first();
             if (result != null) {
-
-                Bson ft = Filters.eq("Username", LoginController.userName);
-                Bson Update = Updates.set("Password", MD5.encryPassword(renewpass.getText()));
-                UpdateResult updates = collection.updateOne(ft, Update);
                 if (newpass.getText().equals(renewpass.getText()) && !oldpass.getText().equals(newpass.getText())) {
                     if (newpass.getText().length() >= 8 && renewpass.getText().length() >= 8) {
+                        Bson ft = Filters.eq("Username", LoginController.userName);
+                        Bson Update = Updates.set("Password", MD5.encryPassword(renewpass.getText()));
+                        UpdateResult updates = collection.updateOne(ft, Update);
+
                         if (updates.getModifiedCount() > 0) {
                             Alert.DialogSuccess("Change Password Successfully");
+                            oldpass.setText("");
+                            newpass.setText("");
+                            renewpass.setText("");
                         }
                     } else {
                         Alert.Dialogerror("Password must be above 8 characters");
