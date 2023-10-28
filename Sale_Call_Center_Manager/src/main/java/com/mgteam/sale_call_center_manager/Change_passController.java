@@ -41,12 +41,11 @@ public class Change_passController implements Initializable {
     @FXML
     void change(ActionEvent event) {
         if (!oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
-            if (newpass.getText().equals(renewpass.getText())) {
+            if (newpass.getText().equals(renewpass.getText()) && !oldpass.getText().equals(newpass.getText())) {
                 if (newpass.getText().length() >= 8 && renewpass.getText().length() >= 8) {
-                    if (!oldpass.getText().equals(newpass.getText())) {
                         MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
                         Bson filter = Filters.and(Filters.eq("Password", MD5.encryPassword(oldpass.getText())), Filters.eq("Username", LoginController.userName));
-                        Document result = collection.find(filter).first();
+                        Document result = collection.find(filter).first();  
                         if (result != null) {
 
                             Bson ft = Filters.eq("Username", LoginController.userName);
@@ -59,13 +58,15 @@ public class Change_passController implements Initializable {
                         } else {
                             Alert.Dialogerror("Old is not correct");
                         }
-                    }else{
-                        Alert.Dialogerror("old pass and new pass is different");
-                    }
+                  
+                }else{
+                    Alert.Dialogerror("Password must be above 8 characters");
                 }
 
-            } else {
+            } else if(!newpass.getText().equals(renewpass.getText())) {
                 Alert.Dialogerror("New password and renew password is match");
+            }else if(oldpass.getText().equals(newpass.getText())){
+                Alert.Dialogerror("Old password and new password is different");
             }
 
         } else if (oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
