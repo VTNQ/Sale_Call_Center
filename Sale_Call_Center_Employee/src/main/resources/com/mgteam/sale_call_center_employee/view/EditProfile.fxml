@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ProfileController">
-    
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #FFCF9D;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ProfileController">
+   <children>
+      <Label layoutX="177.0" text="Update Profile">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+      <TextField fx:id="username" alignment="CENTER" editable="false" layoutX="218.0" layoutY="93.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@../css/application.css">
+         <font>
+            <Font name="System Bold Italic" size="13.0" />
+         </font>
+      </TextField>
+      <Label layoutX="177.0" layoutY="158.0" text="Name" />
+      <TextField fx:id="name" alignment="CENTER" layoutX="259.0" layoutY="154.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@../css/application.css" />
+      <Label layoutX="177.0" layoutY="204.0" text="Email" />
+      <TextField fx:id="email" alignment="CENTER" layoutX="259.0" layoutY="200.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@../css/application.css" />
+      <Label layoutX="177.0" layoutY="248.0" text="Phone" />
+      <TextField fx:id="phone" alignment="CENTER" layoutX="259.0" layoutY="244.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@../css/application.css" />
+      <Label layoutX="177.0" layoutY="292.0" text="Since" />
+      <MFXButton layoutX="271.0" layoutY="339.0" onAction="#Update" style="-fx-background-color: #ED7D31;" text="Update" />
+      <DatePicker fx:id="since_edit" layoutX="259.0" layoutY="288.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@../css/application.css" />
+   </children>
 </AnchorPane>

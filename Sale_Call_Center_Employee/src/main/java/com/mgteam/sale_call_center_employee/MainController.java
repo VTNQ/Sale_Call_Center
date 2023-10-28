@@ -35,7 +35,14 @@ public class MainController implements Initializable{
 
     @FXML
     void changePassword(ActionEvent event) {
-
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("view/changePassword.fxml"));
+        try {
+            AnchorPane changPassword=loader.load();
+            MainDisplay.getChildren().clear();
+            MainDisplay.getChildren().setAll(changPassword);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @FXML
@@ -90,11 +97,6 @@ public class MainController implements Initializable{
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    @FXML
-    void report(ActionEvent event) {
-
     }
     
     @FXML

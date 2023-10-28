@@ -6,26 +6,26 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ProfileController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #F6F1EE;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ProfileController">
    <children>
-      <Label layoutX="171.0" text="INFORMATION">
+      <Label layoutX="171.0" layoutY="40.0" text="INFORMATION">
          <font>
             <Font name="System Bold" size="36.0" />
          </font>
       </Label>
-      <TextField fx:id="username" alignment="CENTER" editable="false" layoutX="226.0" layoutY="54.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css">
+      <TextField fx:id="username" alignment="CENTER" editable="false" layoutX="231.0" layoutY="117.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css">
          <font>
             <Font name="System Bold Italic" size="13.0" />
          </font>
       </TextField>
-      <Label layoutX="166.0" layoutY="81.0" text="Name" />
-      <TextField fx:id="name" alignment="CENTER" editable="false" layoutX="226.0" layoutY="77.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
-      <Label layoutX="168.0" layoutY="128.0" text="Email" />
-      <TextField fx:id="email" alignment="CENTER" editable="false" layoutX="226.0" layoutY="124.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
-      <Label layoutX="168.0" layoutY="178.0" text="Phone" />
-      <TextField fx:id="phone" editable="false" layoutX="225.0" layoutY="174.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
-      <Label layoutX="168.0" layoutY="225.0" text="Since" />
-      <TextField fx:id="since" editable="false" layoutX="225.0" layoutY="221.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
-      <MFXButton layoutX="274.0" layoutY="292.0" onAction="#Edit" text="Edit" />
+      <Label layoutX="171.0" layoutY="144.0" text="Name" />
+      <TextField fx:id="name" alignment="CENTER" editable="false" layoutX="231.0" layoutY="140.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="173.0" layoutY="191.0" text="Email" />
+      <TextField fx:id="email" alignment="CENTER" editable="false" layoutX="231.0" layoutY="187.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="173.0" layoutY="241.0" text="Phone" />
+      <TextField fx:id="phone" editable="false" layoutX="230.0" layoutY="237.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="173.0" layoutY="288.0" text="Since" />
+      <TextField fx:id="since" editable="false" layoutX="230.0" layoutY="284.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <MFXButton layoutX="283.0" layoutY="338.0" onAction="#Edit" style="-fx-background-color: #ED7D31;" text="Edit" />
    </children>
 </AnchorPane>
