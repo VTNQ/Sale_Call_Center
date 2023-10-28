@@ -41,32 +41,31 @@ public class Change_passController implements Initializable {
     @FXML
     void change(ActionEvent event) {
         if (!oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
-            if (newpass.getText().equals(renewpass.getText()) && !oldpass.getText().equals(newpass.getText())) {
-                if (newpass.getText().length() >= 8 && renewpass.getText().length() >= 8) {
-                        MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
-                        Bson filter = Filters.and(Filters.eq("Password", MD5.encryPassword(oldpass.getText())), Filters.eq("Username", LoginController.userName));
-                        Document result = collection.find(filter).first();  
-                        if (result != null) {
+            MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
+            Bson filter = Filters.and(Filters.eq("Password", MD5.encryPassword(oldpass.getText())), Filters.eq("Username", LoginController.userName));
+            Document result = collection.find(filter).first();
+            if (result != null) {
 
-                            Bson ft = Filters.eq("Username", LoginController.userName);
-                            Bson Update = Updates.set("Password", MD5.encryPassword(renewpass.getText()));
-                            UpdateResult updates = collection.updateOne(ft, Update);
-                            if (updates.getModifiedCount() > 0) {
-                                Alert.DialogSuccess("Change Password Successfully");
-                            }
-
-                        } else {
-                            Alert.Dialogerror("Old is not correct");
+                Bson ft = Filters.eq("Username", LoginController.userName);
+                Bson Update = Updates.set("Password", MD5.encryPassword(renewpass.getText()));
+                UpdateResult updates = collection.updateOne(ft, Update);
+                if (newpass.getText().equals(renewpass.getText()) && !oldpass.getText().equals(newpass.getText())) {
+                    if (newpass.getText().length() >= 8 && renewpass.getText().length() >= 8) {
+                        if (updates.getModifiedCount() > 0) {
+                            Alert.DialogSuccess("Change Password Successfully");
                         }
-                  
-                }else{
-                    Alert.Dialogerror("Password must be above 8 characters");
+                    } else {
+                        Alert.Dialogerror("Password must be above 8 characters");
+                    }
+
+                } else if (!newpass.getText().equals(renewpass.getText())) {
+                    Alert.Dialogerror("New password and renew password is match");
+                } else if (oldpass.getText().equals(newpass.getText())) {
+                    Alert.Dialogerror("Old password and  password is different");
                 }
 
-            } else if(!newpass.getText().equals(renewpass.getText())) {
-                Alert.Dialogerror("New password and renew password is match");
-            }else if(oldpass.getText().equals(newpass.getText())){
-                Alert.Dialogerror("Old password and new password is different");
+            } else {
+                Alert.Dialogerror("Old is not correct");
             }
 
         } else if (oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
