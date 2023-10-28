@@ -65,26 +65,26 @@ import org.bson.conversions.Bson;
 public class MainController implements Initializable {
 
     @FXML
-    private ComboBox<String> FilterMonthorder;
+    private ComboBox<String> FilterMonthorder=new ComboBox<>();
     @FXML
-    private MFXTextField Email;
+    private MFXTextField Email=new MFXTextField();
     @FXML
-    private ComboBox<String> filterMonth;
+    private ComboBox<String> filterMonth=new ComboBox<>();
     @FXML
     private AreaChart<String, Number> customerchart;
     @FXML
-    private Label inventory;
+    private Label inventory = new Label();
     @FXML
     private BarChart<String, Number> totalInventory;
     @FXML
-    private ComboBox<String> FilterInventory;
+    private ComboBox<String> FilterInventory=new ComboBox<>();
 
     @FXML
-    private Label order;
+    private Label order = new Label();
     private int itemsperPage = 5;
     private int totalItems;
     @FXML
-    private Label customer;
+    private Label customer = new Label();
     private int displaymode = 1;
     private int currentPageIndex = 0;
     @FXML
@@ -988,11 +988,16 @@ public class MainController implements Initializable {
             }
             AccountEmployee();
         });
+
         ObservableList<String> months = FXCollections.observableArrayList(
                 "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December");
+        LocalDate currentDate = LocalDate.now();
+        Month currentMonth = currentDate.getMonth();
+        String currentMonthName = currentMonth.name().substring(0,1)+currentMonth.name().substring(1).toLowerCase();
+
         filterMonth.setItems(months);
-        filterMonth.setValue("January");
+        filterMonth.setValue(currentMonthName);
         String selectedMonth = filterMonth.getValue();
         countCustomerIdByOrderDate(selectedMonth, customerchart);
         filterMonth.setOnAction(event -> {
@@ -1000,13 +1005,13 @@ public class MainController implements Initializable {
             countCustomerIdByOrderDate(selectedmonth, customerchart);
         });
         FilterMonthorder.setItems(months);
-        FilterMonthorder.setValue("January");
+        FilterMonthorder.setValue(currentMonthName);
         countorderIDbyorderDate(FilterMonthorder.getValue(), chartOrder);
         FilterMonthorder.setOnAction(event -> {
             countorderIDbyorderDate(FilterMonthorder.getValue(), chartOrder);
         });
         FilterInventory.setItems(months);
-        FilterInventory.setValue("January");
+        FilterInventory.setValue(currentMonthName);
         displaytotalInventoryData(FilterInventory.getValue(), totalInventory);
         FilterInventory.setOnAction(event -> {
             displaytotalInventoryData(FilterInventory.getValue(), totalInventory);

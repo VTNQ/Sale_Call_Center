@@ -31,40 +31,45 @@ public class Change_passController implements Initializable {
      */
     @FXML
     private PasswordField newpass;
-    
+
     @FXML
     private PasswordField oldpass;
-    
+
     @FXML
     private PasswordField renewpass;
-    
+
     @FXML
     void change(ActionEvent event) {
         if (!oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
             if (newpass.getText().equals(renewpass.getText())) {
                 if (newpass.getText().length() >= 8 && renewpass.getText().length() >= 8) {
-                    MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
-                    Bson filter = Filters.and(Filters.eq("Password", MD5.encryPassword(oldpass.getText())), Filters.eq("Username", LoginController.userName));
-                    Document result = collection.find(filter).first();
-                    if (result != null) {
-                        if(oldpass.getText().equals(newpass.getText())){
-                            Alert.Dialogerror("new password is different from the old password");
+                    if (!oldpass.getText().equals(newpass.getText())) {
+                        MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
+                        Bson filter = Filters.and(Filters.eq("Password", MD5.encryPassword(oldpass.getText())), Filters.eq("Username", LoginController.userName));
+                        Document result = collection.find(filter).first();
+                        if (result != null) {
+
+                            Bson ft = Filters.eq("Username", LoginController.userName);
+                            Bson Update = Updates.set("Password", MD5.encryPassword(renewpass.getText()));
+                            UpdateResult updates = collection.updateOne(ft, Update);
+                            if (updates.getModifiedCount() > 0) {
+                                Alert.DialogSuccess("Change Password Successfully");
+                            }
+
+                        } else {
+                            Alert.Dialogerror("Old is not correct");
                         }
-                     Bson ft=Filters.eq("Username",LoginController.userName);
-                     Bson Update=Updates.set("Password", MD5.encryPassword(renewpass.getText()));
-                        UpdateResult updates=collection.updateOne(ft, Update);
-                        if(updates.getModifiedCount()>0){
-                            Alert.DialogSuccess("Change Password Successfully");
-                        }
-                    } else {
-                       Alert.Dialogerror("Old is not correct");
+                    }else{
+                        Alert.Dialogerror("old pass and new pass is different");
                     }
                 }
-                
+
+            } else {
+                Alert.Dialogerror("New password and renew password is match");
             }
-            
+
         } else if (oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
-            Alert.Dialogerror("Old password is required");            
+            Alert.Dialogerror("Old password is required");
         } else if (!oldpass.getText().isEmpty() && newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
             Alert.Dialogerror("new Password is required");
         } else if (!oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && renewpass.getText().isEmpty()) {
@@ -78,12 +83,12 @@ public class Change_passController implements Initializable {
         } else if (oldpass.getText().isEmpty() && newpass.getText().isEmpty() && renewpass.getText().isEmpty()) {
             Alert.Dialogerror("Old password and new Password  and RE_new Password");
         }
-        
+
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
-    
+
 }
