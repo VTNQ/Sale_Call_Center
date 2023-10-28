@@ -82,7 +82,7 @@ public class Change_passController implements Initializable {
         } else if (oldpass.getText().isEmpty() && newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
             Alert.Dialogerror("old password And New Password is required");
         } else if (oldpass.getText().isEmpty() && newpass.getText().isEmpty() && renewpass.getText().isEmpty()) {
-            Alert.Dialogerror("Old password and new Password  and RE_new Password");
+            Alert.Dialogerror("Old password and new Password  and RE_new Password is required");
         }
 
     }
