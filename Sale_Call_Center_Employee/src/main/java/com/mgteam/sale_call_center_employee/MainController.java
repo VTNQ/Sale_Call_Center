@@ -21,16 +21,16 @@ import org.bson.Document;
 public class MainController implements Initializable{
 
     @FXML
-    private TextField username;
+    private TextField username=new TextField();
     
     @FXML
     private AnchorPane MainDisplay;
     
     @FXML
-    private Label TotalCustomer;
+    private Label TotalCustomer=new Label();
     
     @FXML
-    private Label TotalOrder;
+    private Label TotalOrder=new Label();
    
 
     @FXML

@@ -10,8 +10,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.MainController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainController">
    <children>
       <AnchorPane layoutX="-5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="102.0" prefWidth="830.0" styleClass="top-form" stylesheets="@css/application.css">
          <children>
@@ -25,7 +24,7 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <MenuButton layoutX="755.0" layoutY="24.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+            <MenuButton layoutX="730.0" layoutY="24.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
               <items>
                 <MenuItem mnemonicParsing="false">
                      <graphic>
