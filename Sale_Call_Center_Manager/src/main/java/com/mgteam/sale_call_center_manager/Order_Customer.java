@@ -391,7 +391,7 @@ public class Order_Customer implements Initializable {
 
     @FXML
     void OrderYet(ActionEvent event) {
-        ordernotyet();
+        orderyet();
         if (currentPageIndex != 0) {
             currentPageIndex = 0;
             pagnation.setCurrentPageIndex(currentPageIndex);

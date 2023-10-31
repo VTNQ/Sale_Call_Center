@@ -6,7 +6,6 @@ package com.mgteam.sale_call_center_manager;
 
 import com.mgteam.sale_call_center_manager.connect.util.daodb;
 import com.mgteam.sale_call_center_manager.model.Iventory;
-import com.mgteam.sale_call_center_manager.model.Order;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.net.URL;
 import java.util.List;
@@ -56,7 +55,7 @@ public class InventoryController implements Initializable {
     private TableView<Iventory> tblInventory;
 
     void SearchInventory(String name,int pageindex) {
-        totalItems=2;
+        displaymode=2;
         List<Iventory> listiventory = daodb.SearchInventory(name);
         ObservableList<Iventory> searchInventorry = FXCollections.observableArrayList(listiventory);
         totalItems = searchInventorry.size();
@@ -94,7 +93,7 @@ public class InventoryController implements Initializable {
     }
 
     private void diplayIventory() {
-        totalItems=1;
+        displaymode=1;
         List<Iventory> InventoryList = daodb.getIventory();
         ObservableList<Iventory> Obserable = FXCollections.observableArrayList(InventoryList);
         totalItems = Obserable.size();
@@ -123,6 +122,7 @@ public class InventoryController implements Initializable {
         }else if(displaymode==2){
             SearchInventory(txtfind.getText(), currentPageIndex);
         }
+            diplayIventory();
         });
     }
 }

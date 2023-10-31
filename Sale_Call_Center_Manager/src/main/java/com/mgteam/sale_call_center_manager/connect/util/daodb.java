@@ -144,35 +144,47 @@ public class daodb {
         }
         return Array;
     }
-    public static List<Iventory>SearchInventory(String Name){
-        ArrayList<Iventory>Inventory=new ArrayList<>();
-         Pattern regexPattern = Pattern.compile(".*" + Name + ".*", Pattern.CASE_INSENSITIVE);
-        MongoCollection<Document>Warehouse=DBconnect.getdatabase().getCollection("WareHouse");
-        MongoCollection<Document>Product=DBconnect.getdatabase().getCollection("Product");
+
+    public static List<Iventory> SearchInventory(String query) {
+        ArrayList<Iventory> Inventory = new ArrayList<>();
+        Pattern regexPattern = Pattern.compile(".*" + query + ".*", Pattern.CASE_INSENSITIVE);
+        MongoCollection<Document> Warehouse = DBconnect.getdatabase().getCollection("WareHouse");
+        MongoCollection<Document> Product = DBconnect.getdatabase().getCollection("Product");
         Warehouse.createIndex(Indexes.ascending("ID_Product"));
         Product.createIndex(Indexes.ascending("_id"));
         Warehouse.createIndex(Indexes.ascending("Date"));
-        FindIterable<Document>Ware_house=Warehouse.find();
+        FindIterable<Document> Ware_house = Warehouse.find();
         for (Document document : Ware_house) {
-            ObjectId idProduct=document.getObjectId("ID_Product");
-            Document product=Product.find(Filters.and(Filters.eq("_id",idProduct),Filters.regex("Name", regexPattern))).first();
-            if(product!=null){
-                int id_Iventory=document.getObjectId("_id").hashCode();
-                ObjectId idProductcode=product.getObjectId("_id");
-                int id_Productint=Math.abs(idProductcode.hashCode());
-                String nameProduct=product.getString("Name");
-                int Quality=document.getInteger("Quality");
-                String dayorder=document.getString("Date");
-                LocalDate sinceDate=LocalDate.parse(dayorder,DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                String formattedSince=sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                DecimalFormat formatter=new DecimalFormat("#,### $");
-                int price=product.getInteger("Price");
-                String formatPrice=formatter.format(price);
-                Inventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, nameProduct));
+            FindIterable<Document> pro = Product.find();
+            for (Document document1 : pro) {
+                ObjectId idProduct = document1.getObjectId("_id");
+                int id_filter = Math.abs(idProduct.hashCode());
+                Document detail = (Document) document.get("Detail");
+                boolean isSimilar = regexPattern.matcher(String.valueOf(id_filter)).matches();
+                if (detail != null && (isSimilar || document1.getString("Name").matches(query))) {
+                    Document idcol = (Document) detail.get(String.valueOf(idProduct));
+
+                    if (idcol != null) {
+                        int id_Iventory = document.getObjectId("_id").hashCode();
+                        ObjectId IdProductcode = document1.getObjectId("_id");
+                        int id_Productint = Math.abs(IdProductcode.hashCode());
+                        String name_product = document1.getString("Name");
+                        int Quality = idcol.getInteger("Quality");
+                        String dayOrder = document.getString("Date");
+                        LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        DecimalFormat formatter = new DecimalFormat("#,### $");
+                        int price = document1.getInteger("Price");
+                        String formatPrice = formatter.format(price);
+                        Inventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, name_product));
+                    }
+                }
             }
+
         }
         return Inventory;
     }
+
     public static List<Iventory> getIventory() {
         ArrayList<Iventory> Iventory = new ArrayList<>();
         MongoCollection<Document> Warehouse = DBconnect.getdatabase().getCollection("WareHouse");
@@ -182,85 +194,68 @@ public class daodb {
         Warehouse.createIndex(Indexes.ascending("Date"));
         FindIterable<Document> Ware_house = Warehouse.find();
         for (Document document : Ware_house) {
-            ObjectId idProduct = document.getObjectId("ID_Product");
-            Document product = Product.find(new Document("_id", idProduct)).first();
-            if (product != null) {
-                int id_Iventory = document.getObjectId("_id").hashCode();
-                ObjectId IdProductcode = product.getObjectId("_id");
-                int id_Productint = Math.abs(IdProductcode.hashCode());
-                String name_product = product.getString("Name");
-                int Quality = document.getInteger("Quality");
-                String dayOrder = document.getString("Date");
-                LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                DecimalFormat formatter = new DecimalFormat("#,### $");
-                int price = product.getInteger("Price");
-                String formatPrice = formatter.format(price);
-                Iventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, name_product));
+            FindIterable<Document> Pro = Product.find();
+            for (Document document1 : Pro) {
+                ObjectId idProduct = document1.getObjectId("_id");
+                Document detail = (Document) document.get("Detail");
+                if (detail != null) {
+                    Document idcol = (Document) detail.get(String.valueOf(idProduct));
+                    if (idcol != null) {
+                        int id_Iventory = document.getObjectId("_id").hashCode();
+                        ObjectId IdProductcode = document1.getObjectId("_id");
+                        int id_Productint = Math.abs(IdProductcode.hashCode());
+                        String name_product = document1.getString("Name");
+                        int Quality = idcol.getInteger("Quality");
+                        String dayOrder = document.getString("Date");
+                        LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        DecimalFormat formatter = new DecimalFormat("#,### $");
+                        int price = document1.getInteger("Price");
+                        String formatPrice = formatter.format(price);
+                        Iventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, name_product));
+                    }
+                }
+
             }
+
         }
         return Iventory;
     }
 
-    public static List<Order> getdetailCustomer(String Name, int id_order) {
-
-        Map<String, Integer> productQuantityMap = new HashMap<>();
-        ArrayList<Order> ordest = new ArrayList<>();
+    public static List<Order> getdetailCustomer(String Name, int idorder) {
+        List<Order> ordest = new ArrayList<>();
         MongoCollection<Document> orderCollection = DBconnect.getdatabase().getCollection("Order");
         MongoCollection<Document> productCollection = DBconnect.getdatabase().getCollection("Product");
-        MongoCollection<Document> CustomeCollection = DBconnect.getdatabase().getCollection("Customer");
+        MongoCollection<Document> customerCollection = DBconnect.getdatabase().getCollection("Customer");
 
-        FindIterable<Document> orders = orderCollection.find(new Document());
-
-        for (Document order : orders) {
-            Document detailOrder = (Document) order.get("DetailOrder");
-
-            List<Object> idProducts = (List<Object>) detailOrder.get("id_Product");
-            ObjectId id_customer = order.getObjectId("id_Customer");
-
-            for (Object idProduct : idProducts) {
-                if (idProduct instanceof String) {
-                    try {
-                        ObjectId objectId = new ObjectId((String) idProduct);
-
-                        Document product = productCollection.find(new Document("_id", objectId)).first();
-                        Document customer1 = CustomeCollection.find(new Document("_id", id_customer)).first();
-                        if (product != null && customer1 != null) {
-                            String productName = product.getString("Name");
-                            String customerName = customer1.getString("Name");
-                            ObjectId idorder = detailOrder.getObjectId("id_Order");
-                            int idorderCustomer = idorder.hashCode();
-                            if (customerName.equals(Name) && idorderCustomer == id_order) {
-
-                                if (productQuantityMap.containsKey(productName)) {
-                                    int existingQuantity = productQuantityMap.get(productName);
-                                    productQuantityMap.put(productName, existingQuantity + 1);
-                                } else {
-                                    productQuantityMap.put(productName, 1);
-                                }
-
-                            }
-
+        FindIterable<Document> order = orderCollection.find();
+        for (Document document : order) {
+            ObjectId idcustomer = document.getObjectId("id_Customer");
+            if (document.getObjectId("_id").hashCode() == idorder) {
+                FindIterable<Document> products = productCollection.find(new Document());
+                ObjectId idproducts = null;
+                for (Document product : products) {
+                    idproducts = product.getObjectId("_id");
+                    Document detail = (Document) document.get("DetailOrder");
+                    Document employeefind = customerCollection.find(Filters.and(Filters.eq("_id", idcustomer), Filters.eq("Name", Name))).first();
+                    if (detail != null && employeefind != null) {
+                        Document idcol = (Document) detail.get(String.valueOf(idproducts));
+                        if (idcol != null) {
+                            String NameProduct = product.getString("Name");
+                            int Quality = idcol.getInteger("Quality");
+                            int Price = product.getInteger("Price");
+                            DecimalFormat formatter = new DecimalFormat("#,### $");
+                            String formatprice = formatter.format(Price);
+                            ordest.add(new Order(NameProduct, Quality, formatprice));
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
 
                 }
-            }
-        }
-        for (Map.Entry<String, Integer> entry : productQuantityMap.entrySet()) {
-            String productName = entry.getKey();
-            int quantity = entry.getValue();
 
-            DecimalFormat formatter = new DecimalFormat("#,### $");
-            int price = getProductPrice(productCollection, productName);
-            String formatPrice = formatter.format(price);
-            ordest.add(new Order(productName, quantity, formatPrice));
+            }
         }
 
         return ordest;
-
     }
 
     public static int calculateTotalPrice(List<Order> orders) {
@@ -614,47 +609,40 @@ public class daodb {
         List<Manager> Mg = new ArrayList<>();
         MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
         MongoCollection<Document> requestCollection = DBconnect.getdatabase().getCollection("Request");
-        MongoCursor<Document> cursor = collections.find().iterator();
-        try {
+
+        try (MongoCursor<Document> cursor = collections.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 int usertype = document.getInteger("usertype");
+
                 if (usertype == 1 || usertype == 2) {
-                    if (usertype == 1) {
-                        String name = document.getString("Name");
-                        String phone = document.getString("Phone");
-                        String sinceString = document.getString("Since");
-                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                        String username = document.getString("Username");
-                        String email = document.getString("Email");
-
-                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
-                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
-                        String value = (requestDocument != null) ? String.valueOf(status) : "";
-                        String postion = "Warehouse";
-                        Mg.add(new Manager(name, email, formattedSince, phone, value, username, postion));
-                    } else if (usertype == 2) {
-                        String name = document.getString("Name");
-                        String phone = document.getString("Phone");
-                        String sinceString = document.getString("Since");
-                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                        String username = document.getString("Username");
-                        String email = document.getString("Email");
-
-                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
-                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
-                        String value = (requestDocument != null) ? String.valueOf(status) : "";
-                        String postion = "SalePerson";
-                        Mg.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                    Manager manager = createManagerFromDocument(document, usertype, requestCollection);
+                    if (manager != null) {
+                        Mg.add(manager);
                     }
-
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return Mg;
+    }
+
+    private static Manager createManagerFromDocument(Document document, int usertype, MongoCollection<Document> requestCollection) {
+        String name = document.getString("Name");
+        String phone = document.getString("Phone");
+        String sinceString = document.getString("Since");
+        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String username = document.getString("Username");
+        String email = document.getString("Email");
+        String position = (usertype == 1) ? "Warehouse" : "SalePerson";
+
+        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+        String value = (requestDocument != null) ? String.valueOf(status) : "";
+
+        return new Manager(name, email, formattedSince, phone, value, username, position);
     }
 }

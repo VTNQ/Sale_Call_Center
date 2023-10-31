@@ -1,131 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.MainController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainController">
    <children>
-      <AnchorPane layoutX="-5.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="102.0" prefWidth="830.0" styleClass="top-form" stylesheets="@css/application.css">
+      <AnchorPane layoutX="362.0" layoutY="100.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fitHeight="108.0" fitWidth="170.0" layoutX="6.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@asset/Warehouse_staff.jpg" />
-               </image>
-            </ImageView>
-            <Label alignment="CENTER" layoutX="114.0" layoutY="14.0" prefHeight="70.0" prefWidth="189.0" text="Manage Inventory">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <MenuButton layoutX="755.0" layoutY="24.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
-              <items>
-                <MenuItem mnemonicParsing="false">
-                     <graphic>
-                        <Button mnemonicParsing="false" style="-fx-background-color: transparent;" text="Logout">
-                           <graphic>
-                              <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+            <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <left>
+                  <AnchorPane prefHeight="536.0" prefWidth="184.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <AnchorPane layoutY="-2.0" prefHeight="496.0" prefWidth="185.0" styleClass="main-bg" stylesheets="@css/application.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-2.0">
+                           <children>
+                              <ImageView fitHeight="150.0" fitWidth="189.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0">
                                  <image>
-                                    <Image url="@asset/exit.png" />
+                                    <Image url="@asset/user-interface.png" />
                                  </image>
                               </ImageView>
-                           </graphic>
-                        </Button>
-                     </graphic>
-                  </MenuItem>
-                <MenuItem mnemonicParsing="false">
-                     <graphic>
-                        <Button mnemonicParsing="false" style="-fx-background-color: transparent;" text="Profile">
-                           <graphic>
-                              <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@asset/profile.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                     </graphic>
-                  </MenuItem>
-              </items>
-               <graphic>
-                  <ImageView fitHeight="41.0" fitWidth="53.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@asset/account.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </MenuButton>
-         </children>
-      </AnchorPane>
-      <AnchorPane layoutY="102.0" prefHeight="497.0" prefWidth="200.0" style="-fx-background-color: #32de84;">
-         <children>
-            <Button layoutY="35.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #66FF00; -fx-background-radius: 10;" text="Dashboard">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@asset/dashboard.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Label layoutX="14.0" layoutY="6.0" text="Welcome" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <Label layoutX="93.0" layoutY="6.0" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <Button layoutY="85.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="200.0" style="-fx-background-color: transparent;" text="Change Password">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@asset/key.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Line endX="100.0" layoutX="100.0" layoutY="155.0" startX="-100.0" stroke="LIMEGREEN" />
-            <Button layoutY="156.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="200.0" style="-fx-background-color: transparent;" text="Import">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@asset/import.jpg" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Line endX="100.0" layoutX="105.0" layoutY="218.0" startX="-105.00000762939453" stroke="LIMEGREEN" />
-            <Button layoutY="219.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="200.0" style="-fx-background-color: transparent;" text="Export">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="33.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@asset/Export.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
+                              <Label layoutX="31.0" layoutY="157.0" text="Welcome,admin" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Button layoutX="7.0" layoutY="222.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Dashboard" />
+                              <Button layoutX="8.0" layoutY="277.0" mnemonicParsing="false" onAction="#Change" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="ChangePassword" />
+                              <Button layoutX="7.0" layoutY="338.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Inport" />
+                              <Button layoutX="8.0" layoutY="398.0" mnemonicParsing="false" onAction="#Export" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Export" />
+                              <Line endX="81.4000244140625" endY="3.0517578125E-5" layoutX="101.0" layoutY="188.0" startX="-100.0" stroke="WHITE" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </left>
+               <top>
+                  <AnchorPane prefHeight="86.0" prefWidth="800.0" stylesheets="@css/application.css" BorderPane.alignment="CENTER">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="main-bg" />
+                     </styleClass>
+                     <children>
+                        <ImageView fitHeight="108.0" fitWidth="118.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@asset/entrepot%20.png" />
+                           </image>
+                        </ImageView>
+                        <Label layoutX="114.0" layoutY="27.0" prefHeight="53.0" prefWidth="257.0" text="Warehouse Application" textFill="WHITE">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </top>
+               <center>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <AnchorPane prefHeight="493.0" prefWidth="615.0">
+                           <children>
+                              <AnchorPane fx:id="mainWarehouse" layoutY="1.0" prefHeight="491.0" prefWidth="615.0">
+                                 <children>
+                                    <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="137.0" prefWidth="598.0">
+                                      <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="122.0" prefWidth="702.0">
+                                             <children>
+                                                <AnchorPane layoutX="14.0" layoutY="5.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
+                                                   <styleClass>
+                                                      <String fx:value="main-bg" />
+                                                      <String fx:value="radius" />
+                                                   </styleClass>
+                                                   <children>
+                                                      <ImageView fitHeight="84.0" fitWidth="115.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@asset/ware_house%20.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                      <Label layoutX="122.0" layoutY="30.0" text="Ware House" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label alignment="CENTER_RIGHT" layoutX="92.0" layoutY="67.0" prefHeight="20.0" prefWidth="106.0" text="0" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="20.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </AnchorPane>
+                                                <AnchorPane layoutX="242.0" layoutY="3.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
+                                                   <styleClass>
+                                                      <String fx:value="main-bg" />
+                                                      <String fx:value="radius" />
+                                                   </styleClass>
+                                                   <children>
+                                                      <ImageView fitHeight="84.0" fitWidth="115.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@asset/import.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                      <Label layoutX="124.0" layoutY="32.0" text="Import House" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label alignment="CENTER_RIGHT" layoutX="93.0" layoutY="58.0" prefHeight="20.0" prefWidth="106.0" text="0" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="20.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </AnchorPane>
+                                                <AnchorPane layoutX="477.0" layoutY="3.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
+                                                   <styleClass>
+                                                      <String fx:value="main-bg" />
+                                                      <String fx:value="radius" />
+                                                   </styleClass>
+                                                   <children>
+                                                      <ImageView fitHeight="84.0" fitWidth="115.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@asset/chariot-elevateur.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                      <Label layoutX="106.0" layoutY="32.0" text="Export House" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label alignment="CENTER_RIGHT" layoutX="86.0" layoutY="53.0" prefHeight="20.0" prefWidth="106.0" text="0" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="20.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </AnchorPane>
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </ScrollPane>
+                                    <AnchorPane layoutX="14.0" layoutY="162.0" prefHeight="318.0" prefWidth="596.0" stylesheets="@css/application.css">
+                                       <styleClass>
+                                          <String fx:value="white-bg" />
+                                          <String fx:value="shadow" />
+                                          <String fx:value="radius" />
+                                       </styleClass>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                           </children></AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </center>
+            </BorderPane>
          </children>
       </AnchorPane>
    </children>

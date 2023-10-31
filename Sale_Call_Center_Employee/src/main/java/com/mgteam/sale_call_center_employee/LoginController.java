@@ -13,6 +13,8 @@ import com.mongodb.client.result.UpdateResult;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -21,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -42,6 +45,9 @@ import org.bson.types.ObjectId;
 public class LoginController implements Initializable {
 
     @FXML
+    private Button ChangePassword;
+
+    @FXML
     private PasswordField PasswordField;
     public static ObjectId id_employee;
     public static String username;
@@ -51,13 +57,17 @@ public class LoginController implements Initializable {
     public static String since;
     @FXML
     private TextField UsernameField;
+    @FXML
+    private PasswordField NewPassword;
 
+    @FXML
+    private PasswordField RenewPassword;
     @FXML
     private MFXTextField Email;
 
     @FXML
     private TextField otp1 = new TextField();
-
+    public static String user;
     @FXML
     private TextField otp2 = new TextField();
 
@@ -100,21 +110,38 @@ public class LoginController implements Initializable {
                     if (result.getInteger("usertype") == 1) {
                         DialogAlert.DialogSuccess("Login Success");
                         id_employee = result.getObjectId("_id");
-                        username=UsernameField.getText();
-                        name=result.getString("Name");
-                        email=result.getString("Email");
-                        phone=result.getString("Phone");
-                        since=result.getString("Since");
+                        username = UsernameField.getText();
+                        name = result.getString("Name");
+                        email = result.getString("Email");
+                        phone = result.getString("Phone");
+                        since = result.getString("Since");
                         App.setRoot("SalePerson");
                     }
                     if (result.getInteger("usertype") == 2) {
                         DialogAlert.DialogSuccess("Login Success");
                         id_employee = result.getObjectId("_id");
-                        username=UsernameField.getText();
-                        name=result.getString("Name");
-                        email=result.getString("Email");
-                        phone=result.getString("Phone");
-                        since=result.getString("Since");
+                        username = UsernameField.getText();
+                        name = result.getString("Name");
+                        email = result.getString("Email");
+                        phone = result.getString("Phone");
+                        since = result.getString("Since");
+                        user = MD5.Md5(UsernameField.getText());
+                        if (istatus(user)) {
+                            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/popupWarehouse.fxml"));
+                            AnchorPane popup = loader.load();
+
+                            Stage popupstage = new Stage();
+                            popupstage.initModality(Modality.APPLICATION_MODAL);
+                            popupstage.setScene(new Scene(popup));
+                            popupstage.setOnCloseRequest(closeEvent -> {
+                                MongoCollection<Document> updatecollection = DBConnection.getConnection().getCollection("Employee");
+                                Bson filterupdate = Filters.eq("Username", user);
+                                Bson updateStatus = Updates.set("status", 1);
+                                UpdateResult updates = updatecollection.updateOne(filterupdate, updateStatus);
+                            });
+                            popupstage.setResizable(true);
+                            popupstage.showAndWait();
+                        }
                         App.setRoot("WarehouseStaff");
                     }
                 } catch (IOException ex) {
@@ -124,6 +151,40 @@ public class LoginController implements Initializable {
             if (isFound == false) {
                 DialogAlert.DialogError("Account not exist Or Username/Password Incorrect");
             }
+        }
+    }
+
+    @FXML
+    void Change(ActionEvent event) {
+        if (!NewPassword.getText().isEmpty() && !RenewPassword.getText().isEmpty()) {
+            if (NewPassword.getText().equals(RenewPassword.getText())) {
+                if (NewPassword.getText().length() >= 8 && RenewPassword.getText().length() >= 8) {
+                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("Employee");
+                    Bson filter = Filters.eq("Username", user);
+                    Bson upate = Updates.set("Password", MD5.Md5(RenewPassword.getText()));
+                    Bson updateStatus = Updates.set("status", 1);
+                    List<Bson> updatesOperations = new ArrayList<>();
+                    updatesOperations.add(upate);
+                    updatesOperations.add(updateStatus);
+                    Bson combinedUpdates = Updates.combine(updatesOperations);
+                    UpdateResult updates = collection.updateOne(filter, combinedUpdates);
+                    if (updates.getModifiedCount() > 0) {
+                        DialogAlert.DialogSuccess("Change Password successfully");
+                        Stage stage = (Stage) ChangePassword.getScene().getWindow();
+                        stage.close();
+                    }
+                }else{
+                    DialogAlert.DialogError("Password must be at least 8 characters long");
+                }
+            }else{
+                 DialogAlert.DialogError("New Password must match renew Password");
+            }
+        }else if (!NewPassword.getText().isEmpty() && RenewPassword.getText().isEmpty()) {
+            DialogAlert.DialogError("Re_new Password is required");
+        } else if (NewPassword.getText().isEmpty() && !RenewPassword.getText().isEmpty()) {
+             DialogAlert.DialogError("New Password is required");
+        } else if (NewPassword.getText().isEmpty() && RenewPassword.getText().isEmpty()) {
+             DialogAlert.DialogError("New Password And Re_new Password is required");
         }
     }
 
@@ -210,6 +271,14 @@ public class LoginController implements Initializable {
             }
         }
 
+    }
+
+    private boolean istatus(String username) {
+        MongoCollection<Document> Employee = DBConnection.getConnection().getCollection("Employee");
+        Document query = new Document("Username", username);
+        query.append("status", 0);
+        Document result = Employee.find(query).first();
+        return result != null;
     }
 
     @Override

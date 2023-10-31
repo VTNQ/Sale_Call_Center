@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
-<?import javafx.scene.chart.AreaChart?>
-<?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -192,55 +190,7 @@
                   <String fx:value="shadow" />
                </styleClass>
                <children>
-                  <AnchorPane layoutX="14.0" layoutY="24.0" prefHeight="204.0" prefWidth="274.0" stylesheets="@css/Employee.css">
-                     <styleClass>
-                        <String fx:value="white-form" />
-                        <String fx:value="radius" />
-                        <String fx:value="shadow" />
-                     </styleClass>
-                     <children>
-                        <AreaChart fx:id="customerchart" layoutY="39.0" prefHeight="165.0" prefWidth="274.0" title="Number of Customers" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="39.0">
-                          <xAxis>
-                            <CategoryAxis side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis side="LEFT" />
-                          </yAxis>
-                        </AreaChart>
-                        <Label layoutX="14.0" layoutY="14.0" text="Filter Month" />
-                        <ComboBox fx:id="filterMonth" layoutX="100.0" layoutY="10.0" prefWidth="150.0" stylesheets="@css/Employee.css">
-                           <styleClass>
-                              <String fx:value="combox-box" />
-                              <String fx:value="combox-box-popup" />
-                           </styleClass>
-                        </ComboBox>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane layoutX="297.0" layoutY="19.0" prefHeight="418.0" prefWidth="344.0" stylesheets="@css/Employee.css">
-                     <styleClass>
-                        <String fx:value="white-form" />
-                        <String fx:value="radius" />
-                        <String fx:value="shadow" />
-                     </styleClass>
-                     <children>
-                        <BarChart fx:id="totalInventory" layoutX="-18.0" layoutY="36.0" prefHeight="382.0" prefWidth="344.0" title="Income per day" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="36.0">
-                          <xAxis>
-                            <CategoryAxis side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis side="LEFT" />
-                          </yAxis>
-                        </BarChart>
-                        <Label layoutX="62.0" layoutY="14.0" text="Filter month" AnchorPane.bottomAnchor="392.79999999999995" />
-                        <ComboBox fx:id="FilterInventory" layoutX="135.0" layoutY="4.0" prefWidth="150.0" stylesheets="@css/Employee.css">
-                           <styleClass>
-                              <String fx:value="combox-box" />
-                              <String fx:value="combox-box-popup" />
-                           </styleClass>
-                        </ComboBox>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane layoutX="14.0" layoutY="236.0" prefHeight="198.0" prefWidth="274.0" stylesheets="@css/Employee.css">
+                  <AnchorPane layoutX="14.0" layoutY="35.0" prefHeight="399.0" prefWidth="626.0" stylesheets="@css/Employee.css">
                      <styleClass>
                         <String fx:value="white-form" />
                         <String fx:value="radius" />
@@ -255,8 +205,8 @@
                             <NumberAxis side="LEFT" />
                           </yAxis>
                         </LineChart>
-                        <Label layoutX="22.0" layoutY="14.0" text="Filter month" />
-                        <ComboBox fx:id="FilterMonthorder" layoutX="94.0" layoutY="10.0" prefWidth="150.0" stylesheets="@css/Employee.css">
+                        <Label layoutX="100.0" layoutY="14.0" text="Filter month" />
+                        <ComboBox fx:id="FilterMonthorder" layoutX="189.0" layoutY="10.0" prefWidth="150.0" stylesheets="@css/Employee.css">
                            <styleClass>
                               <String fx:value="combox-box" />
                               <String fx:value="combox-box-popup" />

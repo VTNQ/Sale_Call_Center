@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="491.0" prefWidth="615.0" stylesheets="@../css/application.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.Export_Warehouse">
+   <children>
+      <AnchorPane layoutY="-2.0" prefHeight="141.0" prefWidth="615.0" style="-fx-background-color: #0abfa4;" stylesheets="@../css/application.css">
+         <children>
+            <ImageView fitHeight="140.0" fitWidth="186.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/import.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="130.0" layoutY="25.0" text="Export Warehouse" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tblExport" layoutX="13.0" layoutY="153.0" prefHeight="310.0" prefWidth="598.0" styleClass="table-view1" stylesheets="@../css/application.css">
+        <columns>
+          <TableColumn fx:id="colOrder" prefWidth="84.800048828125" text="Order" />
+          <TableColumn fx:id="colCustomer" prefWidth="91.199951171875" text="Customer" />
+            <TableColumn fx:id="colEmployee" prefWidth="85.60003662109375" text="Employee" />
+            <TableColumn fx:id="colproduct" prefWidth="90.4000244140625" text="Product" />
+            <TableColumn fx:id="colprint" prefWidth="74.39996337890625" text="Print" />
+            <TableColumn fx:id="colApprove" prefWidth="86.4000244140625" text="Approve" />
+            <TableColumn fx:id="colcancle" prefWidth="74.4000244140625" text="Cancle" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

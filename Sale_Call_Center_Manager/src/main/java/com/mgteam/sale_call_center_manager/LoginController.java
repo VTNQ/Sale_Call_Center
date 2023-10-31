@@ -3,6 +3,7 @@ package com.mgteam.sale_call_center_manager;
 import com.mgteam.sale_call_center_manager.connect.DBconnect;
 import com.mgteam.sale_call_center_manager.connect.MD5;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
@@ -14,18 +15,22 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javax.mail.Authenticator;
@@ -45,7 +50,7 @@ public class LoginController implements Initializable {
     private AnchorPane OTP;
     @FXML
     private TextField one = new TextField();
-
+    private boolean stopLogin = false;
     @FXML
     private PasswordField NewPassword;
 
@@ -77,66 +82,144 @@ public class LoginController implements Initializable {
 
     @FXML
     void login(ActionEvent event) {
-        String inputUsername = username.getText();
-        String inputPassword = password.getText();
-
-        if (inputUsername.isEmpty() || inputPassword.isEmpty()) {
-            if (inputUsername.isEmpty()) {
-                Alert.Dialogerror("Username is required");
-            } else {
-                Alert.Dialogerror("Password is required");
-            }
-
+        if (username.getText().isEmpty() && password.getText().isEmpty()) {
+            Alert.Dialogerror("Username and Password are required");
+            return;
         }
 
-        MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
+        if (username.getText().isEmpty()) {
+            Alert.Dialogerror("Username is required");
+            return;
+        }
 
+        if (password.getText().isEmpty()) {
+            Alert.Dialogerror("Password is required");
+            return;
+        }
+
+        MongoCollection<Document> empCollection = DBconnect.getdatabase().getCollection("Admin");
         Bson filter = Filters.and(
-                Filters.eq("Username", MD5.encryPassword(inputUsername)),
-                Filters.eq("Password", MD5.encryPassword(inputPassword)),
-                Filters.eq("Usertype", 2)
+                Filters.eq("Username", MD5.encryPassword(username.getText())),
+                Filters.eq("Password", MD5.encryPassword(password.getText()))
         );
 
-        Document result = collection.find(filter).first();
+        MongoIterable<Document> results = empCollection.find(filter);
+        boolean isFound = false;
 
-        if (result != null) {
-            Alert.DialogSuccess("Login successfully");
+        for (Document result : results) {
+            isFound = true;
+            if (result.getInteger("Usertype") == 2) {
+                Alert.DialogSuccess("Login Success");
+                user = username.getText();
+                userName = MD5.encryPassword(username.getText());
+                ProgressBar progressBar = new ProgressBar();
+                progressBar.setPrefWidth(180);
 
-            userName = MD5.encryPassword(inputUsername);
-            user=inputUsername;
-            if (isstatus(userName)) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(App.class.getResource("popup.fxml"));
-                    AnchorPane popup = loader.load();
+                VBox vbox = new VBox(progressBar);
+                vbox.setSpacing(10);
+                vbox.setAlignment(Pos.CENTER);
 
-                    Stage popupstage = new Stage();
-                    popupstage.initModality(Modality.APPLICATION_MODAL);
-                    popupstage.setScene(new Scene(popup));
-                    popupstage.setOnCloseRequest(closeEvent -> {
-                        MongoCollection<Document> updateCollection = DBconnect.getdatabase().getCollection("Admin");
-                        Bson filterUpdate = Filters.eq("Username", userName);
-                        Bson updateStatus = Updates.set("status", 1);
-                        UpdateResult updates = updateCollection.updateOne(filterUpdate, updateStatus);
-                    });
-                    popupstage.setResizable(true);
-                    popupstage.showAndWait();
+                Scene scene = new Scene(vbox, 200, 60);
 
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                Stage progressDialogStage = new Stage();
+                progressDialogStage.setScene(scene);
+
+                Task<Void> loginTask = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        while (true) {
+                            for (int i = 0; i <= 100; i++) {
+                                double progress = i / 100.0;
+                                if (stopLogin) {
+                                    break;
+                                }
+                                Thread.sleep(50);
+                            }
+
+                            if (progressDialogStage.isShowing()) {
+                                App.setRoot("secondary");
+                                Platform.runLater(() -> progressDialogStage.close());
+                                break;
+                            }
+                        }
+                        return null;
+                    }
+                };
+                if (isstatus(MD5.encryPassword(username.getText()))) {
+                    openPopup();
+
                 }
+                progressDialogStage.show();
+                new Thread(loginTask).start();
             }
+        }
 
-            try {
-                App.setRoot("secondary");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            Alert.Dialogerror("Login failed");
+        if (!isFound) {
+            Alert.Dialogerror("Account not exist Or Username/Password Incorrect");
         }
     }
 
-    
+    void openPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("popup.fxml"));
+            AnchorPane popup = loader.load();
+
+            Stage popupstage = new Stage();
+            popupstage.initModality(Modality.APPLICATION_MODAL);
+            popupstage.setScene(new Scene(popup));
+            popupstage.setOnCloseRequest(closeEvent -> {
+
+                MongoCollection<Document> updateCollection = DBconnect.getdatabase().getCollection("Admin");
+                Bson filterUpdate = Filters.eq("Username", userName);
+                Bson updateStatus = Updates.set("status", 1);
+                UpdateResult updates = updateCollection.updateOne(filterUpdate, updateStatus);
+
+                // Hiển thị thanh tiến trình
+                ProgressBar progressBar = new ProgressBar();
+                progressBar.setPrefWidth(180);
+
+                VBox vbox = new VBox(progressBar);
+                vbox.setSpacing(10);
+                vbox.setAlignment(Pos.CENTER);
+
+                Scene scene = new Scene(vbox, 200, 60);
+
+                Stage progressDialogStage = new Stage();
+                progressDialogStage.setScene(scene);
+
+                Task<Void> loginTask = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        while (true) {
+                            for (int i = 0; i <= 100; i++) {
+                                double progress = i / 100.0;
+                                if (stopLogin) {
+                                    break;
+                                }
+                                Thread.sleep(50);
+                            }
+
+                            if (progressDialogStage.isShowing()) {
+
+                                Platform.runLater(() -> progressDialogStage.close());
+                                break;
+                            }
+                        }
+                        return null;
+                    }
+                };
+
+                progressDialogStage.show();
+                new Thread(loginTask).start();
+            });
+
+            popupstage.setResizable(true);
+            popupstage.showAndWait();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @FXML
     void showRegisterStage(MouseEvent event) {
@@ -249,6 +332,42 @@ public class LoginController implements Initializable {
                         Alert.DialogSuccess("Change Password successfully");
                         Stage stage = (Stage) ChangePassword.getScene().getWindow();
                         stage.close();
+                        ProgressBar progressBar = new ProgressBar();
+                        progressBar.setPrefWidth(180);
+
+                        VBox vbox = new VBox(progressBar);
+                        vbox.setSpacing(10);
+                        vbox.setAlignment(Pos.CENTER);
+
+                        Scene scene = new Scene(vbox, 200, 60);
+
+                        Stage progressDialogStage = new Stage();
+                        progressDialogStage.setScene(scene);
+
+                        Task<Void> loginTask = new Task<Void>() {
+                            @Override
+                            protected Void call() throws Exception {
+                                while (true) {
+                                    for (int i = 0; i <= 100; i++) {
+                                        double progress = i / 100.0;
+                                        if (stopLogin) {
+                                            break;
+                                        }
+                                        Thread.sleep(50);
+                                    }
+
+                                    if (progressDialogStage.isShowing()) {
+
+                                        Platform.runLater(() -> progressDialogStage.close());
+                                        break;
+                                    }
+                                }
+                                return null;
+                            }
+                        };
+
+                        progressDialogStage.show();
+                        new Thread(loginTask).start();
                     }
                 } else {
                     Alert.Dialogerror("Password must be at least 8 characters long");
@@ -293,7 +412,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-       
+
         one.textProperty().addListener((observable, oldvalue, newvalue) -> {
             if (newvalue.length() == 1) {
                 two.requestFocus();
