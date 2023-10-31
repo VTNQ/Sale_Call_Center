@@ -17,27 +17,27 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.bson.Document;
 
-
-public class MainController implements Initializable{
+public class MainController implements Initializable {
 
     @FXML
-    private TextField username=new TextField();
-    
+    private AnchorPane mainWarehouse;
+    @FXML
+    private TextField username = new TextField();
+
     @FXML
     private AnchorPane MainDisplay;
-    
+
     @FXML
-    private Label TotalCustomer=new Label();
-    
+    private Label TotalCustomer = new Label();
+
     @FXML
-    private Label TotalOrder=new Label();
-   
+    private Label TotalOrder = new Label();
 
     @FXML
     void changePassword(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("view/changePassword.fxml"));
         try {
-            AnchorPane changPassword=loader.load();
+            AnchorPane changPassword = loader.load();
             MainDisplay.getChildren().clear();
             MainDisplay.getChildren().setAll(changPassword);
         } catch (IOException ex) {
@@ -46,10 +46,34 @@ public class MainController implements Initializable{
     }
 
     @FXML
+    void Change(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ChangePasswordWarehouse.fxml"));
+        try {
+            AnchorPane ExportWarehouse = loader.load();
+            mainWarehouse.getChildren().clear();
+            mainWarehouse.getChildren().addAll(ExportWarehouse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void Export(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ExportWarehouse.fxml"));
+        try {
+            AnchorPane ExportWarehouse = loader.load();
+            mainWarehouse.getChildren().clear();
+            mainWarehouse.getChildren().addAll(ExportWarehouse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     void customer(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("MainCustomer.fxml"));
         try {
-            AnchorPane HomeCustomer=loader.load();
+            AnchorPane HomeCustomer = loader.load();
             MainDisplay.getChildren().clear();
             MainDisplay.getChildren().setAll(HomeCustomer);
         } catch (IOException ex) {
@@ -78,7 +102,7 @@ public class MainController implements Initializable{
             }
             if (response == ButtonType.OK) {
                 try {
-                    LoginController.username="";
+                    LoginController.username = "";
                     App.setRoot("login");
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -91,19 +115,19 @@ public class MainController implements Initializable{
     void order(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("MainOrder.fxml"));
         try {
-            AnchorPane HomeOrder=loader.load();
+            AnchorPane HomeOrder = loader.load();
             MainDisplay.getChildren().clear();
             MainDisplay.getChildren().setAll(HomeOrder);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-    
+
     @FXML
     void profile(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("Profile.fxml"));
         try {
-            AnchorPane Profile=loader.load();
+            AnchorPane Profile = loader.load();
             MainDisplay.getChildren().clear();
             MainDisplay.getChildren().setAll(Profile);
         } catch (IOException ex) {
@@ -111,20 +135,20 @@ public class MainController implements Initializable{
         }
     }
 
-    private int TotalCustomer(){
-        int count=0;
-        MongoCollection<Document>totalCustomer=DBConnection.getConnection().getCollection("Customer");
-        MongoIterable<Document>result=totalCustomer.find();
+    private int TotalCustomer() {
+        int count = 0;
+        MongoCollection<Document> totalCustomer = DBConnection.getConnection().getCollection("Customer");
+        MongoIterable<Document> result = totalCustomer.find();
         for (Document document : result) {
             count++;
         }
         return count;
     }
-    
+
     @Override
-    public void initialize(URL location, ResourceBundle resources) {   
+    public void initialize(URL location, ResourceBundle resources) {
         TotalCustomer.setText(String.valueOf(TotalCustomer()));
         username.setText(LoginController.username);
     }
-    
+
 }
