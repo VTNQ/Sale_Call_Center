@@ -147,24 +147,24 @@ public class MainOrderController extends MainController implements Initializable
                     String OrderDate = document.getString("Order_date");
                     String ShipDate = document.getString("Ship_date");
                     int status = document.getInteger("status");
-                String Status = "";
-                switch (status) {
-                    case 0:
-                        Status = "pending";
-                        break;
-                    case 1:
-                        Status = "Waiting for delivery";
-                        break;
-                    case 2:
-                        Status = "Ongoing deliveries";
-                        break;
-                    case 3:
-                        Status = "Delivered";
-                        break;
-                    case 4:
-                        Status = "Cancelled";
-                        break;
-                }
+                    String Status = "";
+                    switch (status) {
+                        case 0:
+                            Status = "pending";
+                            break;
+                        case 1:
+                            Status = "Waiting for delivery";
+                            break;
+                        case 2:
+                            Status = "Ongoing deliveries";
+                            break;
+                        case 3:
+                            Status = "Delivered";
+                            break;
+                        case 4:
+                            Status = "Cancelled";
+                            break;
+                    }
                     Document detailOrder = (Document) document.get("DetailOrder");
                     ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
                 }
@@ -290,10 +290,12 @@ public class MainOrderController extends MainController implements Initializable
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
         FindIterable<Document> result = OrderCollection.find();
         for (Document document : result) {
-            Document detailOrder = (Document) document.get("DetailOrder");
-            List<Object> idProducts = (List<Object>) detailOrder.get("id_Product");
-            for (Object id_product : idProducts) {
-                System.out.println(id_product);
+            if (document.getObjectId("_id").hashCode() == id_order) {
+                Document detailOrder = (Document) document.get("DetailOrder");
+                List<Object> idProducts = (List<Object>) detailOrder.get("id_Product");
+                for (Object id_product : idProducts) {
+                    System.out.println(id_product.hashCode());
+                }
             }
         }
 
