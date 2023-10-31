@@ -13,23 +13,38 @@
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainOrderController">
    <children>
+      <AnchorPane layoutY="-3.0" prefHeight="54.0" prefWidth="641.0" style="-fx-background-color: #e2772f;" stylesheets="@css/application.css">
+         <children>
+            <Label layoutX="73.0" layoutY="9.0" style="-fx-text-fill: white;" text="LIST ORDER">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="54.0" fitWidth="45.0" layoutX="14.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@asset/telephone-intelligent.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
       <AnchorPane layoutX="3.0" layoutY="54.0" prefHeight="347.0" prefWidth="638.0">
          <children>
             <TableView fx:id="tblOrder" layoutX="19.0" layoutY="40.0" prefHeight="267.0" prefWidth="600.0" stylesheets="@css/application.css">
               <columns>
-                <TableColumn fx:id="NameCustomer" prefWidth="93.0" text="Customer" />
+                <TableColumn fx:id="IdOrder" prefWidth="93.0" text="Id Order" />
+                  <TableColumn fx:id="NameCustomer" prefWidth="93.0" text="Customer" />
                 <TableColumn fx:id="NameEmployee" prefWidth="89.0" text="Employee" />
                   <TableColumn fx:id="OrderDay" prefWidth="109.0" text="Order Day" />
                   <TableColumn fx:id="ShipDay" prefWidth="109.0" text="Ship Day" />
                   <TableColumn fx:id="ListProduct" prefWidth="85.0" text="Product" />
-                  <TableColumn prefWidth="120.0" text="Status" />
+                  <TableColumn fx:id="StatusOrder" prefWidth="120.0" text="Status" />
               </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
             <MFXPagination fx:id="pagination" layoutX="255.0" layoutY="309.0" styleClass="mfx-pagination" stylesheets="@css/application.css" />
-            <MFXButton layoutX="19.0" layoutY="4.0" prefHeight="32.0" prefWidth="150.0" style="-fx-background-color: #F4CE14; -fx-text-fill: white; -fx-font-weight: bold;" text="Add New Order" AnchorPane.bottomAnchor="308.8">
+            <MFXButton layoutX="19.0" layoutY="4.0" onAction="#addOrder" prefHeight="32.0" prefWidth="150.0" style="-fx-background-color: #F4CE14; -fx-text-fill: white; -fx-font-weight: bold;" text="Add New Order" AnchorPane.bottomAnchor="308.8">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -41,23 +56,9 @@
                   </ImageView>
                </graphic>
             </MFXButton>
-            <MFXTextField layoutX="345.0" layoutY="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer" />
-            <MFXButton layoutX="564.0" layoutY="9.0" style="-fx-background-color: #e2772f; -fx-text-fill: white;" text="Search" AnchorPane.rightAnchor="20.0" />
+            <MFXTextField fx:id="txtSearch" layoutX="345.0" layoutY="8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer / Id Order" />
+            <MFXButton layoutX="564.0" layoutY="9.0" onAction="#Search" style="-fx-background-color: #e2772f; -fx-text-fill: white;" text="Search" AnchorPane.rightAnchor="20.0" />
          </children>
       </AnchorPane>
-      <AnchorPane layoutY="-3.0" prefHeight="54.0" prefWidth="641.0" style="-fx-background-color: #e2772f;" stylesheets="@css/application.css">
-         <children>
-            <Label layoutX="73.0" layoutY="9.0" style="-fx-text-fill: white;" text="LIST ORDER">
-               <font>
-                  <Font name="System Bold" size="24.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-      <ImageView fitHeight="54.0" fitWidth="143.0" layoutX="-1.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@asset/telephone-intelligent.png" />
-         </image>
-      </ImageView>
    </children>
 </AnchorPane>

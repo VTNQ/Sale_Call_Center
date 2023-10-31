@@ -5,6 +5,15 @@ import org.bson.types.ObjectId;
 public class Order {
     private ObjectId _id;
     private boolean Product;
+    private int id_order;
+
+    public int getId_order() {
+        return id_order;
+    }
+
+    public void setId_order(int id_order) {
+        this.id_order = id_order;
+    }
 
     public boolean isProduct() {
         return Product;
@@ -39,16 +48,17 @@ public class Order {
     public Order() {
     }
 
-    public Order(ObjectId _id, ObjectId id_Customer, ObjectId id_Employee, String Order_date, String Ship_date, Integer status, Object DetailOrder,String nameCustomer,String nameEmployee) {
+    public Order(ObjectId _id, ObjectId id_Customer, ObjectId id_Employee, String Order_date, String Ship_date, String Status, Object DetailOrder,String NameCustomer,String NameEmployee,int id_order) {
         this._id = _id;
         this.id_Customer = id_Customer;
         this.id_Employee = id_Employee;
         this.Order_date = Order_date;
         this.Ship_date = Ship_date;
-        this.status = status;
+        this.Status = Status;
         this.DetailOrder = DetailOrder;
-        this.NameCustomer=nameCustomer;
-        this.NameEmployee=nameEmployee;
+        this.NameCustomer=NameCustomer;
+        this.NameEmployee=NameEmployee;
+        this.id_order=id_order;
         this.Product=true;
     }
     
@@ -94,12 +104,12 @@ public class Order {
         this.Ship_date = Ship_date;
     }
 
-    public Integer getStatus() {
-        return status;
+    public String getStatus() {
+        return Status;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setStatus(String Status) {
+        this.Status = Status;
     }
 
     public Object getDetailOrder() {
@@ -109,6 +119,6 @@ public class Order {
     public void setDetailOrder(Object DetailOrder) {
         this.DetailOrder = DetailOrder;
     }
-    private Integer status;
+    private String Status;
     private Object DetailOrder;
 }

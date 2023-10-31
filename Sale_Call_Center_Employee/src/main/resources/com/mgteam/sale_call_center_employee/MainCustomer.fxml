@@ -1,11 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXPagination?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainCustomerController">
-    
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainCustomerController">
+   <children>
+      <AnchorPane prefHeight="54.0" prefWidth="641.0" style="-fx-background-color: #e2772f;" stylesheets="@css/application.css">
+         <children>
+            <Label layoutX="73.0" layoutY="9.0" style="-fx-text-fill: white;" text="LIST CUSTOMER">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="54.0" fitWidth="143.0" layoutX="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@asset/customerMain.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="52.0" prefHeight="347.0" prefWidth="638.0">
+         <children>
+            <TableView fx:id="tblOrder" layoutX="23.0" layoutY="40.0" prefHeight="267.0" prefWidth="600.0" stylesheets="@css/application.css">
+               <columns>
+                  <TableColumn fx:id="IdCustomer" prefWidth="93.0" text="Id Customer" />
+                  <TableColumn fx:id="NameCustomer" prefWidth="93.0" text="Customer" />
+                  <TableColumn fx:id="NameEmployee" prefWidth="89.0" text="Employee" />
+                  <TableColumn fx:id="StartBuy" prefWidth="109.0" text="Start To Buy" />
+                  <TableColumn fx:id="NearBuy" prefWidth="109.0" text="Near To Buy" />
+                  <TableColumn fx:id="ListProduct" prefWidth="85.0" text="Product" />
+                  <TableColumn fx:id="StatusOrder" prefWidth="120.0" text="Status" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <MFXPagination fx:id="pagination" layoutX="255.0" layoutY="309.0" styleClass="mfx-pagination" stylesheets="@css/application.css" />
+            <MFXButton layoutX="23.0" layoutY="3.0" onAction="#addCustomer" prefHeight="34.0" prefWidth="158.0" style="-fx-background-color: #F4CE14; -fx-text-fill: white; -fx-font-weight: bold;" text="Add New Cusomer" AnchorPane.bottomAnchor="310.0">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="28.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@asset/plus%20.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </MFXButton>
+            <MFXTextField fx:id="txtSearch" layoutX="323.0" layoutY="7.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="213.0" promptText="Name Of Customer" />
+            <MFXButton layoutX="568.0" layoutY="8.0" onAction="#Search" style="-fx-background-color: #e2772f; -fx-text-fill: white;" text="Search" AnchorPane.rightAnchor="16.0" />
+         </children>
+      </AnchorPane>
+   </children>
 </AnchorPane>
