@@ -288,13 +288,16 @@ public class MainOrderController extends MainController implements Initializable
         List<com.mgteam.sale_call_center_employee.model.Product> ArrayProduct = new ArrayList<>();
         MongoCollection<Document> OrderCollection = DBConnection.getConnection().getCollection("Order");
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
-        FindIterable<Document> result = OrderCollection.find();
+        FindIterable<Document> result = ProductCollection.find();
         for (Document document : result) {
-            if (document.getObjectId("_id").hashCode() == id_order) {
-                Document detailOrder = (Document) document.get("DetailOrder");
-                List<Object> idProducts = (List<Object>) detailOrder.get("id_Product");
-                for (Object id_product : idProducts) {
-                    System.out.println(id_product.hashCode());
+           ObjectId idproduct=document.getObjectId("_id");
+           Document query=new Document("DetailOrder."+String.valueOf(idproduct),new Document("$exists",true));
+            Document order=OrderCollection.find(query).first();
+            if(order!=null){
+                Document detail=(Document)order.get("DetailOrder");
+                Document id_order=(Document)detail.get(String.valueOf(idproduct));
+                if(id_order!=null){
+                    System.out.println(id_order.getInteger("Quality"));
                 }
             }
         }
