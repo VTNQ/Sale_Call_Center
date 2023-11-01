@@ -46,6 +46,18 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    void Import(ActionEvent event) {
+        FXMLLoader loader=new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ImportWarehouse.fxml"));
+        try {
+            AnchorPane ImportWarehouse=loader.load();
+            mainWarehouse.getChildren().clear();
+            mainWarehouse.getChildren().addAll(ImportWarehouse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     void Change(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ChangePasswordWarehouse.fxml"));
         try {

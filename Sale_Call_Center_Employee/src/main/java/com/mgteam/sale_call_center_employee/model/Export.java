@@ -114,6 +114,7 @@ private String NameProduct;
         this.idWarehouse=idWarehouse;
         this.status=status;
         this.idProduct=idProduct;
+
     }
 
     public int getOrder() {

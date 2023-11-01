@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="487.0" prefWidth="598.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.Import_Warehouse">
+   <children>
+      <AnchorPane prefHeight="150.0" prefWidth="650.0" style="-fx-background-color: #0abfa4;">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/import.jpg" />
+               </image>
+            </ImageView>
+            <Label layoutX="159.0" layoutY="34.0" text="Import Warehouse" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tblimport" layoutX="74.0" layoutY="164.0" prefHeight="255.0" prefWidth="520.0" styleClass="table-view1" stylesheets="@../css/application.css">
+        <columns>
+          <TableColumn fx:id="colEmployee" prefWidth="96.800048828125" text="Employee" />
+          <TableColumn fx:id="colDate" prefWidth="102.39997863769531" text="Date" />
+            <TableColumn fx:id="colProduct" prefWidth="102.39997863769531" text="Product" />
+            <TableColumn fx:id="colApprove" prefWidth="102.39997863769531" text="Approve" />
+            <TableColumn fx:id="colCancel" prefWidth="114.39999389648438" text="Cancel" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

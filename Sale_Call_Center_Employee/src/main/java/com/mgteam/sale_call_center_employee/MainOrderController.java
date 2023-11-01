@@ -199,7 +199,7 @@ public class MainOrderController extends MainController implements Initializable
                         AnchorPane Detail = loader.load();
                         Stage stage = new Stage();
                         MainOrderController main = loader.getController();
-                        main.displayProduct();
+                        main.displayProduct(orders.getId());
                         stage.initModality(Modality.WINDOW_MODAL);
                         stage.setScene(new Scene(Detail));
                         stage.setResizable(false);
@@ -248,7 +248,7 @@ public class MainOrderController extends MainController implements Initializable
                         AnchorPane Detail = loader.load();
                         Stage stage = new Stage();
                         MainOrderController main = loader.getController();
-                        main.displayProduct();
+                        main.displayProduct(orders.getId());
                         stage.initModality(Modality.WINDOW_MODAL);
                         stage.setScene(new Scene(Detail));
                         stage.setResizable(false);
@@ -275,8 +275,8 @@ public class MainOrderController extends MainController implements Initializable
         pagination.setMaxPage(OrderCustomer.size());
     }
 
-    private void displayProduct() {
-        List<Product> productshow = ListProduct();
+    private void displayProduct(ObjectId idorder) {
+        List<Product> productshow = ListProduct(idorder);
         ObservableList<Product> obserable = FXCollections.observableArrayList(productshow);
         tblProduct.setItems(obserable);
         idproduct.setCellValueFactory(new PropertyValueFactory<>("Id_product"));
@@ -284,22 +284,24 @@ public class MainOrderController extends MainController implements Initializable
         colquality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
     }
 
-    public static List<com.mgteam.sale_call_center_employee.model.Product> ListProduct() {
+    public static List<com.mgteam.sale_call_center_employee.model.Product> ListProduct(ObjectId idorder) {
         List<com.mgteam.sale_call_center_employee.model.Product> ArrayProduct = new ArrayList<>();
         MongoCollection<Document> OrderCollection = DBConnection.getConnection().getCollection("Order");
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
         FindIterable<Document> result = ProductCollection.find();
         for (Document document : result) {
-           ObjectId idproduct=document.getObjectId("_id");
-           Document query=new Document("DetailOrder."+String.valueOf(idproduct),new Document("$exists",true));
-            Document order=OrderCollection.find(query).first();
-            if(order!=null){
-                Document detail=(Document)order.get("DetailOrder");
-                Document id_order=(Document)detail.get(String.valueOf(idproduct));
-                if(id_order!=null){
-                    System.out.println(id_order.getInteger("Quality"));
+            ObjectId idproduct=document.getObjectId("_id");
+              Document query1 = new Document("DetailOrder." + String.valueOf(idproduct), new Document("$exists", true));
+              query1.append("_id", idorder);
+                        Document detailWarehouse = OrderCollection.find(query1).first();
+                if(detailWarehouse!=null){
+                String nameProduct=document.getString("Name");
+                 Document Detail = (Document) detailWarehouse.get("DetailOrder");
+                 Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                 if(idcol!=null ){
+                     ArrayProduct.add(new Product(nameProduct, idcol.getInteger("Quality"), Math.abs(idproduct.hashCode())));
+                 }
                 }
-            }
         }
 
         return ArrayProduct;

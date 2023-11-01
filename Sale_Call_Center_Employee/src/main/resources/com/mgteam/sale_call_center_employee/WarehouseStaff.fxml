@@ -33,7 +33,7 @@
                               </Label>
                               <Button layoutX="7.0" layoutY="222.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Dashboard" />
                               <Button layoutX="8.0" layoutY="277.0" mnemonicParsing="false" onAction="#Change" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="ChangePassword" />
-                              <Button layoutX="7.0" layoutY="338.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Inport" />
+                              <Button layoutX="7.0" layoutY="338.0" mnemonicParsing="false" onAction="#Import" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Inport" />
                               <Button layoutX="8.0" layoutY="398.0" mnemonicParsing="false" onAction="#Export" prefHeight="40.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Export" />
                               <Line endX="81.4000244140625" endY="3.0517578125E-5" layoutX="101.0" layoutY="188.0" startX="-100.0" stroke="WHITE" />
                            </children>

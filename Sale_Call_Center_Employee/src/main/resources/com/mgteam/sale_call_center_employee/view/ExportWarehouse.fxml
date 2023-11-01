@@ -24,7 +24,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <TableView fx:id="tblExport" layoutX="13.0" layoutY="153.0" prefHeight="310.0" prefWidth="598.0" styleClass="table-view1" stylesheets="@../css/application.css">
+      <TableView fx:id="tblExport" layoutX="8.0" layoutY="147.0" prefHeight="280.0" prefWidth="598.0" styleClass="table-view1" stylesheets="@../css/application.css">
         <columns>
           <TableColumn fx:id="colOrder" prefWidth="84.800048828125" text="Order" />
           <TableColumn fx:id="colCustomer" prefWidth="91.199951171875" text="Customer" />
