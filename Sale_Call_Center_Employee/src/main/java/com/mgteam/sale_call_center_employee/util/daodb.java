@@ -184,7 +184,8 @@ public class daodb {
                             String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                             int status = incomingfilter.getInteger("status");
                             ObjectId idWarehouse = document.getObjectId("_id");
-                            Import.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee));
+                            String Supply=incomingfilter.getString("supplier");
+                            Import.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee,idincoming,Supply));
                             Wareimport.add(idincoming);
                         }
                     }

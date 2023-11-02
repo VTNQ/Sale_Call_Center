@@ -21,7 +21,24 @@ public class Import {
     private String price;
     private ObjectId idEmployee;
     private int Quality;
+    private ObjectId idincoming;
+    private String supply;
 
+    public String getSupply() {
+        return supply;
+    }
+
+    public void setSupply(String supply) {
+        this.supply = supply;
+    }
+
+    public ObjectId getIdincoming() {
+        return idincoming;
+    }
+
+    public void setIdincoming(ObjectId idincoming) {
+        this.idincoming = idincoming;
+    }
     public ObjectId getIdEmployee() {
         return idEmployee;
     }
@@ -110,13 +127,14 @@ public class Import {
         this.status = status;
     }
 
-    public Import(String Employee, String Date, int status, ObjectId idWarehouse,ObjectId idEmployee) {
+    public Import(String Employee, String Date, int status, ObjectId idWarehouse,ObjectId idEmployee,ObjectId idincoming,String supply) {
         this.Employee = Employee;
         this.Date = Date;
         this.status = status;
         this.productpopup = true;
         this.IdWarehouse = idWarehouse;
         this.idEmployee=idEmployee;
-        
+        this.idincoming=idincoming;
+        this.supply=supply;
     }
 }

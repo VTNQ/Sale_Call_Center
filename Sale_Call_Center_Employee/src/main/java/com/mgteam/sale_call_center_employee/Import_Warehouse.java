@@ -4,6 +4,7 @@
  */
 package com.mgteam.sale_call_center_employee;
 
+import com.mgteam.sale_call_center_employee.dialog.DialogAlert;
 import com.mgteam.sale_call_center_employee.model.Import;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mgteam.sale_call_center_employee.util.daodb;
@@ -21,6 +22,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -38,39 +40,40 @@ import org.bson.types.ObjectId;
 public class Import_Warehouse implements Initializable {
 
     @FXML
-    private TableColumn<Import, Integer> colApprove=new TableColumn<>();
+    private TableColumn<Import, Integer> colApprove = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colNameCategory=new TableColumn<>();
+    private TableColumn<?, ?> colNameCategory = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colNameproduct=new TableColumn<>();
+    private TableColumn<?, ?> colNameproduct = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colQuality=new TableColumn<>();
+    private TableColumn<?, ?> colQuality = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colprice=new TableColumn<>();
+    private TableColumn<?, ?> colprice = new TableColumn<>();
 
     @FXML
-    private TableView<Import> tbldetail=new TableView<>();
+    private TableView<Import> tbldetail = new TableView<>();
     @FXML
-    private TableColumn<Import, Integer> colCancel=new TableColumn<>();
+    private TableColumn<Import, Integer> colCancel = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colDate=new TableColumn<>();
+    private TableColumn<?, ?> colDate = new TableColumn<>();
+    @FXML
+    private TableColumn<?,?>colsupply=new TableColumn<>();
+    @FXML
+    private TableColumn<?, ?> colEmployee = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colEmployee=new TableColumn<>();
+    private TableColumn<Import, Boolean> colProduct = new TableColumn<>();
 
     @FXML
-    private TableColumn<Import, Boolean> colProduct=new TableColumn<>();
-
-    @FXML
-    private TableView<Import> tblimport=new TableView<>();
+    private TableView<Import> tblimport = new TableView<>();
 
     private void deailProduct(List<ObjectId> idproduct, ObjectId idWare) {
-        List<Import> ImportApprovedetail = daodb.DetailWarehouseApproval(idproduct,idWare);
+        List<Import> ImportApprovedetail = daodb.DetailWarehouseApproval(idproduct, idWare);
         ObservableList<Import> obserable = FXCollections.observableArrayList(ImportApprovedetail);
         tbldetail.setItems(obserable);
         colNameproduct.setCellValueFactory(new PropertyValueFactory<>("NameProduct"));
@@ -103,6 +106,7 @@ public class Import_Warehouse implements Initializable {
         colDate.setCellValueFactory(new PropertyValueFactory<>("Date"));
         colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
         colCancel.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colsupply.setCellValueFactory(new PropertyValueFactory<>("supply"));
         colProduct.setCellFactory(column -> new TableCell<Import, Boolean>() {
             private MFXButton button = new MFXButton("Product");
 
@@ -115,10 +119,9 @@ public class Import_Warehouse implements Initializable {
                         Stage popupStage = new Stage();
                         Import_Warehouse Import = loader.getController();
                         List<ObjectId> idList = displayidProduct(imp.getIdWarehouse());
-                      
-                            Import.deailProduct(idList, imp.getIdWarehouse());
 
-                       
+                        Import.deailProduct(idList, imp.getIdWarehouse());
+
                         popupStage.initModality(Modality.APPLICATION_MODAL);
                         popupStage.setScene(new Scene(newpopup));
                         popupStage.setResizable(false);
@@ -126,7 +129,7 @@ public class Import_Warehouse implements Initializable {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                
+
                 });
             }
 
@@ -144,6 +147,40 @@ public class Import_Warehouse implements Initializable {
         });
         colApprove.setCellFactory(column -> new TableCell<>() {
             private MFXButton button = new MFXButton("Approve");
+
+            {
+                button.setOnAction(event -> {
+                    Import imp = getTableView().getItems().get(getIndex());
+                    if (imp.getStatus() == 0) {
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("CONFIRMATION");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Are you Approve?");
+                        alert.showAndWait().ifPresent(responsive -> {
+                            if (responsive == ButtonType.CLOSE) {
+                                alert.close();
+                            }
+                            if (responsive == ButtonType.OK) {
+                                MongoCollection<Document> collection = DBConnection.getConnection().getCollection("InComingOrder");
+                                MongoCollection<Document> WarehouseIntgoing = DBConnection.getConnection().getCollection("WareHouse_InComingOrder");
+                                Document filter = new Document("_id", imp.getIdincoming());
+                                Document update = new Document("$set", new Document("status", 1));
+                                collection.updateOne(filter, update);
+                                List<ObjectId> idList = displayidProduct(imp.getIdWarehouse());
+                                for (ObjectId import1 : idList) {
+                                    Document document = new Document("ID_WareHouse", imp.getIdWarehouse()).append("ID_InComingOrder", imp.getIdincoming()).append("ID_Product", import1);
+                                    WarehouseIntgoing.insertOne(document);
+                                }
+                                Importapproval();
+                            }
+                        });
+                    } else {
+                        DialogAlert.DialogError("Approved");
+                    }
+
+                });
+
+            }
 
             @Override
             protected void updateItem(Integer item, boolean empty) {
@@ -164,6 +201,33 @@ public class Import_Warehouse implements Initializable {
         });
         colCancel.setCellFactory(column -> new TableCell<Import, Integer>() {
             private MFXButton button = new MFXButton("Cancel");
+
+            {
+                button.setOnAction(event -> {
+                    Import imp = getTableView().getItems().get(getIndex());
+                    if (imp.getStatus() == 0) {
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("CONFIRMATION");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Are you Cancel?");
+                        alert.showAndWait().ifPresent(responsive -> {
+                            if (responsive == ButtonType.CLOSE) {
+                                alert.close();
+                            }
+                            if (responsive == ButtonType.OK) {
+                                MongoCollection<Document> collection = DBConnection.getConnection().getCollection("InComingOrder");
+                                Document filter = new Document("_id", imp.getIdincoming());
+                                Document update = new Document("$set", new Document("status", 2));
+                                collection.updateOne(filter, update);
+                            }
+                            Importapproval();
+                        });
+                    } else {
+                        DialogAlert.DialogError("Canceled");
+                    }
+
+                });
+            }
 
             @Override
             protected void updateItem(Integer item, boolean empty) {

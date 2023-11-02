@@ -70,6 +70,17 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    void Product(ActionEvent event) {
+ FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Product.fxml"));
+        try {
+            AnchorPane ExportWarehouse = loader.load();
+            mainWarehouse.getChildren().clear();
+            mainWarehouse.getChildren().addAll(ExportWarehouse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
     void Export(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ExportWarehouse.fxml"));
         try {

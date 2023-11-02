@@ -617,3 +617,22 @@ Popup
     -fx-cursor:hand;
     -fx-border-insets: 0;
 }
+.combobox-box {
+    -fx-background-color: #FFD700; /* Màu nền màu vàng đậm */
+}
+
+.combobox-box .list-view {
+    -fx-background-color: #FFD700; /* Màu nền danh sách thả xuống */
+}
+
+.combobox-box .list-view .list-cell:filled:selected {
+    -fx-text-fill: #ffffff; /* Màu văn bản chữ được chọn */
+}
+
+.combobox-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: #007bff; /* Màu nền khi mục được chọn (xanh da trời) */
+}
+
+.combobox-box-popup .list-view .list-cell {
+    -fx-text-fill: #000000; /* Màu văn bản chữ */
+}

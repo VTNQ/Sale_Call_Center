@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="487.0" prefWidth="598.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.Import_Warehouse">
+<AnchorPane id="AnchorPane" prefHeight="487.0" prefWidth="598.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.Import_Warehouse">
    <children>
       <AnchorPane prefHeight="150.0" prefWidth="650.0" style="-fx-background-color: #0abfa4;">
          <children>
@@ -25,13 +24,14 @@
             </Label>
          </children>
       </AnchorPane>
-      <TableView fx:id="tblimport" layoutX="74.0" layoutY="164.0" prefHeight="255.0" prefWidth="520.0" styleClass="table-view1" stylesheets="@../css/application.css">
+      <TableView fx:id="tblimport" layoutX="14.0" layoutY="165.0" prefHeight="276.0" prefWidth="627.0" styleClass="table-view1" stylesheets="@../css/application.css">
         <columns>
           <TableColumn fx:id="colEmployee" prefWidth="96.800048828125" text="Employee" />
-          <TableColumn fx:id="colDate" prefWidth="102.39997863769531" text="Date" />
+          <TableColumn fx:id="colsupply" prefWidth="102.39997863769531" text="Supply" />
+            <TableColumn fx:id="colDate" prefWidth="102.39997863769531" text="Date" />
             <TableColumn fx:id="colProduct" prefWidth="102.39997863769531" text="Product" />
-            <TableColumn fx:id="colApprove" prefWidth="102.39997863769531" text="Approve" />
-            <TableColumn fx:id="colCancel" prefWidth="114.39999389648438" text="Cancel" />
+            <TableColumn fx:id="colApprove" prefWidth="114.39999389648438" text="Approve" />
+            <TableColumn fx:id="colCancel" prefWidth="105.60002441406255" text="Cancel" />
         </columns>
       </TableView>
    </children>
