@@ -36,7 +36,7 @@ public class ProductController implements Initializable {
     private TextField NameProduct;
     
     @FXML
-    private ComboBox<String> Namecategory;
+    private ComboBox<String>Namecategory;
     
     @FXML
     private TextField Price;
