@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -76,6 +77,9 @@ public class MainOrderController extends MainController implements Initializable
     private MFXPagination PaginationProduct = new MFXPagination();
 
     @FXML
+    private TableColumn<?, ?> colPrice;
+
+    @FXML
     private MFXTextField txtSearch;
 
     public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrder() {
@@ -126,13 +130,13 @@ public class MainOrderController extends MainController implements Initializable
         return ArrayOrder;
     }
 
-    public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrderWithKey() {
+    public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrderWithKey(String Key) {
         List<com.mgteam.sale_call_center_employee.model.Order> ArrayOrder = new ArrayList<>();
         try {
             MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
             MongoCollection<Document> customerCollection = DBConnection.getConnection().getCollection("Customer");
             MongoCollection<Document> employeeCollection = DBConnection.getConnection().getCollection("Employee");
-            Bson filterWithID = Filters.and(Filters.eq("id_Employee", LoginController.id_employee), Filters.or(Filters.eq("_id", id_order), Filters.eq("z", id_order)));
+            Bson filterWithID = Filters.and(Filters.eq("id_Employee", LoginController.id_employee));
 
             FindIterable<Document> result = orderCollection.find(filterWithID);
             for (Document document : result) {
@@ -141,6 +145,8 @@ public class MainOrderController extends MainController implements Initializable
                 ObjectId IdEmployee = document.getObjectId("id_Employee");
                 Document CustomerAll = customerCollection.find(Filters.eq("_id", IdCustomer)).first();
                 Document EmployeeAll = employeeCollection.find(Filters.eq("_id", IdEmployee)).first();
+                Pattern regexPattern = Pattern.compile(".*" + Key + ".*", Pattern.CASE_INSENSITIVE);
+                int id_filter = Math.abs(id_order);
                 if (CustomerAll != null && EmployeeAll != null) {
                     String nameCustomer = CustomerAll.getString("Name");
                     String nameemployee = EmployeeAll.getString("Name");
@@ -165,8 +171,12 @@ public class MainOrderController extends MainController implements Initializable
                             Status = "Cancelled";
                             break;
                     }
-                    Document detailOrder = (Document) document.get("DetailOrder");
-                    ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
+                    boolean isSimilar1 = regexPattern.matcher(String.valueOf(id_filter)).matches();
+                    boolean isSimilar2 = regexPattern.matcher(nameCustomer).matches();
+                    if (String.valueOf(id_order).matches(Key) || nameCustomer.matches(Key) || isSimilar1||isSimilar2) {
+                        Document detailOrder = (Document) document.get("DetailOrder");
+                        ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
+                    }
                 }
 
             }
@@ -227,7 +237,7 @@ public class MainOrderController extends MainController implements Initializable
     }
 
     private void ListOrderCustomerWithKey() {
-        List<Order> OrderCustomer = ListOrderWithKey();
+        List<Order> OrderCustomer = ListOrderWithKey(txtSearch.getText());
         ObservableList<Order> obserableList = FXCollections.observableArrayList(OrderCustomer);
         tblOrder.setItems(obserableList);
         IdOrder.setCellValueFactory(new PropertyValueFactory<>("id_order"));
@@ -282,6 +292,7 @@ public class MainOrderController extends MainController implements Initializable
         idproduct.setCellValueFactory(new PropertyValueFactory<>("Id_product"));
         Nameproduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
         colquality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+        colPrice.setCellValueFactory(new PropertyValueFactory<>("Price"));
     }
 
     public static List<com.mgteam.sale_call_center_employee.model.Product> ListProduct(ObjectId idorder) {
@@ -290,18 +301,18 @@ public class MainOrderController extends MainController implements Initializable
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
         FindIterable<Document> result = ProductCollection.find();
         for (Document document : result) {
-            ObjectId idproduct=document.getObjectId("_id");
-              Document query1 = new Document("DetailOrder." + String.valueOf(idproduct), new Document("$exists", true));
-              query1.append("_id", idorder);
-                        Document detailWarehouse = OrderCollection.find(query1).first();
-                if(detailWarehouse!=null){
-                String nameProduct=document.getString("Name");
-                 Document Detail = (Document) detailWarehouse.get("DetailOrder");
-                 Document idcol = (Document) Detail.get(String.valueOf(idproduct));
-                 if(idcol!=null ){
-                     ArrayProduct.add(new Product(nameProduct, idcol.getInteger("Quality"), Math.abs(idproduct.hashCode())));
-                 }
+            ObjectId idproduct = document.getObjectId("_id");
+            Document query1 = new Document("DetailOrder." + String.valueOf(idproduct), new Document("$exists", true));
+            query1.append("_id", idorder);
+            Document detailWarehouse = OrderCollection.find(query1).first();
+            if (detailWarehouse != null) {
+                String nameProduct = document.getString("Name");
+                Document Detail = (Document) detailWarehouse.get("DetailOrder");
+                Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                if (idcol != null) {
+                    ArrayProduct.add(new Product(nameProduct, idcol.getInteger("Quality"), Math.abs(idproduct.hashCode()), document.getInteger("Price")));
                 }
+            }
         }
 
         return ArrayProduct;

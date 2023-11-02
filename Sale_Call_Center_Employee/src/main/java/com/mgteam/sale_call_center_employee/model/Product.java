@@ -10,10 +10,11 @@ public class Product {
     private int Quality;
     private int Id_product;
 
-    public Product(String Name, int Quality, int Id_product) {
+    public Product(String Name, int Quality, int Id_product,int Price) {
         this.Name = Name;
         this.Quality = Quality;
         this.Id_product = Id_product;
+        this.Price=Price;
     }
 
     public int getQuality() {
