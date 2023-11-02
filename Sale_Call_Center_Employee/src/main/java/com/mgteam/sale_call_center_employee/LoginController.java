@@ -129,7 +129,6 @@ public class LoginController implements Initializable {
                         if (istatus(user)) {
                             FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/popupWarehouse.fxml"));
                             AnchorPane popup = loader.load();
-
                             Stage popupstage = new Stage();
                             popupstage.initModality(Modality.APPLICATION_MODAL);
                             popupstage.setScene(new Scene(popup));

@@ -4,6 +4,7 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,6 +34,21 @@ public class MainController implements Initializable {
 
     @FXML
     private Label TotalOrder = new Label();
+    
+    @FXML
+    private MFXButton btnChangePassword=new MFXButton();
+
+    @FXML
+    private MFXButton btnCustomer=new MFXButton();
+
+    @FXML
+    private MFXButton btnHome=new MFXButton();
+
+    @FXML
+    private MFXButton btnOrder=new MFXButton();
+
+    @FXML
+    private MFXButton btnProfile=new MFXButton();
 
     @FXML
     void changePassword(ActionEvent event) {
@@ -44,13 +60,18 @@ public class MainController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        btnChangePassword.getStyleClass().add("bg-active");
+        btnHome.getStyleClass().remove("bg-active");
+        btnOrder.getStyleClass().remove("bg-active");
+        btnCustomer.getStyleClass().remove("bg-active");
+        btnProfile.getStyleClass().remove("bg-active");
     }
 
     @FXML
     void Import(ActionEvent event) {
-        FXMLLoader loader=new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ImportWarehouse.fxml"));
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ImportWarehouse.fxml"));
         try {
-            AnchorPane ImportWarehouse=loader.load();
+            AnchorPane ImportWarehouse = loader.load();
             mainWarehouse.getChildren().clear();
             mainWarehouse.getChildren().addAll(ImportWarehouse);
         } catch (Exception e) {
@@ -72,7 +93,7 @@ public class MainController implements Initializable {
 
     @FXML
     void Product(ActionEvent event) {
- FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Product.fxml"));
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Product.fxml"));
         try {
             AnchorPane ExportWarehouse = loader.load();
             mainWarehouse.getChildren().clear();
@@ -81,6 +102,7 @@ public class MainController implements Initializable {
             e.printStackTrace();
         }
     }
+
     @FXML
     void Export(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ExportWarehouse.fxml"));
@@ -103,23 +125,33 @@ public class MainController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        btnChangePassword.getStyleClass().remove("bg-active");
+        btnHome.getStyleClass().remove("bg-active");
+        btnOrder.getStyleClass().remove("bg-active");
+        btnCustomer.getStyleClass().add("bg-active");
+        btnProfile.getStyleClass().remove("bg-active");
     }
 
     @FXML
     void home(ActionEvent event) {
-        MongoCollection<Document>EmployeeCollection=DBConnection.getConnection().getCollection("Employee");
-        FindIterable<Document>iterable=EmployeeCollection.find();
+        MongoCollection<Document> EmployeeCollection = DBConnection.getConnection().getCollection("Employee");
+        FindIterable<Document> iterable = EmployeeCollection.find();
         try {
             for (Document document : iterable) {
-                if(document.getInteger("status")==1){
+                if (document.getInteger("status") == 1) {
                     App.setRoot("SalePerson");
-                }else{
+                } else {
                     App.setRoot("WarehouseStaff");
                 }
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        btnChangePassword.getStyleClass().remove("bg-active");
+        btnHome.getStyleClass().add("bg-active");
+        btnOrder.getStyleClass().remove("bg-active");
+        btnCustomer.getStyleClass().remove("bg-active");
+        btnProfile.getStyleClass().remove("bg-active");
     }
 
     @FXML
@@ -153,6 +185,11 @@ public class MainController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        btnChangePassword.getStyleClass().remove("bg-active");
+        btnHome.getStyleClass().remove("bg-active");
+        btnOrder.getStyleClass().add("bg-active");
+        btnCustomer.getStyleClass().remove("bg-active");
+        btnProfile.getStyleClass().remove("bg-active");
     }
 
     @FXML
@@ -165,6 +202,11 @@ public class MainController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        btnChangePassword.getStyleClass().remove("bg-active");
+        btnHome.getStyleClass().remove("bg-active");
+        btnOrder.getStyleClass().remove("bg-active");
+        btnCustomer.getStyleClass().remove("bg-active");
+        btnProfile.getStyleClass().add("bg-active");
     }
 
     private int TotalCustomer() {
