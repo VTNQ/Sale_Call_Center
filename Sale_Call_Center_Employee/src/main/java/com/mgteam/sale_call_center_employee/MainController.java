@@ -1,6 +1,7 @@
 package com.mgteam.sale_call_center_employee;
 
 import com.mgteam.sale_call_center_employee.util.DBConnection;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
 import java.io.IOException;
@@ -106,8 +107,16 @@ public class MainController implements Initializable {
 
     @FXML
     void home(ActionEvent event) {
+        MongoCollection<Document>EmployeeCollection=DBConnection.getConnection().getCollection("Employee");
+        FindIterable<Document>iterable=EmployeeCollection.find();
         try {
-            App.setRoot("SalePerson");
+            for (Document document : iterable) {
+                if(document.getInteger("status")==1){
+                    App.setRoot("SalePerson");
+                }else{
+                    App.setRoot("WarehouseStaff");
+                }
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
