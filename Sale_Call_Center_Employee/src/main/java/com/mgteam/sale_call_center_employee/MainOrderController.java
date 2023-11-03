@@ -107,6 +107,9 @@ public class MainOrderController extends MainController implements Initializable
     private TableView<Product> listProductOrder = new TableView<>();
 
     @FXML
+    private TableColumn<?, ?> colTotalPrice;
+
+    @FXML
     private MFXTextField quantity = new MFXComboBox();
 
     @FXML
@@ -114,16 +117,39 @@ public class MainOrderController extends MainController implements Initializable
 
     private Document list_Product;
 
+    List<Product> list = new ArrayList<>();
+
     @FXML
     void add(ActionEvent event) {
-        MongoCollection<Document> collection = DBConnection.getConnection().getCollection("Product");
-        FindIterable<Document> documents = collection.find(Filters.eq("Name", listProduct.getSelectedItem()));
-        for (Document document : documents) {
-            List<Product>list=new ArrayList<>();
-            list.add(new Product(listProduct.getSelectedItem(), Integer.parseInt(quantity.getText()), Math.abs(document.getObjectId("_id").hashCode()), document.get("Price").hashCode()));
-            
+        if (!listProduct.getSelectedItem().isEmpty()) {
+            MongoCollection<Document> collection = DBConnection.getConnection().getCollection("Product");
+            FindIterable<Document> documents = collection.find(Filters.eq("Name", listProduct.getSelectedItem()));
+            int index = -1;
+            String selectedProduct = listProduct.getSelectedItem();
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getName().equals(selectedProduct)) {
+                    index = i;
+                    break;
+                }
+            }
+            for (Document document : documents) {
+                if (index == -1) {
+                    list.add(new Product(listProduct.getSelectedItem(), Integer.parseInt(quantity.getText()), Math.abs(document.getObjectId("_id").hashCode()), document.get("Price").hashCode()));
+                } else {
+                    Product product = list.get(index);
+                    int oldQuantity = product.getQuality();
+                    int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
+                    product.setQuality(newQuantity);
+                }
+                ObservableList<Product> observableList = FXCollections.observableArrayList(list);
+                listProductOrder.setItems(observableList);
+                listProductOrder.getItems().setAll(list);
+                colIdProduct.setCellValueFactory(new PropertyValueFactory<>("id_product"));
+                colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
+                colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+                col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
+            }
         }
-
     }
 
     @FXML
