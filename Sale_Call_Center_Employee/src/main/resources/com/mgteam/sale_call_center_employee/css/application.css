@@ -44,6 +44,7 @@
     -fx-scale-z: 1;
     -fx-visual-effect: null;
     -fx-effect: null;
+    -fx-cursor:hand;
 }
 .text_field_error{
     -fx-border-color:red !important;
@@ -92,6 +93,19 @@
 
 .mfx-combo-box:disabled .caret .mfx-font-icon {
     -mfx-color: #bcbcbc;
+}
+.logout{
+    -fx-background-color:transparent;
+    -fx-border-color:#fff;
+    -fx-background-radius:50px;
+    -fx-border-width:.7px;
+    -fx-border-radius:50px;
+    -fx-padding:5px;
+    -fx-cursor:hand;
+}
+.logout:hover{
+    -fx-background-color:#fff;
+    -fx-background-radius:50px;
 }
 /*MFXButton*/
 .mfx-button {

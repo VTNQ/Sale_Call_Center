@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="461.0" prefWidth="663.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ListWarehouseController">
+   <children>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="101.0" prefWidth="663.0" style="-fx-background-color: #0abfa4;">
+         <children>
+            <ImageView fitHeight="102.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/detail-product.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="117.0" layoutY="25.0" prefHeight="57.0" prefWidth="292.0" text="Detail Warehouse" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tbldetail" layoutX="92.0" layoutY="137.0" prefHeight="238.0" prefWidth="479.0" styleClass="table-view1" stylesheets="@../css/application.css">
+         <columns>
+            <TableColumn fx:id="colNameproduct" prefWidth="107.20001220703125" text="Name Product" />
+            <TableColumn fx:id="colQuality" prefWidth="104.80000305175781" text="Quality" />
+            <TableColumn fx:id="colprice" prefWidth="109.5999755859375" text="Price" />
+            <TableColumn fx:id="colNameCategory" prefWidth="148.79998779296875" text="Category" />
+         </columns>
+      </TableView>
+      <Pagination fx:id="pagination1" layoutX="221.0" layoutY="390.0" prefHeight="42.0" prefWidth="200.0" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="449.0" prefWidth="635.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ListWarehouseController">
+   <children>
+      <AnchorPane prefHeight="114.0" prefWidth="635.0" style="-fx-background-color: #0abfa4;">
+         <children>
+            <ImageView fitHeight="113.0" fitWidth="168.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/edit.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="129.0" layoutY="30.0" prefHeight="66.0" prefWidth="267.0" text="List Warehouse" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tblWarehouse" layoutX="72.0" layoutY="174.0" prefHeight="210.0" prefWidth="474.0" styleClass="table-view1" stylesheets="@../css/application.css">
+        <columns>
+          <TableColumn fx:id="colid" prefWidth="79.99999809265137" text="ID issue" />
+          <TableColumn fx:id="coldate" prefWidth="106.39997100830078" text="Date" />
+            <TableColumn fx:id="colProduct" prefWidth="99.20001220703125" text="Product" />
+            <TableColumn fx:id="colSuppliers" minWidth="4.79998779296875" prefWidth="92.79998779296875" text="Suppliers" />
+            <TableColumn fx:id="colstatus" minWidth="4.79998779296875" prefWidth="88.79998779296875" text="status" />
+        </columns>
+      </TableView>
+      <Button layoutX="87.0" layoutY="123.0" mnemonicParsing="false" onAction="#Appreceipt" prefHeight="34.0" prefWidth="90.0" styleClass="button-design" stylesheets="@../css/application.css" text="Add receipt" />
+      <Pagination fx:id="pagination" layoutX="189.0" layoutY="391.0" prefHeight="34.0" prefWidth="200.0" />
+      <TextField layoutX="309.0" layoutY="126.0" prefHeight="26.0" prefWidth="138.0" />
+      <Label layoutX="262.0" layoutY="131.0" text="Search" />
+      <Button layoutX="460.0" layoutY="123.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="54.0" styleClass="button-success" stylesheets="@../css/application.css" text="Search" />
+   </children>
+</AnchorPane>

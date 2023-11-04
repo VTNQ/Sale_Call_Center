@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.ListCategoryController">
+   <children>
+      <AnchorPane prefHeight="103.0" prefWidth="600.0" style="-fx-background-color: #0abfa4;">
+         <children>
+            <ImageView fitHeight="113.0" fitWidth="168.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/edit.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="129.0" layoutY="30.0" prefHeight="66.0" prefWidth="267.0" text="Edit Category" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Label alignment="CENTER" layoutX="153.0" layoutY="159.0" prefHeight="34.0" prefWidth="79.0" text="Name">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="updatenameCategory" layoutX="233.0" layoutY="168.0" promptText="Name category" />
+      <Button layoutX="211.0" layoutY="241.0" mnemonicParsing="false" onAction="#UpdateCategory" prefHeight="50.0" prefWidth="79.0" styleClass="button_class" stylesheets="@../css/application.css" text="Update" />
+   </children>
+</AnchorPane>

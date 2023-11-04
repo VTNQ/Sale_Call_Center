@@ -29,6 +29,8 @@ public class MainController implements Initializable {
     private AnchorPane MainDisplay;
 
     @FXML
+    private Label user=new Label();
+    @FXML
     private Label TotalCustomer = new Label();
 
     @FXML
@@ -47,10 +49,22 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    void Import(ActionEvent event) {
-        FXMLLoader loader=new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ImportWarehouse.fxml"));
+    void Warehouse(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ListWarehouse.fxml"));
         try {
-            AnchorPane ImportWarehouse=loader.load();
+            AnchorPane ImportWarehouse = loader.load();
+            mainWarehouse.getChildren().clear();
+            mainWarehouse.getChildren().addAll(ImportWarehouse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void Import(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ImportWarehouse.fxml"));
+        try {
+            AnchorPane ImportWarehouse = loader.load();
             mainWarehouse.getChildren().clear();
             mainWarehouse.getChildren().addAll(ImportWarehouse);
         } catch (Exception e) {
@@ -71,8 +85,8 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    void Product(ActionEvent event) {
-    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ListProduct.fxml"));
+    void Category(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ListCategory.fxml"));
         try {
             AnchorPane ExportWarehouse = loader.load();
             mainWarehouse.getChildren().clear();
@@ -81,6 +95,19 @@ public class MainController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    void Product(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ListProduct.fxml"));
+        try {
+            AnchorPane ExportWarehouse = loader.load();
+            mainWarehouse.getChildren().clear();
+            mainWarehouse.getChildren().addAll(ExportWarehouse);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void Export(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ExportWarehouse.fxml"));
@@ -107,13 +134,13 @@ public class MainController implements Initializable {
 
     @FXML
     void home(ActionEvent event) {
-        MongoCollection<Document>EmployeeCollection=DBConnection.getConnection().getCollection("Employee");
-        FindIterable<Document>iterable=EmployeeCollection.find();
+        MongoCollection<Document> EmployeeCollection = DBConnection.getConnection().getCollection("Employee");
+        FindIterable<Document> iterable = EmployeeCollection.find();
         try {
             for (Document document : iterable) {
-                if(document.getInteger("status")==1){
+                if (document.getInteger("status") == 1) {
                     App.setRoot("SalePerson");
-                }else{
+                } else {
                     App.setRoot("WarehouseStaff");
                 }
             }
@@ -181,6 +208,7 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         TotalCustomer.setText(String.valueOf(TotalCustomer()));
         username.setText(LoginController.username);
+        user.setText("Welcome,"+LoginController.username);
     }
 
 }

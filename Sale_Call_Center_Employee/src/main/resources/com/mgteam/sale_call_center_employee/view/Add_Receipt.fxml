@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="579.0" prefWidth="762.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.ListWarehouseController">
+   <children>
+      <AnchorPane prefHeight="111.0" prefWidth="762.0" style="-fx-background-color: #0abfa4;">
+         <children>
+            <ImageView fitHeight="127.0" fitWidth="111.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../asset/add.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="139.0" layoutY="14.0" prefHeight="66.0" prefWidth="267.0" text="Add Receipt" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Label layoutX="141.0" layoutY="111.0" prefHeight="50.0" prefWidth="118.0" text="Name Product">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="141.0" layoutY="153.0" prefHeight="50.0" prefWidth="118.0" text="Supplier">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="Namesupply" layoutX="279.0" layoutY="165.0" />
+      <Label alignment="CENTER" layoutX="141.0" layoutY="191.0" prefHeight="50.0" prefWidth="118.0" text="Quality">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="Quality" layoutX="283.0" layoutY="203.0" />
+      <Button layoutX="279.0" layoutY="241.0" mnemonicParsing="false" onAction="#AddWarehouse" prefHeight="50.0" prefWidth="79.0" styleClass="button_class" stylesheets="@../css/application.css" text="Add" />
+      <ComboBox fx:id="Nameproduct" layoutX="283.0" layoutY="123.0" prefWidth="150.0" />
+      <TableView fx:id="tblAddlist" layoutX="50.0" layoutY="301.0" prefHeight="224.0" prefWidth="630.0" styleClass="table-view1" stylesheets="@../css/application.css">
+        <columns>
+          <TableColumn fx:id="colidproduct" prefWidth="109.59995079040527" text="ID Product" />
+          <TableColumn fx:id="colNamproduct" prefWidth="111.20001220703125" text="Name Product" />
+            <TableColumn fx:id="colQuality" prefWidth="111.20001220703125" text="Quality" />
+            <TableColumn fx:id="colProce" prefWidth="97.5999755859375" text="Price" />
+            <TableColumn fx:id="colSupplier" prefWidth="102.39993286132812" text="Supplier" />
+            <TableColumn fx:id="coldelete" prefWidth="92.80007324218752" text="Delete" />
+        </columns>
+      </TableView>
+      <Button layoutX="576.0" layoutY="535.0" mnemonicParsing="false" onAction="#Create" prefHeight="43.0" prefWidth="79.0" styleClass="button-design" stylesheets="@../css/application.css" text="Create" />
+   </children>
+</AnchorPane>

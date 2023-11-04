@@ -9,6 +9,41 @@ public class Product {
     private Integer Price;
     private int Quality;
     private int Id_product;
+    private String priceformat;
+    private boolean isactive;
+
+    public boolean isIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(boolean isactive) {
+        this.isactive = isactive;
+    }
+    public String getPriceformat() {
+        return priceformat;
+    }
+
+    public void setPriceformat(String priceformat) {
+        this.priceformat = priceformat;
+    }
+    private String category;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Product(ObjectId id,String Name, String priceformat, String category) {
+        this._id=id;
+        this.Name = Name;
+        this.priceformat = priceformat;
+        this.category = category;
+        this.isactive=true;
+    }
+    
 
     public Product(String Name, int Quality, int Id_product,int Price) {
         this.Name = Name;

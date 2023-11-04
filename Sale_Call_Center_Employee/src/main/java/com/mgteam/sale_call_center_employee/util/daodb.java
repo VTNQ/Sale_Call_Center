@@ -4,8 +4,12 @@
  */
 package com.mgteam.sale_call_center_employee.util;
 
+import com.mgteam.sale_call_center_employee.LoginController;
+import com.mgteam.sale_call_center_employee.model.Category;
 import com.mgteam.sale_call_center_employee.model.Export;
 import com.mgteam.sale_call_center_employee.model.Import;
+import com.mgteam.sale_call_center_employee.model.Product;
+import com.mgteam.sale_call_center_employee.model.Warehouse;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -18,7 +22,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 /**
@@ -26,6 +32,132 @@ import org.bson.types.ObjectId;
  * @author tranp
  */
 public class daodb {
+
+    public static List<Product> searchListProduct(String search) {
+        ArrayList<Product> arr = new ArrayList<>();
+        Pattern regexPattern = Pattern.compile(".*" + search + ".*", Pattern.CASE_INSENSITIVE);
+        MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+        MongoCollection<Document> Category = DBConnection.getConnection().getCollection("Category");
+        FindIterable<Document> productcollection = Product.find();
+        for (Document document : productcollection) {
+            ObjectId idCategory = document.getObjectId("ID_Category");
+            Document filterCategory = Category.find(Filters.eq("_id", idCategory)).first();
+            if (filterCategory != null && regexPattern.matcher(document.getString("Name")).matches()) {
+                ObjectId id = document.getObjectId("_id");
+                String NameProduct = document.getString("Name");
+                String NameCategory = filterCategory.getString("Name");
+                int price = document.getInteger("Price");
+                DecimalFormat formatter = new DecimalFormat("#,### $");
+                String formatprice = formatter.format(price);
+                arr.add(new Product(id, NameProduct, formatprice, NameCategory));
+            }
+        }
+        return arr;
+    }
+
+    public static List<Product> ListProduct() {
+        ArrayList<Product> arr = new ArrayList<>();
+        MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+        MongoCollection<Document> Category = DBConnection.getConnection().getCollection("Category");
+        FindIterable<Document> productcollection = Product.find();
+        for (Document document : productcollection) {
+            ObjectId idCategory = document.getObjectId("ID_Category");
+            Document filterCategory = Category.find(Filters.eq("_id", idCategory)).first();
+            if (filterCategory != null) {
+                ObjectId id = document.getObjectId("_id");
+                String NameProduct = document.getString("Name");
+                String NameCategory = filterCategory.getString("Name");
+                int price = document.getInteger("Price");
+                DecimalFormat formatter = new DecimalFormat("#,### $");
+                String formatprice = formatter.format(price);
+                arr.add(new Product(id, NameProduct, formatprice, NameCategory));
+            }
+        }
+        return arr;
+    }
+
+    public static List<Category> searchListCategory(String search) {
+        ArrayList<Category> categories = new ArrayList<>();
+        Pattern regexPattern = Pattern.compile(".*" + search + ".*", Pattern.CASE_INSENSITIVE);
+        MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Category");
+
+        FindIterable<Document> categoryDocuments = categoryCollection.find(Filters.regex("Name", regexPattern));
+
+        for (Document document : categoryDocuments) {
+            String name = document.getString("Name");
+            ObjectId idCategory = document.getObjectId("_id");
+            categories.add(new Category(name, idCategory));
+        }
+        return categories;
+    }
+
+    public static List<Category> ListCategory() {
+        ArrayList<Category> category = new ArrayList<>();
+        MongoCollection<Document> cate = DBConnection.getConnection().getCollection("Category");
+        FindIterable<Document> categorycollection = cate.find();
+        for (Document document : categorycollection) {
+            String name = document.getString("Name");
+            ObjectId idcategory = document.getObjectId("_id");
+            category.add(new Category(name, idcategory));
+        }
+        return category;
+    }
+
+    public static List<Export> SearchExportWarehouse(String search) {
+        ArrayList<Export> export = new ArrayList<>();
+        Pattern regexPattern = Pattern.compile(".*" + search + ".*", Pattern.CASE_INSENSITIVE);
+        Set<ObjectId> processedOrders = new HashSet<>();
+        try {
+            MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
+            MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+            MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+            MongoCollection<Document> Employee = DBConnection.getConnection().getCollection("Employee");
+            MongoCollection<Document> Customer = DBConnection.getConnection().getCollection("Customer");
+            MongoCollection<Document> Outgoinorder = DBConnection.getConnection().getCollection("OutGoingOrder");
+            FindIterable<Document> orders = orderCollection.find(new Document());
+            for (Document order : orders) {
+                ObjectId orderid = order.getObjectId("_id");
+                FindIterable<Document> pro = Product.find();
+                for (Document document : pro) {
+                    ObjectId idproduct = document.getObjectId("_id");
+                    Document query = new Document("DetailOrder." + String.valueOf(idproduct), new Document("$exists", true));
+                    Document detail = orderCollection.find(query).first();
+                    if (detail != null) {
+                        Document query1 = new Document("Detail." + String.valueOf(idproduct), new Document("$exists", true));
+                        Document detailWarehouse = Warehouse.find(query1).first();
+                        if (detailWarehouse != null) {
+                            ObjectId idEmployee = order.getObjectId("id_Employee");
+                            ObjectId idCustomer = order.getObjectId("id_Customer");
+                            Document Emp = Employee.find(new Document("_id", idEmployee)).first();
+                            Document cus = Customer.find(new Document("_id", idCustomer)).first();
+                            Document incoming = Outgoinorder.find(Filters.and(Filters.eq("ID_Employee", idEmployee), Filters.eq("ID_Order", orderid))).first();
+
+                            if (Emp != null && cus != null && incoming != null && !processedOrders.contains(orderid)) {
+                                boolean isSimilar = regexPattern.matcher(String.valueOf(order.getObjectId("_id").hashCode())).matches();
+                                if (isSimilar || regexPattern.matcher(cus.getString("Name")).matches()) {
+                                    String nameCustomer = cus.getString("Name");
+                                    String EmployeeName = Emp.getString("Name");
+                                    int status = incoming.getInteger("status");
+                                    ObjectId idEmploye = Emp.getObjectId("_id");
+                                    int id_order = order.getObjectId("_id").hashCode();
+                                    ObjectId idWarehouse = detailWarehouse.getObjectId("_id");
+                                    ObjectId id_outgoing = incoming.getObjectId("_id");
+                                    export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, idWarehouse, status, id_outgoing));
+                                    processedOrders.add(orderid);
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return export;
+    }
 
     public static List<Export> ExportWarehouse() {
         ArrayList<Export> export = new ArrayList<>();
@@ -78,40 +210,213 @@ public class daodb {
         return export;
     }
 
-    public static List<Export> DetailExportProduct(String Name, int idOrder) {
-        ArrayList<Export> export = new ArrayList<>();
-
+    public static List<Warehouse> DetailProductWarehouse(ObjectId id) {
+        ArrayList<Warehouse> ProductWare = new ArrayList<>();
         try {
-            Map<String, Integer> productQuantityMap = new HashMap<>();
-            MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
-            MongoCollection<Document> category = DBConnection.getConnection().getCollection("Category");
+            // Kết nối đến cơ sở dữ liệu MongoDB
             MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
-            MongoCollection<Document> Customer = DBConnection.getConnection().getCollection("Customer");
-            FindIterable<Document> orders = orderCollection.find(new Document());
+            MongoCollection<Document> Ware = DBConnection.getConnection().getCollection("WareHouse");
+            MongoCollection<Document> category = DBConnection.getConnection().getCollection("Category");
 
-            for (Document order : orders) {
-
-                ObjectId id_customer = order.getObjectId("id_Customer");
+            // Lấy tất cả sản phẩm
+            FindIterable<Document> Warehouse = Ware.find();
+            for (Document document : Warehouse) {
                 FindIterable<Document> product = Product.find();
-                for (Document document : product) {
-                    ObjectId idProduct = document.getObjectId("_id");
+                for (Document document1 : product) {
+                    ObjectId idproduct = document1.getObjectId("_id");
+                    Document Detail = (Document) document.get("Detail");
+                    Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                    ObjectId idcategory = document1.getObjectId("ID_Category");
+                    Document categoryfilter = category.find(Filters.eq("_id", idcategory)).first();
+                    if (categoryfilter != null && idcol != null && document.getObjectId("_id").equals(id)) {
+                        String nameproduct = document1.getString("Name");
+                        ObjectId idwarehouse = document.getObjectId("_id");
+                        int Quality = idcol.getInteger("Quality");
+                        int price = document1.getInteger("Price");
+                        DecimalFormat formatter = new DecimalFormat("#,### $");
+                        String formatprice = formatter.format(price);
+                        String namecategory = categoryfilter.getString("Name");
+                        ProductWare.add(new Warehouse(idwarehouse, nameproduct, Quality, formatprice, namecategory, idproduct));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ProductWare;
+    }
 
-                    ObjectId idCategory = document.getObjectId("ID_Category");
-                    Document cus = Customer.find(Filters.and(Filters.eq("_id", id_customer), Filters.eq("Name", Name))).first();
-                    Document Detail = (Document) order.get("DetailOrder");
-                    Document categorycollection = category.find(Filters.eq("_id", idCategory)).first();
-                    if (cus != null && categorycollection != null && Detail != null && order.getObjectId("_id").hashCode() == idOrder) {
-                        Document idcol = (Document) Detail.get(String.valueOf(idProduct));
-                        if (idcol != null) {
-                            String nameProduct = document.getString("Name");
+    public static List<Warehouse> WarehouseReceipt() {
+        List<Warehouse> Warehouses = new ArrayList<>();
+        Set<ObjectId> Warehousereceipt = new HashSet<>();
+        try {
+            MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+            MongoCollection<Document> IncomingOrder = DBConnection.getConnection().getCollection("InComingOrder");
+            MongoCollection<Document> Ware = DBConnection.getConnection().getCollection("WareHouse");
+            FindIterable<Document> Warehousecollection = Ware.find();
+            for (Document document : Warehousecollection) {
+                FindIterable<Document> Productcollection = Product.find();
+                for (Document document1 : Productcollection) {
+                    ObjectId idproduct = document1.getObjectId("_id");
+                    Document Detail = (Document) document.get("Detail");
+                    Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                    ObjectId idincoming = document.getObjectId("ID_InComingOrder");
+                    Document comingFileter = IncomingOrder.find(Filters.eq("_id", idincoming)).first();
+                    if (idcol != null && comingFileter != null && comingFileter.getObjectId("Id_Employee").equals(LoginController.id_employee) && !Warehousereceipt.contains(idincoming)) {
+                        String Date = document.getString("Date");
+                        LocalDate sinceDate = LocalDate.parse(Date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        String supplier = comingFileter.getString("Supplier");
+                        ObjectId idwarehouse = document.getObjectId("_id");
+                        int status = comingFileter.getInteger("status");
+                        String statustring = "";
+                        if (status == 0) {
+                            statustring = "no process";
+                        } else if (status == 1) {
+                            statustring = "approved";
+                        } else if (status == 2) {
+                            statustring = "canceled";
+                        }
+                        Warehouses.add(new Warehouse(Math.abs(idincoming.hashCode()), formattedSince, statustring, supplier, idwarehouse));
+                        Warehousereceipt.add(idincoming);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Warehouses;
+    }
+
+    public static List<Export> searchDetailExportProduct(String Name, ObjectId idorder, String search) {
+        List<Export> exports = new ArrayList<>();
+        Pattern regexPattern = Pattern.compile(".*" + search + ".*", Pattern.CASE_INSENSITIVE);
+        try {
+            MongoCollection<Document> productCollection = DBConnection.getConnection().getCollection("Product");
+            MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Category");
+            MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
+            MongoCollection<Document> customerCollection = DBConnection.getConnection().getCollection("Customer");
+
+            // Find products first.
+            FindIterable<Document> productDocuments = productCollection.find();
+
+            for (Document productDocument : productDocuments) {
+                ObjectId productID = productDocument.getObjectId("_id");
+                ObjectId categoryID = productDocument.getObjectId("ID_Category");
+
+                // Check if the category exists in the Category collection.
+                Document categoryFilter = categoryCollection.find(Filters.eq("_id", categoryID)).first();
+
+                if (categoryFilter != null) {
+                    // Once we have found the product and its category, proceed to find the order.
+                    // Find the order document with the specified id.
+                    Document orderDocument = orderCollection.find(Filters.eq("_id", idorder)).first();
+
+                    if (orderDocument != null) {
+                        ObjectId customerID = orderDocument.getObjectId("id_Customer");
+
+                        // Check if the customer exists in the Customer collection.
+                        Document customerFilter = customerCollection.find(Filters.eq("_id", customerID)).first();
+
+                        Document Detail = (Document) orderDocument.get("DetailOrder");
+                        Document idcol = (Document) Detail.get(String.valueOf(productID));
+                        if (idcol != null && regexPattern.matcher(productDocument.getString("Name")).matches()) {
+                            String NameProduct = productDocument.getString("Name");
                             int Quality = idcol.getInteger("Quality");
-                            int price = document.getInteger("Price");
+                            int price = productDocument.getInteger("Price");
                             DecimalFormat formatter = new DecimalFormat("#,### $");
                             String formatprice = formatter.format(price);
-                            String Namecategory = categorycollection.getString("Name");
-                            export.add(new Export(Namecategory, Quality, formatprice, nameProduct));
+                            String nameCategory = categoryFilter.getString("Name");
+                            exports.add(new Export(nameCategory, Quality, formatprice, NameProduct));
                         }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exports;
+    }
 
+    public static List<Export> DetailExportProduct(String Name, ObjectId idOrder) {
+        List<Export> exports = new ArrayList<>();
+
+        try {
+            MongoCollection<Document> productCollection = DBConnection.getConnection().getCollection("Product");
+            MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Category");
+            MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
+            MongoCollection<Document> customerCollection = DBConnection.getConnection().getCollection("Customer");
+
+            // Find products first.
+            FindIterable<Document> productDocuments = productCollection.find();
+
+            for (Document productDocument : productDocuments) {
+                ObjectId productID = productDocument.getObjectId("_id");
+                ObjectId categoryID = productDocument.getObjectId("ID_Category");
+
+                // Check if the category exists in the Category collection.
+                Document categoryFilter = categoryCollection.find(Filters.eq("_id", categoryID)).first();
+
+                if (categoryFilter != null) {
+                    // Once we have found the product and its category, proceed to find the order.
+                    // Find the order document with the specified id.
+                    Document orderDocument = orderCollection.find(Filters.eq("_id", idOrder)).first();
+
+                    if (orderDocument != null) {
+                        ObjectId customerID = orderDocument.getObjectId("id_Customer");
+
+                        // Check if the customer exists in the Customer collection.
+                        Document customerFilter = customerCollection.find(Filters.eq("_id", customerID)).first();
+
+                        Document Detail = (Document) orderDocument.get("DetailOrder");
+                        Document idcol = (Document) Detail.get(String.valueOf(productID));
+                        if (idcol != null) {
+                            String NameProduct = productDocument.getString("Name");
+                            int Quality = idcol.getInteger("Quality");
+                            int price = productDocument.getInteger("Price");
+                            DecimalFormat formatter = new DecimalFormat("#,### $");
+                            String formatprice = formatter.format(price);
+                            String nameCategory = categoryFilter.getString("Name");
+                            exports.add(new Export(nameCategory, Quality, formatprice, NameProduct));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exports;
+    }
+
+    public static List<Import> SearchDetailWarehouseApproval(String search, ObjectId idWarehouse) {
+        List<Import> imports = new ArrayList<>();
+        MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+        MongoCollection<Document> Category = DBConnection.getConnection().getCollection("Category");
+        MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+        Pattern regexPattern = Pattern.compile(".*" + search + ".*", Pattern.CASE_INSENSITIVE);
+        try {
+
+            FindIterable<Document> productCollection = Product.find();
+            for (Document document : productCollection) {
+                ObjectId id = document.getObjectId("_id");
+                ObjectId idCategory = document.getObjectId("ID_Category");
+                Bson query = Filters.and(
+                        Filters.eq("_id", idWarehouse),
+                        Filters.exists("Detail." + id, true)
+                );
+                Document WarehouseQury = Warehouse.find(query).first();
+                Document categoryFilter = Category.find(Filters.eq("_id", idCategory)).first();
+                if (WarehouseQury != null && categoryFilter != null) {
+                    String nameproduct = document.getString("Name");
+                    Document Detail = (Document) WarehouseQury.get("Detail");
+                    Document idcol = (Document) Detail.get(String.valueOf(id));
+                    if (idcol != null && regexPattern.matcher(nameproduct).matches()) {
+                        int Quality = idcol.getInteger("Quality");
+                        int price = document.getInteger("Price");
+                        DecimalFormat formatter = new DecimalFormat("#,### $");
+                        String formatprice = formatter.format(price);
+                        String nameCategory = categoryFilter.getString("Name");
+                        imports.add(new Import(nameproduct, nameCategory, formatprice, Quality));
                     }
                 }
             }
@@ -119,42 +424,97 @@ public class daodb {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return export;
+        return imports;
     }
 
-    public static List<Import> DetailWarehouseApproval(List<ObjectId> idProducts,ObjectId idWarehouse) {
-    List<Import> imports = new ArrayList<>();
-    MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
-    MongoCollection<Document> Category = DBConnection.getConnection().getCollection("Category");
-    MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
-    
-    try {
-        for (ObjectId idProduct : idProducts) {
-            FindIterable<Document> Warehousecollection = Warehouse.find();
-            for (Document document : Warehousecollection) {
-                Document Detail = (Document) document.get("Detail");
-                Document idcol = (Document) Detail.get(String.valueOf(idProduct));
-                Document Productcollection = Product.find(Filters.eq("_id", idProduct)).first();
-                if (Productcollection != null && idcol != null) {
-                    ObjectId idCategory = Productcollection.getObjectId("ID_Category");
-                    Document categorycollection = Category.find(Filters.eq("_id", idCategory)).first();
-                    if (categorycollection != null && document.getObjectId("_id").equals(idWarehouse)) {
-                        String nameProduct = Productcollection.getString("Name");
-                        String nameCategory = categorycollection.getString("Name");
+    public static List<Import> DetailWarehouseApproval(ObjectId idWarehouse) {
+        List<Import> imports = new ArrayList<>();
+        MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+        MongoCollection<Document> Category = DBConnection.getConnection().getCollection("Category");
+        MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+
+        try {
+
+            FindIterable<Document> productCollection = Product.find();
+            for (Document document : productCollection) {
+                ObjectId id = document.getObjectId("_id");
+                ObjectId idCategory = document.getObjectId("ID_Category");
+                Bson query = Filters.and(
+                        Filters.eq("_id", idWarehouse),
+                        Filters.exists("Detail." + id, true)
+                );
+                Document WarehouseQury = Warehouse.find(query).first();
+                Document categoryFilter = Category.find(Filters.eq("_id", idCategory)).first();
+                if (WarehouseQury != null && categoryFilter != null) {
+                    String nameproduct = document.getString("Name");
+                    Document Detail = (Document) WarehouseQury.get("Detail");
+                    Document idcol = (Document) Detail.get(String.valueOf(id));
+                    if (idcol != null) {
                         int Quality = idcol.getInteger("Quality");
-                        int price = Productcollection.getInteger("Price");
+                        int price = document.getInteger("Price");
                         DecimalFormat formatter = new DecimalFormat("#,### $");
                         String formatprice = formatter.format(price);
-                        imports.add(new Import(nameProduct, nameCategory, formatprice, Quality));
+                        String nameCategory = categoryFilter.getString("Name");
+                        imports.add(new Import(nameproduct, nameCategory, formatprice, Quality));
                     }
                 }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return imports;
     }
-    return imports;
-}
+
+    public static List<Import> SearchWarehouseApproval(String search) {
+        Pattern regexPattern = Pattern.compile(".*" + search + ".*", Pattern.CASE_INSENSITIVE);
+        List<Import> imports = new ArrayList<>();
+        Set<ObjectId> Wareimport = new HashSet();
+
+        MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+        MongoCollection<Document> InComingOrder = DBConnection.getConnection().getCollection("InComingOrder");
+        MongoCollection<Document> Employee = DBConnection.getConnection().getCollection("Employee");
+        MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+
+        try {
+            FindIterable<Document> Ware = Warehouse.find();
+
+            for (Document document : Ware) {
+                FindIterable<Document> product = Product.find();
+
+                for (Document Productcollection : product) {
+                    ObjectId idProduct = Productcollection.getObjectId("_id");
+                    Document Detail = (Document) document.get("Detail");
+                    Document idproductcheck = (Document) Detail.get(String.valueOf(idProduct));
+                    ObjectId idincoming = document.getObjectId("ID_InComingOrder");
+                    Document incomingfilter = InComingOrder.find(Filters.eq("_id", idincoming)).first();
+
+                    if (idproductcheck != null && incomingfilter != null) {
+                        ObjectId idEmployee = incomingfilter.getObjectId("Id_Employee");
+                        Document Employeecheck = Employee.find(Filters.eq("_id", idEmployee)).first();
+
+                        if (Employeecheck != null && !Wareimport.contains(idincoming)
+                                && incomingfilter.getObjectId("Id_Employee").equals(LoginController.id_employee)
+                                && regexPattern.matcher(incomingfilter.getString("Supplier")).matches()) {
+
+                            String nameEmployee = Employeecheck.getString("Name");
+                            String date = document.getString("Date");
+                            LocalDate sinceDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                            int status = incomingfilter.getInteger("status");
+                            ObjectId idWarehouse = document.getObjectId("_id");
+                            String Supply = incomingfilter.getString("Supplier");
+                            imports.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee, idincoming, Supply));
+                            Wareimport.add(idincoming);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imports;
+    }
 
     public static List<Import> WarehouseApproval() {
         List<Import> Import = new ArrayList<>();
@@ -177,15 +537,15 @@ public class daodb {
                     if (idproductcheck != null && incomingfilter != null) {
                         ObjectId idEmployee = incomingfilter.getObjectId("Id_Employee");
                         Document Employeecheck = Employee.find(Filters.eq("_id", idEmployee)).first();
-                        if (Employeecheck != null && !Wareimport.contains(idincoming)) {
+                        if (Employeecheck != null && !Wareimport.contains(idincoming) && incomingfilter.getObjectId("Id_Employee").equals(LoginController.id_employee)) {
                             String nameEmployee = Employeecheck.getString("Name");
                             String date = document.getString("Date");
                             LocalDate sinceDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                             String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                             int status = incomingfilter.getInteger("status");
                             ObjectId idWarehouse = document.getObjectId("_id");
-                            String Supply=incomingfilter.getString("supplier");
-                            Import.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee,idincoming,Supply));
+                            String Supply = incomingfilter.getString("Supplier");
+                            Import.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee, idincoming, Supply));
                             Wareimport.add(idincoming);
                         }
                     }

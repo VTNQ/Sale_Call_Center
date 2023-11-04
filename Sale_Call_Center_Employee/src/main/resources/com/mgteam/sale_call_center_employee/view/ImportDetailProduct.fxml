@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="480.0" prefWidth="662.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.Import_Warehouse">
+<AnchorPane id="AnchorPane" prefHeight="492.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.Import_Warehouse">
    <children>
-      <AnchorPane prefHeight="150.0" prefWidth="662.0" style="-fx-background-color: #0abfa4;">
+      <AnchorPane prefHeight="150.0" prefWidth="670.0" style="-fx-background-color: #0abfa4;">
          <children>
             <ImageView fitHeight="150.0" fitWidth="162.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -24,7 +27,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <TableView fx:id="tbldetail" layoutX="91.0" layoutY="162.0" prefHeight="238.0" prefWidth="479.0" styleClass="table-view1" stylesheets="@../css/application.css">
+      <TableView fx:id="tbldetail" layoutX="95.0" layoutY="193.0" prefHeight="221.0" prefWidth="479.0" styleClass="table-view1" stylesheets="@../css/application.css">
          <columns>
             <TableColumn fx:id="colNameproduct" prefWidth="107.20001220703125" text="Name Product" />
             <TableColumn fx:id="colQuality" prefWidth="104.80000305175781" text="Quality" />
@@ -32,5 +35,9 @@
             <TableColumn fx:id="colNameCategory" prefWidth="148.79998779296875" text="Category" />
          </columns>
       </TableView>
+      <Pagination fx:id="pagination1" layoutX="213.0" layoutY="422.0" prefHeight="30.0" prefWidth="200.0" />
+      <TextField fx:id="txtsearchdetail" layoutX="338.0" layoutY="158.0" />
+      <Label layoutX="295.0" layoutY="162.0" text="Search" />
+      <Button layoutX="494.0" layoutY="154.0" mnemonicParsing="false" onAction="#searchDetail" styleClass="button-design" stylesheets="@../css/application.css" text="Search" />
    </children>
 </AnchorPane>

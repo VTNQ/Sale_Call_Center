@@ -10,16 +10,10 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mgteam.sale_call_center_employee.util.daodb;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.InsertOneResult;
 import io.github.palexdev.materialfx.controls.MFXButton;
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -33,6 +27,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -61,6 +56,10 @@ public class Export_Warehouse implements Initializable {
     private TableColumn<Export, Integer> colApprove = new TableColumn<>();
 
     @FXML
+    private Pagination pagination = new Pagination();
+    @FXML
+    private Pagination pagination1 = new Pagination();
+    @FXML
     private TableColumn<?, ?> colCustomer = new TableColumn<>();
 
     @FXML
@@ -71,7 +70,10 @@ public class Export_Warehouse implements Initializable {
 
     @FXML
     private TableColumn<Export, Integer> colcancle = new TableColumn<>();
-
+    private int itemsperPage = 5;
+    private int totalItems;
+    private int displaymode = 1;
+    private int currentPageIndex = 0;
     @FXML
     private TableColumn<Export, Boolean> colprint = new TableColumn<>();
 
@@ -80,7 +82,11 @@ public class Export_Warehouse implements Initializable {
 
     @FXML
     private TableView<Export> tblExport = new TableView<>();
+    @FXML
+    private TextField detailtxt = new TextField();
 
+    @FXML
+    private TextField textsearch = new TextField();
     @FXML
     private TableColumn<?, ?> colNameCategory = new TableColumn<>();
 
@@ -99,6 +105,7 @@ public class Export_Warehouse implements Initializable {
         return idorder;
     }
     private ObjectId idssue;
+
 
     private void setidissue(ObjectId idissue) {
         idssue = idissue;
@@ -129,6 +136,19 @@ public class Export_Warehouse implements Initializable {
     private Button buttonsave;
     @FXML
     private TableView<Export> tbldetail = new TableView<>();
+
+    @FXML
+    void Search(ActionEvent event) {
+        currentPageIndex = 0;
+        searchlistExport(textsearch.getText(), currentPageIndex);
+        if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        } else if (currentPageIndex == 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }
+    }
 
     @FXML
     void choice_Direct(ActionEvent event) {
@@ -218,10 +238,42 @@ public class Export_Warehouse implements Initializable {
         }
     }
 
-    private void Detailexportproduct(String Name, int idOrder) {
+    private void SearchDetailExportproduct(String Name, ObjectId idorder, String txt, int pageindex) {
+        displaymode=2;
+        List<Export> export = daodb.searchDetailExportProduct(Name, idorder, txt);
+        ObservableList<Export> obserable = FXCollections.observableArrayList(export);
+        totalItems = obserable.size();
+        int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination1.setPageCount(pageCount);
+        if (obserable.isEmpty()) {
+            pagination1.setPageCount(1);
+            tbldetail.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        int startIndex = pageindex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+        List<Export> Ass = obserable.subList(startIndex, endIndex);
+        tbldetail.setItems(FXCollections.observableArrayList(Ass));
+        colNameproduct.setCellValueFactory(new PropertyValueFactory<>("NameProduct"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+        colprice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        colNameCategory.setCellValueFactory(new PropertyValueFactory<>("NameCategory"));
+    }
+
+    private void Detailexportproduct(String Name, ObjectId idOrder) {
+        displaymode=1;
         List<Export> export = daodb.DetailExportProduct(Name, idOrder);
         ObservableList<Export> obserable = FXCollections.observableArrayList(export);
-        tbldetail.setItems(obserable);
+        totalItems = obserable.size();
+        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination1.setPageCount(pageCounts);
+        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.max(startIndex, 0);
+        List<Export> as = obserable.subList(startIndex, endIndex);
+        tbldetail.setItems(FXCollections.observableArrayList(as));
         colNameproduct.setCellValueFactory(new PropertyValueFactory<>("NameProduct"));
         colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
         colprice.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -242,6 +294,19 @@ public class Export_Warehouse implements Initializable {
             }
         }
         return idList;
+    }
+
+    @FXML
+    void find(ActionEvent event) {
+        currentPageIndex = 0;
+        SearchDetailExportproduct(getcustomer(), idorder, detailtxt.getText(), currentPageIndex);
+        if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination1.setCurrentPageIndex(currentPageIndex);
+        } else if (currentPageIndex == 0) {
+            currentPageIndex = 0;
+            pagination1.setCurrentPageIndex(currentPageIndex);
+        }
     }
 
     private List<Integer> displayQuality(ObjectId id, ObjectId idorder) {
@@ -275,10 +340,24 @@ public class Export_Warehouse implements Initializable {
         return idList;
     }
 
-    private void ListExport() {
-        List<Export> export = daodb.ExportWarehouse();
+    private void searchlistExport(String search, int pageindex) {
+        displaymode = 2;
+        List<Export> export = daodb.SearchExportWarehouse(search);
         ObservableList<Export> obserable = FXCollections.observableArrayList(export);
-        tblExport.setItems(obserable);
+        totalItems = obserable.size();
+        int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCount);
+        if (obserable.isEmpty()) {
+            pagination.setPageCount(1);
+            tblExport.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        int startIndex = pageindex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+        startIndex = Math.max(startIndex, 0);
+        List<Export> Ass = obserable.subList(startIndex, endIndex);
+        tblExport.setItems(FXCollections.observableArrayList(Ass));
         colOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
         colCustomer.setCellValueFactory(new PropertyValueFactory<>("Customer"));
         colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
@@ -295,10 +374,11 @@ public class Export_Warehouse implements Initializable {
                         Export_Warehouse export = loader.getController();
                         popupStage.initModality(Modality.APPLICATION_MODAL);
                         popupStage.setScene(new Scene(newpopup));
-                        export.Detailexportproduct(ex.getCustomer(), ex.getOrder());
+                        export.Detailexportproduct(ex.getCustomer(), ex.getIdOrder());
                         String idorder = String.valueOf(ex.getOrder());
                         export.customer.setText(idorder);
-
+                        export.setcustomer(ex.getCustomer());
+                        export.setidorder(ex.getIdOrder());
                         popupStage.setResizable(false);
                         popupStage.showAndWait();
                     } catch (IOException ex1) {
@@ -353,14 +433,14 @@ public class Export_Warehouse implements Initializable {
                 super.updateItem(item, empty);
                 button.getStyleClass().add("button_class");
                 if (item != null || !empty) {
-                   int status = getTableView().getItems().get(getIndex()).getStatus();
-                   if(status==1){
+                    int status = getTableView().getItems().get(getIndex()).getStatus();
+                    if (status == 1) {
                         setGraphic(button);
-                   }else{
-                       setGraphic(button);
-                       button.setDisable(true);
-                   }
-                   
+                    } else {
+                        setGraphic(button);
+                        button.setDisable(true);
+                    }
+
                 } else {
                     setGraphic(null);
                 }
@@ -438,32 +518,251 @@ public class Export_Warehouse implements Initializable {
 
             {
                 button.setOnAction(event -> {
-                     Export ex = getTableView().getItems().get(getIndex());
-                     if(ex.getStatus()==0){
-                         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("CONFIRMATION");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Are you cancel?");
-                    alert.showAndWait().ifPresent(responsive -> {
-                        if (responsive == ButtonType.CLOSE) {
-                            alert.close();
-                        }
-                        if (responsive == ButtonType.OK) {
-                            try {
-                                MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
-                                MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                Document filter = new Document("_id", ex.getIdProduct());
-                                Document update = new Document("$set", new Document("status", 2));
-                                collection.updateOne(filter, update);
-                                ListExport();
-                            } catch (Exception e) {
+                    Export ex = getTableView().getItems().get(getIndex());
+                    if (ex.getStatus() == 0) {
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("CONFIRMATION");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Are you cancel?");
+                        alert.showAndWait().ifPresent(responsive -> {
+                            if (responsive == ButtonType.CLOSE) {
+                                alert.close();
                             }
-                        }
-                    });
-                     }else{
-                         DialogAlert.DialogError("canceled");
-                     }
-                    
+                            if (responsive == ButtonType.OK) {
+                                try {
+                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
+                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                    Document filter = new Document("_id", ex.getIdProduct());
+                                    Document update = new Document("$set", new Document("status", 2));
+                                    collection.updateOne(filter, update);
+                                    ListExport();
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
+                    } else {
+                        DialogAlert.DialogError("canceled");
+                    }
+
+                });
+            }
+
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                button.getStyleClass().add("button-error");
+                if (item != null || !empty) {
+                    if (item == 1) {
+                        setGraphic(button);
+                        button.setDisable(true);
+
+                    } else {
+                        setGraphic(button);
+                    }
+                }
+            }
+
+        });
+    }
+
+    private void ListExport() {
+        displaymode = 1;
+        List<Export> export = daodb.ExportWarehouse();
+        ObservableList<Export> obserable = FXCollections.observableArrayList(export);
+        totalItems = obserable.size();
+        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCounts);
+        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.max(startIndex, 0);
+        List<Export> as = obserable.subList(startIndex, endIndex);
+        tblExport.setItems(FXCollections.observableArrayList(as));
+        colOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
+        colCustomer.setCellValueFactory(new PropertyValueFactory<>("Customer"));
+        colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
+        colproduct.setCellFactory(column -> new TableCell<Export, Boolean>() {
+            private MFXButton button = new MFXButton("Product");
+
+            {
+                button.setOnAction(event -> {
+                    Export ex = getTableView().getItems().get(getIndex());
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/DetailProduct_Warehouse.fxml"));
+                    try {
+                        AnchorPane newpopup = loader.load();
+                        Stage popupStage = new Stage();
+                        Export_Warehouse export = loader.getController();
+                        popupStage.initModality(Modality.APPLICATION_MODAL);
+                        popupStage.setScene(new Scene(newpopup));
+                        export.Detailexportproduct(ex.getCustomer(), ex.getIdOrder());
+                        String idorder = String.valueOf(ex.getOrder());
+                        export.customer.setText(idorder);
+                        export.setcustomer(ex.getCustomer());
+                        export.setidorder(ex.getIdOrder());
+                        popupStage.setResizable(false);
+                        popupStage.showAndWait();
+                    } catch (IOException ex1) {
+                        ex1.printStackTrace();
+                    }
+
+                });
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                button.getStyleClass().add("button_class");
+                if (item != null || !empty) {
+                    setGraphic(button);
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+        colprint.setCellFactory(column -> new TableCell<Export, Boolean>() {
+            private MFXButton button = new MFXButton("Print");
+
+            {
+
+                button.setOnAction(event -> {
+                    try {
+                        Export ex = getTableView().getItems().get(getIndex());
+                        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Path.fxml"));
+                        AnchorPane newpopup = loader.load();
+
+                        Stage popupStage = new Stage();
+                        Export_Warehouse export = loader.getController();
+                        popupStage.initModality(Modality.APPLICATION_MODAL);
+                        popupStage.setScene(new Scene(newpopup));
+                        export.setidorder(ex.getIdOrder());
+                        export.setidissue(ex.getIdProduct());
+                        export.setcustomer(ex.getCustomer());
+                        export.idWarehouse = ex.getIdWarehouse();
+                        popupStage.setResizable(false);
+                        popupStage.showAndWait();
+                    } catch (IOException ex1) {
+                        ex1.printStackTrace();
+                    }
+
+                });
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                button.getStyleClass().add("button_class");
+                if (item != null || !empty) {
+                    int status = getTableView().getItems().get(getIndex()).getStatus();
+                    if (status == 1) {
+                        setGraphic(button);
+                    } else {
+                        setGraphic(button);
+                        button.setDisable(true);
+                    }
+
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+        colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colApprove.setCellFactory(column -> new TableCell<Export, Integer>() {
+            private MFXButton button = new MFXButton("Approve");
+
+            {
+                button.setOnAction(event -> {
+                    Export ex = getTableView().getItems().get(getIndex());
+                    if (ex.getStatus() == 0) {
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("CONFIRMATION");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Are you Approve?");
+                        alert.showAndWait().ifPresent(responsive -> {
+                            if (responsive == ButtonType.CLOSE) {
+                                alert.close();
+                            }
+                            if (responsive == ButtonType.OK) {
+                                try {
+
+                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
+                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                    Document filter = new Document("_id", ex.getIdProduct());
+                                    Document update = new Document("$set", new Document("status", 1));
+                                    collection.updateOne(filter, update);
+                                    List<ObjectId> idList = displayIdProduct(ex.getIdWarehouse());
+                                    for (ObjectId id : idList) {
+                                        List<Integer> Quality = displayQuality(id, ex.getIdOrder());
+                                        for (Integer export1 : Quality) {
+
+                                            Document document = new Document("ID_WareHouse", ex.getIdWarehouse()).append("ID_OutGoingOrder", ex.getIdProduct()).append("ID_Product", id).append("Quality", export1);
+                                            WarehouseOutgoing.insertOne(document);
+                                        }
+
+                                    }
+                                    DialogAlert.DialogSuccess("Approve successfully");
+                                    ListExport();
+
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
+                    } else {
+                        DialogAlert.DialogError("Approved");
+                    }
+
+                });
+
+            }
+
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                button.getStyleClass().add("button-success");
+                if (item != null || !empty) {
+                    if (item == 2) {
+                        setGraphic(button);
+                        button.setDisable(true);
+
+                    } else {
+                        setGraphic(button);
+                    }
+                }
+            }
+
+        });
+        colcancle.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colcancle.setCellFactory(column -> new TableCell<Export, Integer>() {
+            private MFXButton button = new MFXButton("cancel");
+
+            {
+                button.setOnAction(event -> {
+                    Export ex = getTableView().getItems().get(getIndex());
+                    if (ex.getStatus() == 0) {
+                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("CONFIRMATION");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Are you cancel?");
+                        alert.showAndWait().ifPresent(responsive -> {
+                            if (responsive == ButtonType.CLOSE) {
+                                alert.close();
+                            }
+                            if (responsive == ButtonType.OK) {
+                                try {
+                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
+                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                    Document filter = new Document("_id", ex.getIdProduct());
+                                    Document update = new Document("$set", new Document("status", 2));
+                                    collection.updateOne(filter, update);
+                                    ListExport();
+                                } catch (Exception e) {
+                                }
+                            }
+                        });
+                    } else {
+                        DialogAlert.DialogError("canceled");
+                    }
 
                 });
             }
@@ -489,5 +788,23 @@ public class Export_Warehouse implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ListExport();
+        pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            currentPageIndex = newIndex.intValue();
+            if (displaymode == 1) {
+                ListExport();
+            } else if (displaymode == 2) {
+                searchlistExport(textsearch.getText(), currentPageIndex);
+            }
+            ListExport();
+        });
+        pagination1.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
+            currentPageIndex=newIndex.intValue();
+            if(displaymode==1){
+                 Detailexportproduct(getcustomer(), getidorder());
+            }else if(displaymode==2){
+                SearchDetailExportproduct(getcustomer(), idorder, detailtxt.getText(), currentPageIndex);
+            }
+            Detailexportproduct(getcustomer(), getidorder());
+        });
     }
 }
