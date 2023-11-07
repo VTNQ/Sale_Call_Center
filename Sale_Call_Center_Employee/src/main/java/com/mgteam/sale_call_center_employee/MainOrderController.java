@@ -93,7 +93,7 @@ public class MainOrderController extends MainController implements Initializable
 
     @FXML
     private TableColumn<?, ?> colNameProduct = new TableColumn<>();
-
+    String nameproduct;
     @FXML
     private TableColumn<?, ?> col_Price = new TableColumn<>();
 
@@ -102,9 +102,9 @@ public class MainOrderController extends MainController implements Initializable
 
     @FXML
     private MFXComboBox<String> listProduct = new MFXComboBox<>();
-    
+
     @FXML
-    private MFXComboBox<String> listCustomer=new MFXComboBox<>();
+    private MFXComboBox<String> listCustomer = new MFXComboBox<>();
 
     @FXML
     private TableView<Product> listProductOrder = new TableView<>();
@@ -116,24 +116,24 @@ public class MainOrderController extends MainController implements Initializable
     private MFXTextField quantity = new MFXComboBox();
 
     @FXML
-    private Label totalPrice=new Label();
+    private Label totalPrice = new Label();
 
     private Document list_Product;
 
     List<Product> list = new ArrayList<>();
-    
+
     @FXML
     void AddCustomer(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddCustomer.fxml"));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/AddCustomer.fxml"));
             AnchorPane anchorPane = loader.load();
-            MainOrderController order=loader.getController();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 600, 400));
-            order.totalPrice.setText("0");
-            stage.showAndWait();
+
             stage.setResizable(false);
+            stage.showAndWait();
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -154,22 +154,30 @@ public class MainOrderController extends MainController implements Initializable
             }
             for (Document document : documents) {
                 if (index == -1) {
-                    list.add(new Product(listProduct.getSelectedItem(), Integer.parseInt(quantity.getText()), Math.abs(document.getObjectId("_id").hashCode()), document.get("Price").hashCode()));
+                    Product newProduct = new Product();
+                    newProduct.setName(listProduct.getSelectedItem());
+
+                    newProduct.setQuality(Integer.parseInt(quantity.getText()));
+                    newProduct.setId_product(Math.abs(document.getObjectId("_id").hashCode()));
+                    newProduct.setPrice(document.get("Price").hashCode());
+                    list.add(newProduct);
+
                 } else {
                     Product product = list.get(index);
                     int oldQuantity = product.getQuality();
                     int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
                     product.setQuality(newQuantity);
+
                 }
                 ObservableList<Product> observableList = FXCollections.observableArrayList(list);
                 listProductOrder.setItems(observableList);
+
                 listProductOrder.getItems().setAll(list);
                 colIdProduct.setCellValueFactory(new PropertyValueFactory<>("id_product"));
                 colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
                 colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
                 col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
-                colDelete.setCellValueFactory(new PropertyValueFactory<>("Delete"));
-                colTotalPrice.setCellValueFactory(new PropertyValueFactory<>("total_price"));
+
             }
         }
     }
@@ -179,13 +187,14 @@ public class MainOrderController extends MainController implements Initializable
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("view/CreateOrder.fxml"));
             AnchorPane anchorPane = loader.load();
-            MainOrderController order=loader.getController();
+            MainOrderController order = loader.getController();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 300, 200));
             order.totalPrice.setText("0");
-            stage.showAndWait();
             stage.setResizable(false);
+            stage.showAndWait();
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -445,11 +454,27 @@ public class MainOrderController extends MainController implements Initializable
     }
 
     @FXML
+    void popupcustomer(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddCustomer.fxml"));
+            AnchorPane anchorPane = loader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(anchorPane));
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @FXML
     void addOrder(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddOrder.fxml"));
             AnchorPane anchorPane = loader.load();
-            MainOrderController order=loader.getController();
+            MainOrderController order = loader.getController();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 648, 480));
@@ -460,7 +485,7 @@ public class MainOrderController extends MainController implements Initializable
             ex.printStackTrace();
         }
     }
-    
+
     public static List<String> ListProductAll() {
         List<String> ArrayProduct = new ArrayList<>();
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
@@ -470,8 +495,8 @@ public class MainOrderController extends MainController implements Initializable
         }
         return ArrayProduct;
     }
-    
-    public static List<String> ListCustomerAll(){
+
+    public static List<String> ListCustomerAll() {
         List<String> ArrayCustomer = new ArrayList<>();
         MongoCollection<Document> CustomerCollection = DBConnection.getConnection().getCollection("Customer");
         MongoIterable<Document> customers = CustomerCollection.find();

@@ -67,7 +67,7 @@ public class MainCustomerController extends MainController implements Initializa
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        age.setItems();
+  
     }    
     
 }

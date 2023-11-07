@@ -63,6 +63,7 @@
                   </TableView>
                </content>
             </ScrollPane>
+            <MFXButton layoutX="24.0" layoutY="101.0" onAction="#popupcustomer" styleClass="mfx-button" stylesheets="@../css/application.css" text="Add customer" />
          </children>
       </AnchorPane>
    </children>

@@ -468,77 +468,58 @@ public class Export_Warehouse implements Initializable {
             {
                 button.setOnAction(event -> {
                     Export ex = getTableView().getItems().get(getIndex());
-
                     if (ex.getStatus() == 0) {
-                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("CONFIRMATION");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Are you Approve?");
-                        alert.showAndWait().ifPresent(response -> {
-                            if (response == ButtonType.OK) {
-                                try {
-                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
-                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                    MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+                        MongoCollection<Document> WareHouse = DBConnection.getConnection().getCollection("WareHouse");
+                        List<ObjectId> idproduct = displayIdProduct(ex.getIdOrder());
+                        List<String> outOfStockProducts = new ArrayList<>();
+                        System.out.println(areAllProductsAboveThreshold(idproduct, ex));
+                        for (ObjectId productId : idproduct) {
+                            List<Integer> Qualityproduct = displayQuality(productId, ex.getIdOrder());
 
-                                    Document filter = new Document("_id", ex.getIdProduct());
-                                    Document update = new Document("$set", new Document("status", 1));
-                                    collection.updateOne(filter, update);
+                            for (Integer a : Qualityproduct) {
 
-                                    List<ObjectId> idList = displayIdProduct(ex.getIdWarehouse());
+                                FindIterable<Document> warehousedocument = WareHouse.find(Filters.and(
+                                        Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
+                                )).sort(Sorts.ascending("Date")).limit(1);
 
-                                    for (ObjectId id : idList) {
-                                        List<Integer> Quality = displayQuality(id, ex.getIdOrder());
-
-                                        for (Integer export1 : Quality) {
-                                            Document document = new Document("ID_WareHouse", ex.getIdWarehouse())
-                                                    .append("ID_OutGoingOrder", ex.getIdProduct())
-                                                    .append("ID_Product", id)
-                                                    .append("Quality", export1);
-                                            WarehouseOutgoing.insertOne(document);
-
-                                            FindIterable<Document> warehouseCollection = Warehouse.find(
-                                                    new Document("_id", ex.getIdWarehouse())
-                                            );
-
-                                            for (Document warehouseDocument : warehouseCollection) {
-                                                Document Detail = (Document) warehouseDocument.get("Detail");
-
-                                                if (Detail != null) {
-                                                    Document idcol = (Document) Detail.get(String.valueOf(ex.getIdProduct()));
-                                                    if (idcol != null) {
-                                                        int newQuality = idcol.getInteger("Quality");
-
-                                                        if (newQuality > 0) {
-                                                            int qualityUpdate = newQuality - export1;
-
-                                                            idcol.put("Quality", qualityUpdate);
-                                                            Document filter1 = new Document("_id", ex.getIdWarehouse());
-                                                            // Update the WareHouse Quality here.
-                                                            Document wareHouseUpdate = new Document("$set",
-                                                                    new Document("Detail." + ex.getIdProduct() + ".Quality", qualityUpdate));
-
-                                                            Warehouse.updateOne(filter1, wareHouseUpdate);
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                // Biến cờ để kiểm tra sản phẩm có hết hay không
+                                for (Document a1 : warehousedocument) {
+                                    String date = a1.getString("Date");
+                                    Document detailProduct = a1.get("Detail", Document.class).get(productId.toString(), Document.class);
+                                    int quality = detailProduct.getInteger("Quality");
+                                    ObjectId id = a1.getObjectId("_id");
+                                    if (areAllProductsAboveThreshold(idproduct, ex)) {
+                                        MongoCollection<Document> OutGoingOrder = DBConnection.getConnection().getCollection("OutGoingOrder");
+                                        MongoCollection<Document> Warehouse_outgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                        Bson filter = Filters.eq("_id", ex.getIdProduct());
+                                        Bson update = Updates.set("status", 1);
+                                        UpdateResult updateResult = OutGoingOrder.updateOne(filter, update);
+                                        Document document = new Document("ID_WareHouse", id).append("ID_OutGoingOrder", ex.getIdProduct()).append("ID_Product", productId).append("Quality", quality);
+                                        Warehouse_outgoing.insertOne(document);
+                                        int totalQuality = quality - a;
+                                        Bson filter1 = Filters.eq("_id", id);
+                                        if (totalQuality == 0) {
+                                            Bson unset = Updates.unset("Detail." + String.valueOf(productId));
+                                            UpdateResult updateResult1 = WareHouse.updateOne(filter1, unset);
+                                        } else {
+                                            Bson updates = Updates.set("Detail." + String.valueOf(productId) + ".Quality", totalQuality);
+                                            UpdateResult updateResult1 = WareHouse.updateOne(filter1, updates);
                                         }
+
+                                    } else {
+                                        DialogAlert.DialogError("The warehouse is not a product ");
                                     }
-
-                                    DialogAlert.DialogSuccess("Approve successfully");
-                                    ListExport();
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
+
                             }
-                        });
+                        }
+
+                        ListExport();
                     } else {
                         DialogAlert.DialogError("Approved");
                     }
-                });
 
+                });
             }
 
             @Override
@@ -610,39 +591,39 @@ public class Export_Warehouse implements Initializable {
         });
     }
 
-   public boolean areAllProductsAboveThreshold(List<ObjectId> productIds, Export ex) {
-    MongoCollection<Document> wareHouse = DBConnection.getConnection().getCollection("WareHouse");
+    public boolean areAllProductsAboveThreshold(List<ObjectId> productIds, Export ex) {
+        MongoCollection<Document> wareHouse = DBConnection.getConnection().getCollection("WareHouse");
 
-    for (ObjectId productId : productIds) {
-        List<Integer> qualityList = displayQuality(productId, ex.getIdOrder());
-        boolean anyProductBelowThreshold = false;
+        for (ObjectId productId : productIds) {
+            List<Integer> qualityList = displayQuality(productId, ex.getIdOrder());
+            boolean anyProductBelowThreshold = false;
 
-        for (Integer quality : qualityList) {
-            Document warehouseDocument = wareHouse.find(Filters.and(
-                    Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
-            )).sort(Sorts.ascending("Date")).limit(1).first();
+            for (Integer quality : qualityList) {
+                Document warehouseDocument = wareHouse.find(Filters.and(
+                        Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
+                )).sort(Sorts.ascending("Date")).limit(1).first();
 
-            if (warehouseDocument != null) {
-                Document detail = warehouseDocument.get("Detail", Document.class);
-                Document idcol = detail.get(productId.toString(), Document.class);
+                if (warehouseDocument != null) {
+                    Document detail = warehouseDocument.get("Detail", Document.class);
+                    Document idcol = detail.get(productId.toString(), Document.class);
 
-                if (idcol != null) {
-                    int productQuality = idcol.getInteger("Quality");
-                    if (productQuality < quality) {
-                        anyProductBelowThreshold = true;
-                        return false;
+                    if (idcol != null) {
+                        int productQuality = idcol.getInteger("Quality");
+                        if (productQuality < quality) {
+                            anyProductBelowThreshold = true;
+                            return false;
+                        }
                     }
                 }
             }
+
+            if (!anyProductBelowThreshold) {
+                return true;
+            }
         }
 
-        if (!anyProductBelowThreshold) {
-            return true;
-        }
+        return true;
     }
-
-    return true;
-}
 
     private void ListExport() {
         displaymode = 1;
@@ -754,37 +735,57 @@ public class Export_Warehouse implements Initializable {
 
                 button.setOnAction(event -> {
                     Export ex = getTableView().getItems().get(getIndex());
-                    MongoCollection<Document> WareHouse = DBConnection.getConnection().getCollection("WareHouse");
-                    List<ObjectId> idproduct = displayIdProduct(ex.getIdOrder());
-                    List<String> outOfStockProducts = new ArrayList<>();
-                     System.out.println(areAllProductsAboveThreshold(idproduct, ex));
-                    for (ObjectId productId : idproduct) {
-                        List<Integer> Qualityproduct = displayQuality(productId, ex.getIdOrder());
+                    if (ex.getStatus() == 0) {
+                        MongoCollection<Document> WareHouse = DBConnection.getConnection().getCollection("WareHouse");
+                        List<ObjectId> idproduct = displayIdProduct(ex.getIdOrder());
+                        List<String> outOfStockProducts = new ArrayList<>();
+                        System.out.println(areAllProductsAboveThreshold(idproduct, ex));
+                        for (ObjectId productId : idproduct) {
+                            List<Integer> Qualityproduct = displayQuality(productId, ex.getIdOrder());
 
-                        for (Integer a : Qualityproduct) {
-                           
-                            FindIterable<Document> warehousedocument = WareHouse.find(Filters.and(
-                                    Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
-                            )).sort(Sorts.ascending("Date")).limit(1);
+                            for (Integer a : Qualityproduct) {
 
-                            // Biến cờ để kiểm tra sản phẩm có hết hay không
-                            for (Document a1 : warehousedocument) {
-                                String date = a1.getString("Date");
-                                Document detailProduct = a1.get("Detail", Document.class).get(productId.toString(), Document.class);
-                                int quality = detailProduct.getInteger("Quality");
-                                ObjectId id = a1.getObjectId("_id");
-   
-                               
-                        
-                                   
-                                
+                                FindIterable<Document> warehousedocument = WareHouse.find(Filters.and(
+                                        Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
+                                )).sort(Sorts.ascending("Date")).limit(1);
+
+                                // Biến cờ để kiểm tra sản phẩm có hết hay không
+                                for (Document a1 : warehousedocument) {
+                                    String date = a1.getString("Date");
+                                    Document detailProduct = a1.get("Detail", Document.class).get(productId.toString(), Document.class);
+                                    int quality = detailProduct.getInteger("Quality");
+                                    ObjectId id = a1.getObjectId("_id");
+                                    if (areAllProductsAboveThreshold(idproduct, ex)) {
+                                        MongoCollection<Document> OutGoingOrder = DBConnection.getConnection().getCollection("OutGoingOrder");
+                                        MongoCollection<Document> Warehouse_outgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                        Bson filter = Filters.eq("_id", ex.getIdProduct());
+                                        Bson update = Updates.set("status", 1);
+                                        UpdateResult updateResult = OutGoingOrder.updateOne(filter, update);
+                                        Document document = new Document("ID_WareHouse", id).append("ID_OutGoingOrder", ex.getIdProduct()).append("ID_Product", productId).append("Quality", quality);
+                                        Warehouse_outgoing.insertOne(document);
+                                        int totalQuality = quality - a;
+                                        Bson filter1 = Filters.eq("_id", id);
+                                        if (totalQuality == 0) {
+                                            Bson unset = Updates.unset("Detail." + String.valueOf(productId));
+                                            UpdateResult updateResult1 = WareHouse.updateOne(filter1, unset);
+                                        } else {
+                                            Bson updates = Updates.set("Detail." + String.valueOf(productId) + ".Quality", totalQuality);
+                                            UpdateResult updateResult1 = WareHouse.updateOne(filter1, updates);
+                                        }
+
+                                    } else {
+                                        DialogAlert.DialogError("The warehouse is not a product ");
+                                    }
+                                }
 
                             }
-
                         }
+
+                        ListExport();
+                    } else {
+                        DialogAlert.DialogError("Approved");
                     }
 
-                    ListExport();
                 });
 
             }
