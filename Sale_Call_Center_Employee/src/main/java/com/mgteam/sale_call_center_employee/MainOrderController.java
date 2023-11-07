@@ -5,8 +5,10 @@ import com.mgteam.sale_call_center_employee.model.Product;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Filters;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXPagination;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -81,6 +84,78 @@ public class MainOrderController extends MainController implements Initializable
 
     @FXML
     private MFXTextField txtSearch;
+
+    @FXML
+    private TableColumn<?, ?> colDelete = new TableColumn<>();
+
+    @FXML
+    private TableColumn<?, ?> colIdProduct = new TableColumn<>();
+
+    @FXML
+    private TableColumn<?, ?> colNameProduct = new TableColumn<>();
+
+    @FXML
+    private TableColumn<?, ?> col_Price = new TableColumn<>();
+
+    @FXML
+    private TableColumn<?, ?> colQuantity = new TableColumn<>();
+
+    @FXML
+    private MFXComboBox<String> listProduct = new MFXComboBox<>();
+
+    @FXML
+    private TableView<Product> listProductOrder = new TableView<>();
+
+    @FXML
+    private TableColumn<?, ?> colTotalPrice;
+
+    @FXML
+    private MFXTextField quantity = new MFXComboBox();
+
+    @FXML
+    private Label totalPrice;
+
+    private Document list_Product;
+
+    List<Product> list = new ArrayList<>();
+
+    @FXML
+    void add(ActionEvent event) {
+        if (!listProduct.getSelectedItem().isEmpty()) {
+            MongoCollection<Document> collection = DBConnection.getConnection().getCollection("Product");
+            FindIterable<Document> documents = collection.find(Filters.eq("Name", listProduct.getSelectedItem()));
+            int index = -1;
+            String selectedProduct = listProduct.getSelectedItem();
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getName().equals(selectedProduct)) {
+                    index = i;
+                    break;
+                }
+            }
+            for (Document document : documents) {
+                if (index == -1) {
+                    list.add(new Product(listProduct.getSelectedItem(), Integer.parseInt(quantity.getText()), Math.abs(document.getObjectId("_id").hashCode()), document.get("Price").hashCode()));
+                } else {
+                    Product product = list.get(index);
+                    int oldQuantity = product.getQuality();
+                    int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
+                    product.setQuality(newQuantity);
+                }
+                ObservableList<Product> observableList = FXCollections.observableArrayList(list);
+                listProductOrder.setItems(observableList);
+                listProductOrder.getItems().setAll(list);
+                colIdProduct.setCellValueFactory(new PropertyValueFactory<>("id_product"));
+                colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
+                colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+                col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
+            }
+        }
+    }
+
+    @FXML
+    void create(ActionEvent event) {
+
+    }
 
     public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrder() {
         List<com.mgteam.sale_call_center_employee.model.Order> ArrayOrder = new ArrayList<>();
@@ -173,7 +248,7 @@ public class MainOrderController extends MainController implements Initializable
                     }
                     boolean isSimilar1 = regexPattern.matcher(String.valueOf(id_filter)).matches();
                     boolean isSimilar2 = regexPattern.matcher(nameCustomer).matches();
-                    if (String.valueOf(id_order).matches(Key) || nameCustomer.matches(Key) || isSimilar1||isSimilar2) {
+                    if (String.valueOf(id_order).matches(Key) || nameCustomer.matches(Key) || isSimilar1 || isSimilar2) {
                         Document detailOrder = (Document) document.get("DetailOrder");
                         ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
                     }
@@ -342,7 +417,7 @@ public class MainOrderController extends MainController implements Initializable
             AnchorPane anchorPane = loader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(anchorPane, 400, 300));
+            stage.setScene(new Scene(anchorPane, 648, 480));
             stage.showAndWait();
             stage.setResizable(false);
         } catch (IOException ex) {
@@ -350,9 +425,19 @@ public class MainOrderController extends MainController implements Initializable
         }
     }
 
+    public static List<String> ListProductAll() {
+        List<String> ArrayProduct = new ArrayList<>();
+        MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
+        MongoIterable<Document> products = ProductCollection.find();
+        for (Document product : products) {
+            ArrayProduct.add(product.getString("Name"));
+        }
+        return ArrayProduct;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ListOrderCustomer();
+        listProduct.getItems().addAll(ListProductAll());
     }
-
 }

@@ -26,6 +26,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javax.mail.Session;
@@ -48,6 +49,8 @@ public class MainController implements Initializable {
     private MFXTextField Email;
 
     @FXML
+    private Pagination pagination;
+    @FXML
     private ComboBox<String> Position;
     @FXML
     private TableColumn<Employee, String> colName;
@@ -69,7 +72,10 @@ public class MainController implements Initializable {
 
     @FXML
     private MFXTextField Phone;
-
+    private int displaymode = 1;
+    private int itemsperPage = 5;
+    private int totalItems;
+    private int currentPageIndex = 0;
     @FXML
     private DatePicker Since;
 
@@ -162,10 +168,23 @@ public class MainController implements Initializable {
 
     }
 
-    private void searchdisplay(String search) {
+    private void searchdisplay(String search,int pageindex) {
+        displaymode=2;
         List<Employee> listAccout = daodb.getAcccountwithKey(search);
         ObservableList<Employee> observableList = FXCollections.observableArrayList(listAccout);
-        tblAccount.setItems(observableList);
+        totalItems=observableList.size();
+        int Pagecount=(totalItems+itemsperPage-1)/itemsperPage;
+        pagination.setPageCount(Pagecount);
+        if(listAccout.isEmpty()){
+            pagination.setPageCount(1);
+            tblAccount.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        int startIndex=pageindex*itemsperPage;
+        int endIndex=Math.min(startIndex+itemsperPage, totalItems);
+        startIndex=Math.min(startIndex, totalItems);
+        List<Employee>Ass=listAccout.subList(startIndex, endIndex);
+        tblAccount.setItems(FXCollections.observableArrayList(Ass));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         isreset.setCellValueFactory(new PropertyValueFactory<>("isReset"));
         isreset.setCellFactory(column -> new TableCell<Employee, String>() {
@@ -325,9 +344,17 @@ public class MainController implements Initializable {
         }
     }
     private void displayrecord() {
+        totalItems=1;
         List<Employee> resulist = daodb.getAccountEmployee();
         ObservableList<Employee> observableList = FXCollections.observableArrayList(resulist);
-        tblAccount.setItems(observableList);
+        totalItems = observableList.size();
+        int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCount);
+        int startIndex = currentPageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+        List<Employee> Ass = observableList.subList(startIndex, endIndex);
+        tblAccount.setItems(FXCollections.observableArrayList(Ass));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         isreset.setCellValueFactory(new PropertyValueFactory<>("isReset"));
         isreset.setCellFactory(column -> new TableCell<Employee, String>() {
@@ -465,7 +492,15 @@ public class MainController implements Initializable {
     }
  @FXML
     void findName(ActionEvent event) {
-        searchdisplay(txtName.getText());
+          currentPageIndex=0;
+        searchdisplay(txtName.getText(),currentPageIndex);
+         if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }else if(currentPageIndex==0){
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }
     }
     @FXML
     void LogOut(ActionEvent event) {
@@ -493,6 +528,14 @@ public class MainController implements Initializable {
         ObservableList<String> data = FXCollections.observableArrayList("Manager", "Director");
         Position.setItems(data);
         Position.setValue("Manager");
-       
+       pagination.currentPageIndexProperty().addListener((obs,oldIndex,newIndedx)->{
+       currentPageIndex=newIndedx.intValue();
+       if(displaymode==1){
+           displayrecord();
+       }else{
+           searchdisplay(txtName.getText(), currentPageIndex);
+       }
+       displayrecord();
+       });
     }
 }

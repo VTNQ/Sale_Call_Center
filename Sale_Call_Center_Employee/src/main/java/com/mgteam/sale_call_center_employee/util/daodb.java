@@ -13,6 +13,7 @@ import com.mgteam.sale_call_center_employee.model.Warehouse;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import static com.mongodb.client.model.Filters.eq;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -209,7 +210,42 @@ public class daodb {
         }
         return export;
     }
+public static List<Warehouse>SearchDetailProductWarehouse(String Nameproduct,ObjectId id){
+         ArrayList<Warehouse> ProductWare = new ArrayList<>();
+         Pattern regexPattern = Pattern.compile(".*" + Nameproduct + ".*", Pattern.CASE_INSENSITIVE);
+        try {
+            // Kết nối đến cơ sở dữ liệu MongoDB
+            MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+            MongoCollection<Document> Ware = DBConnection.getConnection().getCollection("WareHouse");
+            MongoCollection<Document> category = DBConnection.getConnection().getCollection("Category");
 
+            // Lấy tất cả sản phẩm
+            FindIterable<Document> Warehouse = Ware.find();
+            for (Document document : Warehouse) {
+                FindIterable<Document> product = Product.find();
+                for (Document document1 : product) {
+                    ObjectId idproduct = document1.getObjectId("_id");
+                    Document Detail = (Document) document.get("Detail");
+                    Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                    ObjectId idcategory = document1.getObjectId("ID_Category");
+                    Document categoryfilter = category.find(Filters.eq("_id", idcategory)).first();
+                    if (categoryfilter != null && idcol != null && document.getObjectId("_id").equals(id) && regexPattern.matcher(document1.getString("Name")).matches()) {
+                        String nameproduct = document1.getString("Name");
+                        ObjectId idwarehouse = document.getObjectId("_id");
+                        int Quality = idcol.getInteger("Quality");
+                        int price = document1.getInteger("Price");
+                        DecimalFormat formatter = new DecimalFormat("#,### $");
+                        String formatprice = formatter.format(price);
+                        String namecategory = categoryfilter.getString("Name");
+                        ProductWare.add(new Warehouse(idwarehouse, nameproduct, Quality, formatprice, namecategory, idproduct));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ProductWare;
+}
     public static List<Warehouse> DetailProductWarehouse(ObjectId id) {
         ArrayList<Warehouse> ProductWare = new ArrayList<>();
         try {
@@ -244,6 +280,54 @@ public class daodb {
             e.printStackTrace();
         }
         return ProductWare;
+    }
+
+    public static List<Warehouse> SearchWarehouseReceipt(String query) {
+        List<Warehouse> Warehouses = new ArrayList<>();
+        Set<ObjectId> Warehousereceipt = new HashSet<>();
+        Pattern regexPattern = Pattern.compile(".*" + query + ".*", Pattern.CASE_INSENSITIVE);
+        try {
+            MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
+            MongoCollection<Document> IncomingOrder = DBConnection.getConnection().getCollection("InComingOrder");
+            MongoCollection<Document> Ware = DBConnection.getConnection().getCollection("WareHouse");
+            FindIterable<Document> Warehousecollection = Ware.find();
+            for (Document document : Warehousecollection) {
+                FindIterable<Document> Productcollection = Product.find();
+                for (Document document1 : Productcollection) {
+                    ObjectId idproduct = document1.getObjectId("_id");
+                    Document Detail = (Document) document.get("Detail");
+                    Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                    ObjectId idincoming = document.getObjectId("ID_InComingOrder");
+
+                    Document comingFileter = IncomingOrder.find(Filters.eq("_id", idincoming)).first();
+                    if (idcol != null && comingFileter != null && comingFileter.getObjectId("Id_Employee").equals(LoginController.id_employee) && !Warehousereceipt.contains(idincoming)) {
+                        boolean isSimilar = regexPattern.matcher(String.valueOf(Math.abs(idincoming.hashCode()))).matches();
+                        if (isSimilar) {
+                            String Date = document.getString("Date");
+                            LocalDate sinceDate = LocalDate.parse(Date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                            String supplier = comingFileter.getString("Supplier");
+                            ObjectId idwarehouse = document.getObjectId("_id");
+                            int status = comingFileter.getInteger("status");
+                            String statustring = "";
+                            if (status == 0) {
+                                statustring = "no process";
+                            } else if (status == 1) {
+                                statustring = "approved";
+                            } else if (status == 2) {
+                                statustring = "canceled";
+                            }
+                            Warehouses.add(new Warehouse(Math.abs(idincoming.hashCode()), formattedSince, statustring, supplier, idwarehouse));
+                            Warehousereceipt.add(idincoming);
+                        }
+
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Warehouses;
     }
 
     public static List<Warehouse> WarehouseReceipt() {
@@ -516,45 +600,53 @@ public class daodb {
         return imports;
     }
 
-    public static List<Import> WarehouseApproval() {
-        List<Import> Import = new ArrayList<>();
-        Set<ObjectId> Wareimport = new HashSet<>();
-        MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
-        MongoCollection<Document> InComingOrder = DBConnection.getConnection().getCollection("InComingOrder");
-        MongoCollection<Document> Employee = DBConnection.getConnection().getCollection("Employee");
-        MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
-        try {
-            FindIterable<Document> Ware = Warehouse.find();
-            for (Document document : Ware) {
-                FindIterable<Document> product = Product.find();
-                for (Document Productcollection : product) {
-                    ObjectId idProduct = Productcollection.getObjectId("_id");
-                    Document Detail = (Document) document.get("Detail");
-                    Document idproductcheck = (Document) Detail.get(String.valueOf(idProduct));
-                    ObjectId idincoming = document.getObjectId("ID_InComingOrder");
-                    Document incomingfilter = InComingOrder.find(Filters.eq("_id", idincoming)).first();
+   public static List<Import> WarehouseApproval() {
+    List<Import> importList = new ArrayList<>();
+    Set<ObjectId> warehouseImports = new HashSet();
 
-                    if (idproductcheck != null && incomingfilter != null) {
-                        ObjectId idEmployee = incomingfilter.getObjectId("Id_Employee");
-                        Document Employeecheck = Employee.find(Filters.eq("_id", idEmployee)).first();
-                        if (Employeecheck != null && !Wareimport.contains(idincoming) && incomingfilter.getObjectId("Id_Employee").equals(LoginController.id_employee)) {
-                            String nameEmployee = Employeecheck.getString("Name");
-                            String date = document.getString("Date");
+    try {
+       
+
+        MongoCollection<Document> warehouseCollection = DBConnection.getConnection().getCollection("WareHouse");
+        MongoCollection<Document> incomingOrderCollection = DBConnection.getConnection().getCollection("InComingOrder");
+        MongoCollection<Document> employeeCollection = DBConnection.getConnection().getCollection("Employee");
+        MongoCollection<Document> productCollection = DBConnection.getConnection().getCollection("Product");
+
+        FindIterable<Document> warehouseDocuments = warehouseCollection.find();
+        for (Document warehouseDocument : warehouseDocuments) {
+            Document detail = warehouseDocument.get("Detail", Document.class);
+            for (String productKey : detail.keySet()) {
+                ObjectId idProduct = new ObjectId(productKey);
+
+                FindIterable<Document> productDocuments = productCollection.find(eq("_id", idProduct));
+                for (Document productDocument : productDocuments) {
+                    Document idProductCheck = (Document) detail.get(idProduct.toHexString());
+                    ObjectId idIncoming = warehouseDocument.getObjectId("ID_InComingOrder");
+                    Document incomingFilter = incomingOrderCollection.find(eq("_id", idIncoming)).first();
+
+                    if (idProductCheck != null && incomingFilter != null) {
+                        ObjectId idEmployee = incomingFilter.getObjectId("Id_Employee");
+                        Document employeeCheck = employeeCollection.find(eq("_id", idEmployee)).first();
+
+                        if (employeeCheck != null && !warehouseImports.contains(idIncoming) && idEmployee.equals(LoginController.id_employee)) {
+                            String nameEmployee = employeeCheck.getString("Name");
+                            String date = warehouseDocument.getString("Date");
                             LocalDate sinceDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                             String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                            int status = incomingfilter.getInteger("status");
-                            ObjectId idWarehouse = document.getObjectId("_id");
-                            String Supply = incomingfilter.getString("Supplier");
-                            Import.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee, idincoming, Supply));
-                            Wareimport.add(idincoming);
+                            int status = incomingFilter.getInteger("status");
+                            ObjectId idWarehouse = warehouseDocument.getObjectId("_id");
+                            String supply = incomingFilter.getString("Supplier");
+                            importList.add(new Import(nameEmployee, formattedSince, status, idWarehouse, idEmployee, idIncoming, supply));
+                            warehouseImports.add(idIncoming);
                         }
                     }
-
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return Import;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return importList;
+}
+
 }

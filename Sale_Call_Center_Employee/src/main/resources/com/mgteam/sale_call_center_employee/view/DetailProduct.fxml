@@ -25,7 +25,6 @@
       <MFXPagination fx:id="PaginationProduct" layoutX="254.0" layoutY="397.0" />
       <AnchorPane layoutX="-6.0" prefHeight="108.0" prefWidth="654.0" style="-fx-background-color: #e2772f;">
          <children>
-            <ImageView fitHeight="108.0" fitWidth="182.0" pickOnBounds="true" preserveRatio="true" />
             <ImageView fitHeight="108.0" fitWidth="148.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../asset/detail-product.png" />

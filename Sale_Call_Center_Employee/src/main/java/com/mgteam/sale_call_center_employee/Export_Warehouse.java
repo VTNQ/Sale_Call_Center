@@ -10,13 +10,23 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mgteam.sale_call_center_employee.util.daodb;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,6 +34,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -44,6 +55,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 /**
@@ -54,7 +66,7 @@ public class Export_Warehouse implements Initializable {
 
     @FXML
     private TableColumn<Export, Integer> colApprove = new TableColumn<>();
-
+    boolean actionInProgress = false;
     @FXML
     private Pagination pagination = new Pagination();
     @FXML
@@ -105,7 +117,6 @@ public class Export_Warehouse implements Initializable {
         return idorder;
     }
     private ObjectId idssue;
-
 
     private void setidissue(ObjectId idissue) {
         idssue = idissue;
@@ -239,7 +250,7 @@ public class Export_Warehouse implements Initializable {
     }
 
     private void SearchDetailExportproduct(String Name, ObjectId idorder, String txt, int pageindex) {
-        displaymode=2;
+        displaymode = 2;
         List<Export> export = daodb.searchDetailExportProduct(Name, idorder, txt);
         ObservableList<Export> obserable = FXCollections.observableArrayList(export);
         totalItems = obserable.size();
@@ -262,7 +273,7 @@ public class Export_Warehouse implements Initializable {
     }
 
     private void Detailexportproduct(String Name, ObjectId idOrder) {
-        displaymode=1;
+        displaymode = 1;
         List<Export> export = daodb.DetailExportProduct(Name, idOrder);
         ObservableList<Export> obserable = FXCollections.observableArrayList(export);
         totalItems = obserable.size();
@@ -283,14 +294,17 @@ public class Export_Warehouse implements Initializable {
     private List<ObjectId> displayIdProduct(ObjectId id) {
         List<ObjectId> idList = new ArrayList<>();
         MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
-        MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
-        FindIterable<Document> productWarehouse = Product.find(new Document());
-        for (Document document : productWarehouse) {
-            ObjectId id_product = document.getObjectId("_id");
-            Document query = new Document("Detail." + id_product, new Document("$exists", true));
-            Document WarehouseQuery = Warehouse.find(query).first();
-            if (WarehouseQuery != null && WarehouseQuery.getObjectId("_id").equals(id) && !idList.contains(id_product)) {
-                idList.add(id_product);
+        MongoCollection<Document> ordercollection = DBConnection.getConnection().getCollection("Order");
+        FindIterable<Document> order = ordercollection.find(new Document("_id", id));
+        for (Document document : order) {
+            FindIterable<Document> Productcollection = Product.find();
+            for (Document document1 : Productcollection) {
+                ObjectId idproduct = document1.getObjectId("_id");
+                Document Detail = (Document) document.get("DetailOrder");
+                Document idcol = (Document) Detail.get(String.valueOf(idproduct));
+                if (idcol != null && !idList.contains(idproduct)) {
+                    idList.add(idproduct);
+                }
             }
         }
         return idList;
@@ -454,44 +468,75 @@ public class Export_Warehouse implements Initializable {
             {
                 button.setOnAction(event -> {
                     Export ex = getTableView().getItems().get(getIndex());
+
                     if (ex.getStatus() == 0) {
                         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
                         alert.setTitle("CONFIRMATION");
                         alert.setHeaderText(null);
                         alert.setContentText("Are you Approve?");
-                        alert.showAndWait().ifPresent(responsive -> {
-                            if (responsive == ButtonType.CLOSE) {
-                                alert.close();
-                            }
-                            if (responsive == ButtonType.OK) {
+                        alert.showAndWait().ifPresent(response -> {
+                            if (response == ButtonType.OK) {
                                 try {
-
                                     MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
                                     MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                    MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+
                                     Document filter = new Document("_id", ex.getIdProduct());
                                     Document update = new Document("$set", new Document("status", 1));
                                     collection.updateOne(filter, update);
+
                                     List<ObjectId> idList = displayIdProduct(ex.getIdWarehouse());
+
                                     for (ObjectId id : idList) {
                                         List<Integer> Quality = displayQuality(id, ex.getIdOrder());
+
                                         for (Integer export1 : Quality) {
-
-                                            Document document = new Document("ID_WareHouse", ex.getIdWarehouse()).append("ID_OutGoingOrder", ex.getIdProduct()).append("ID_Product", id).append("Quality", export1);
+                                            Document document = new Document("ID_WareHouse", ex.getIdWarehouse())
+                                                    .append("ID_OutGoingOrder", ex.getIdProduct())
+                                                    .append("ID_Product", id)
+                                                    .append("Quality", export1);
                                             WarehouseOutgoing.insertOne(document);
-                                        }
 
+                                            FindIterable<Document> warehouseCollection = Warehouse.find(
+                                                    new Document("_id", ex.getIdWarehouse())
+                                            );
+
+                                            for (Document warehouseDocument : warehouseCollection) {
+                                                Document Detail = (Document) warehouseDocument.get("Detail");
+
+                                                if (Detail != null) {
+                                                    Document idcol = (Document) Detail.get(String.valueOf(ex.getIdProduct()));
+                                                    if (idcol != null) {
+                                                        int newQuality = idcol.getInteger("Quality");
+
+                                                        if (newQuality > 0) {
+                                                            int qualityUpdate = newQuality - export1;
+
+                                                            idcol.put("Quality", qualityUpdate);
+                                                            Document filter1 = new Document("_id", ex.getIdWarehouse());
+                                                            // Update the WareHouse Quality here.
+                                                            Document wareHouseUpdate = new Document("$set",
+                                                                    new Document("Detail." + ex.getIdProduct() + ".Quality", qualityUpdate));
+
+                                                            Warehouse.updateOne(filter1, wareHouseUpdate);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
+
                                     DialogAlert.DialogSuccess("Approve successfully");
                                     ListExport();
 
                                 } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                             }
                         });
                     } else {
                         DialogAlert.DialogError("Approved");
                     }
-
                 });
 
             }
@@ -564,6 +609,40 @@ public class Export_Warehouse implements Initializable {
 
         });
     }
+
+   public boolean areAllProductsAboveThreshold(List<ObjectId> productIds, Export ex) {
+    MongoCollection<Document> wareHouse = DBConnection.getConnection().getCollection("WareHouse");
+
+    for (ObjectId productId : productIds) {
+        List<Integer> qualityList = displayQuality(productId, ex.getIdOrder());
+        boolean anyProductBelowThreshold = false;
+
+        for (Integer quality : qualityList) {
+            Document warehouseDocument = wareHouse.find(Filters.and(
+                    Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
+            )).sort(Sorts.ascending("Date")).limit(1).first();
+
+            if (warehouseDocument != null) {
+                Document detail = warehouseDocument.get("Detail", Document.class);
+                Document idcol = detail.get(productId.toString(), Document.class);
+
+                if (idcol != null) {
+                    int productQuality = idcol.getInteger("Quality");
+                    if (productQuality < quality) {
+                        anyProductBelowThreshold = true;
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (!anyProductBelowThreshold) {
+            return true;
+        }
+    }
+
+    return true;
+}
 
     private void ListExport() {
         displaymode = 1;
@@ -672,51 +751,46 @@ public class Export_Warehouse implements Initializable {
             private MFXButton button = new MFXButton("Approve");
 
             {
+
                 button.setOnAction(event -> {
                     Export ex = getTableView().getItems().get(getIndex());
-                    if (ex.getStatus() == 0) {
-                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("CONFIRMATION");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Are you Approve?");
-                        alert.showAndWait().ifPresent(responsive -> {
-                            if (responsive == ButtonType.CLOSE) {
-                                alert.close();
+                    MongoCollection<Document> WareHouse = DBConnection.getConnection().getCollection("WareHouse");
+                    List<ObjectId> idproduct = displayIdProduct(ex.getIdOrder());
+                    List<String> outOfStockProducts = new ArrayList<>();
+                     System.out.println(areAllProductsAboveThreshold(idproduct, ex));
+                    for (ObjectId productId : idproduct) {
+                        List<Integer> Qualityproduct = displayQuality(productId, ex.getIdOrder());
+
+                        for (Integer a : Qualityproduct) {
+                           
+                            FindIterable<Document> warehousedocument = WareHouse.find(Filters.and(
+                                    Filters.eq("Detail." + productId.toString(), new Document("$exists", true))
+                            )).sort(Sorts.ascending("Date")).limit(1);
+
+                            // Biến cờ để kiểm tra sản phẩm có hết hay không
+                            for (Document a1 : warehousedocument) {
+                                String date = a1.getString("Date");
+                                Document detailProduct = a1.get("Detail", Document.class).get(productId.toString(), Document.class);
+                                int quality = detailProduct.getInteger("Quality");
+                                ObjectId id = a1.getObjectId("_id");
+   
+                               
+                        
+                                   
+                                
+
                             }
-                            if (responsive == ButtonType.OK) {
-                                try {
 
-                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
-                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                    Document filter = new Document("_id", ex.getIdProduct());
-                                    Document update = new Document("$set", new Document("status", 1));
-                                    collection.updateOne(filter, update);
-                                    List<ObjectId> idList = displayIdProduct(ex.getIdWarehouse());
-                                    for (ObjectId id : idList) {
-                                        List<Integer> Quality = displayQuality(id, ex.getIdOrder());
-                                        for (Integer export1 : Quality) {
-
-                                            Document document = new Document("ID_WareHouse", ex.getIdWarehouse()).append("ID_OutGoingOrder", ex.getIdProduct()).append("ID_Product", id).append("Quality", export1);
-                                            WarehouseOutgoing.insertOne(document);
-                                        }
-
-                                    }
-                                    DialogAlert.DialogSuccess("Approve successfully");
-                                    ListExport();
-
-                                } catch (Exception e) {
-                                }
-                            }
-                        });
-                    } else {
-                        DialogAlert.DialogError("Approved");
+                        }
                     }
 
+                    ListExport();
                 });
 
             }
 
             @Override
+
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
                 button.getStyleClass().add("button-success");
@@ -731,7 +805,8 @@ public class Export_Warehouse implements Initializable {
                 }
             }
 
-        });
+        }
+        );
         colcancle.setCellValueFactory(new PropertyValueFactory<>("status"));
         colcancle.setCellFactory(column -> new TableCell<Export, Integer>() {
             private MFXButton button = new MFXButton("cancel");
@@ -798,10 +873,10 @@ public class Export_Warehouse implements Initializable {
             ListExport();
         });
         pagination1.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            currentPageIndex=newIndex.intValue();
-            if(displaymode==1){
-                 Detailexportproduct(getcustomer(), getidorder());
-            }else if(displaymode==2){
+            currentPageIndex = newIndex.intValue();
+            if (displaymode == 1) {
+                Detailexportproduct(getcustomer(), getidorder());
+            } else if (displaymode == 2) {
                 SearchDetailExportproduct(getcustomer(), idorder, detailtxt.getText(), currentPageIndex);
             }
             Detailexportproduct(getcustomer(), getidorder());

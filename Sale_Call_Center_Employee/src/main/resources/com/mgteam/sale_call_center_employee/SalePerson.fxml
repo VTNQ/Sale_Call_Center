@@ -26,7 +26,7 @@
                   <Font name="System Bold Italic" size="13.0" />
                </font>
             </TextField>
-            <MFXButton layoutX="1.0" layoutY="63.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#home" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="DashBoard">
+            <MFXButton fx:id="btnHome" layoutX="1.0" layoutY="63.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#home" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="DashBoard">
                <styleClass>
                   <String fx:value="mfx-button" />
                   <String fx:value="bg_tranparent" />
@@ -44,7 +44,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </MFXButton>
-            <MFXButton layoutY="142.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#order" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Order">
+            <MFXButton fx:id="btnOrder" layoutY="142.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#order" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Order">
                <styleClass>
                   <String fx:value="mfx-button" />
                   <String fx:value="bg_tranparent" />
@@ -61,7 +61,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </MFXButton>
-            <MFXButton layoutY="221.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#customer" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Customer">
+            <MFXButton fx:id="btnCustomer" layoutY="221.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#customer" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Customer">
                <styleClass>
                   <String fx:value="mfx-button" />
                   <String fx:value="bg_tranparent" />
@@ -78,7 +78,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </MFXButton>
-            <MFXButton layoutX="1.0" layoutY="300.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#profile" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Profile">
+            <MFXButton fx:id="btnProfile" layoutX="1.0" layoutY="300.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#profile" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Profile">
                <styleClass>
                   <String fx:value="mfx-button" />
                   <String fx:value="bg_tranparent" />
@@ -95,7 +95,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </MFXButton>
-            <MFXButton layoutY="379.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#changePassword" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Change Password">
+            <MFXButton fx:id="btnChangePassword" layoutY="379.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#changePassword" prefHeight="79.0" prefWidth="163.0" stylesheets="@css/application.css" text="Change Password">
                <styleClass>
                   <String fx:value="mfx-button" />
                   <String fx:value="bg_tranparent" />

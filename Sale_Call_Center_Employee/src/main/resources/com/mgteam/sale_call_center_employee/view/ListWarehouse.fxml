@@ -38,8 +38,8 @@
       </TableView>
       <Button layoutX="87.0" layoutY="123.0" mnemonicParsing="false" onAction="#Appreceipt" prefHeight="34.0" prefWidth="90.0" styleClass="button-design" stylesheets="@../css/application.css" text="Add receipt" />
       <Pagination fx:id="pagination" layoutX="189.0" layoutY="391.0" prefHeight="34.0" prefWidth="200.0" />
-      <TextField layoutX="309.0" layoutY="126.0" prefHeight="26.0" prefWidth="138.0" />
+      <TextField fx:id="txtsearch" layoutX="309.0" layoutY="126.0" prefHeight="26.0" prefWidth="138.0" />
       <Label layoutX="262.0" layoutY="131.0" text="Search" />
-      <Button layoutX="460.0" layoutY="123.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="54.0" styleClass="button-success" stylesheets="@../css/application.css" text="Search" />
+      <Button layoutX="460.0" layoutY="123.0" mnemonicParsing="false" onAction="#search" prefHeight="18.0" prefWidth="54.0" styleClass="button-success" stylesheets="@../css/application.css" text="Search" />
    </children>
 </AnchorPane>

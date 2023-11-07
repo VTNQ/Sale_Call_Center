@@ -59,6 +59,10 @@ public class ListWarehouseController implements Initializable {
     private int itemsperPage = 5;
 
     @FXML
+    private TextField txtsearch = new TextField();
+        @FXML
+    private TextField txtfield=new TextField();
+    @FXML
     private Pagination pagination1 = new Pagination();
     private int totalItems;
     private int displaymode = 1;
@@ -98,6 +102,12 @@ public class ListWarehouseController implements Initializable {
     @FXML
     private TableColumn<?, ?> colNameproduct = new TableColumn<>();
     private ObjectId id;
+    private void setid(ObjectId id){
+        this.id=id;
+    }
+    private ObjectId getid(){
+        return id;
+    }
     @FXML
     private TableColumn<?, ?> colprice = new TableColumn<>();
     boolean exists = false;
@@ -112,6 +122,83 @@ public class ListWarehouseController implements Initializable {
     boolean isDataValid = true;
     @FXML
     private TableView<Warehouse> tblWarehouse = new TableView<>();
+
+    private void searchdisplay(String name, int pageIndex) {
+        displaymode = 2;
+        List<Warehouse> ware = daodb.SearchWarehouseReceipt(name);
+        ObservableList<Warehouse> obserable = FXCollections.observableArrayList(ware);
+        totalItems = obserable.size();
+        int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination.setPageCount(pageCount);
+        if (obserable.isEmpty()) {
+            pagination.setPageCount(1);
+            tblWarehouse.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        int startIndex = pageIndex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+        List<Warehouse> Ass = obserable.subList(startIndex, endIndex);
+        tblWarehouse.setItems(FXCollections.observableArrayList(Ass));
+        colid.setCellValueFactory(new PropertyValueFactory<>("id"));
+        coldate.setCellValueFactory(new PropertyValueFactory<>("Date"));
+        colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colstatus.setCellFactory(column -> new TableCell<Warehouse, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.wrappingWidthProperty().bind(colstatus.widthProperty());
+                    setGraphic(text);
+                }
+            }
+
+        });
+
+        colProduct.setCellFactory(column -> new TableCell<Warehouse, Boolean>() {
+            private Button button = new Button("Product");
+
+            {
+                button.setOnAction(event -> {
+                    Warehouse ware = getTableView().getItems().get(getIndex());
+                    try {
+                        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/detailProductWarehouse.fxml"));
+                        AnchorPane newpopup;
+                        newpopup = loader.load();
+                        Stage popupStage = new Stage();
+                        ListWarehouseController list = loader.getController();
+                        popupStage.initModality(Modality.APPLICATION_MODAL);
+                        popupStage.setScene(new Scene(newpopup));
+                        ListWarehouseController List = loader.getController();
+                        List.listdetailWarehouse(ware.getIdwarehouse());
+                        list.setid(ware.getIdwarehouse());
+                        popupStage.setResizable(false);
+                        popupStage.show();
+
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                button.getStyleClass().add("btn-design");
+                if (item != null || !empty) {
+                    setGraphic(button);
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
+        colSuppliers.setCellValueFactory(new PropertyValueFactory<>("suppliers"));
+    }
 
     private List<String> displayIdProducts(ObjectId id) {
         List<String> idList = new ArrayList<>();
@@ -132,8 +219,31 @@ public class ListWarehouseController implements Initializable {
         }
         return idList;
     }
+    private void searchListdetailWarehouse(String name,ObjectId id,int pageindex){
+        displaymode=2;
+        List<Warehouse>warehouse=daodb.SearchDetailProductWarehouse(name, id);
+        ObservableList<Warehouse> obserable = FXCollections.observableArrayList(warehouse);
+        totalItems = obserable.size();
+        int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
+        pagination1.setPageCount(pageCount);
+        if (obserable.isEmpty()) {
+            pagination1.setPageCount(1);
+            tblWarehouse.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        int startIndex = pageindex * itemsperPage;
+        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+        startIndex = Math.min(startIndex, totalItems);
+        List<Warehouse> Ass = obserable.subList(startIndex, endIndex);
+        tbldetail.setItems(FXCollections.observableArrayList(Ass));
+        colNameproduct.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
 
+        colprice.setCellValueFactory(new PropertyValueFactory<>("price"));
+        colNameCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+    }
     private void listdetailWarehouse(ObjectId id) {
+        displaymode=1;
         List<Warehouse> warehouse = daodb.DetailProductWarehouse(id);
         ObservableList<Warehouse> obserable = FXCollections.observableArrayList(warehouse);
         totalItems = obserable.size();
@@ -153,6 +263,7 @@ public class ListWarehouseController implements Initializable {
     }
 
     private void ListWarehouse() {
+        displaymode=1;
         List<Warehouse> ware = daodb.WarehouseReceipt();
         ObservableList<Warehouse> obserable = FXCollections.observableArrayList(ware);
         totalItems = obserable.size();
@@ -199,7 +310,7 @@ public class ListWarehouseController implements Initializable {
                         popupStage.setScene(new Scene(newpopup));
                         ListWarehouseController List = loader.getController();
                         List.listdetailWarehouse(ware.getIdwarehouse());
-                        list.id = ware.getIdProduct();
+                        list.setid(ware.getIdwarehouse());
                         popupStage.setResizable(false);
                         popupStage.show();
 
@@ -419,15 +530,51 @@ public class ListWarehouseController implements Initializable {
 
         return categoryNameToIdMap.get(productName);
     }
+    @FXML
+    void searchdetail(ActionEvent event) {
+         currentPageIndex=0;
+         searchListdetailWarehouse(txtfield.getText(),getid(),currentPageIndex);
+         if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination1.setCurrentPageIndex(currentPageIndex);
+        }else if(currentPageIndex==0){
+            currentPageIndex = 0;
+            pagination1.setCurrentPageIndex(currentPageIndex);
+        }
+      
+    }
+    @FXML
+    void search(ActionEvent event) {
+        currentPageIndex = 0;
+        searchdisplay(txtsearch.getText(), currentPageIndex);
+        if (currentPageIndex != 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        } else if (currentPageIndex == 0) {
+            currentPageIndex = 0;
+            pagination.setCurrentPageIndex(currentPageIndex);
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ListWarehouse();
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            ListWarehouse();
+            currentPageIndex=newIndex.intValue();
+            if(displaymode==1){
+                ListWarehouse();
+            }else if(displaymode==2){
+                searchdisplay(txtsearch.getText(), currentPageIndex);
+            }
+            
         });
         pagination1.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            listdetailWarehouse(id);
+            currentPageIndex=newIndex.intValue();
+         if(displaymode==1){
+             listdetailWarehouse(getid());
+         }else if(displaymode==2){
+             searchListdetailWarehouse(txtfield.getText(), getid(), currentPageIndex);
+         }
         });
         MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Product");
         ObservableList<String> categoryList = FXCollections.observableArrayList();
