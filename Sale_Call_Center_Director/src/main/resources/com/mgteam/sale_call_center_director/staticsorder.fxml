@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="481.0" prefWidth="660.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_director.Item_StaticsController">
+   <children>
+      <AnchorPane prefHeight="150.0" prefWidth="660.0" styleClass="nav1" stylesheets="@css/director.css">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@asset/market.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="165.0" layoutY="39.0" text="Order not yet processed" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tbldetail" layoutX="90.0" layoutY="195.0" prefHeight="230.0" prefWidth="462.0" styleClass="table-view1" stylesheets="@css/director.css">
+        <columns>
+          <TableColumn fx:id="order" prefWidth="112.00006866455078" text="order" />
+          <TableColumn fx:id="date" prefWidth="111.2000732421875" text="Date" />
+            <TableColumn fx:id="Customer" prefWidth="111.2000732421875" text="Customer" />
+            <TableColumn fx:id="status" prefWidth="122.39993286132812" text="status" />
+        </columns>
+      </TableView>
+      <Label fx:id="product" layoutX="102.0" layoutY="160.0" prefHeight="35.0" prefWidth="200.0" text="Product:test">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

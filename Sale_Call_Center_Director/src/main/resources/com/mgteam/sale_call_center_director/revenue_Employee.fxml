@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_director.Revenue_EmployeeController">
+   <children>
+      <AnchorPane prefHeight="142.0" prefWidth="600.0" styleClass="nav1" stylesheets="@css/director.css">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@asset/4534632.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="139.0" layoutY="30.0" text="Employee sales statistics " textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tblEmployee" layoutX="97.0" layoutY="183.0" prefHeight="246.0" prefWidth="411.0" styleClass="table-view1" stylesheets="@css/director.css">
+        <columns>
+          <TableColumn fx:id="colEmployee" prefWidth="120.79998779296875" text="Employee" />
+          <TableColumn fx:id="colQuality" prefWidth="140.0" text="Quality" />
+            <TableColumn fx:id="coltotal" prefWidth="148.7999755859375" text="total sale amount" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

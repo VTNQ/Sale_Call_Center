@@ -1,0 +1,159 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Oct 18, 2023, 5:49:42 PM
+    Author     : tranp
+*/
+.button-design{
+    -fx-text-fill: #fff;
+    -fx-background-color: #007bff;
+    -fx-border-color: #007bff;
+    -fx-display: inline-block;
+    -fx-font-weight: 400;
+    -fx-alignment: center;
+    -fx-white-space: nowrap;
+    -fx-vertical-alignment: middle;
+    -fx-focus-traversable: false; /* Equivalent to user-select: none */
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 2.5px; /* Equivalent to 0.25rem */
+    -fx-padding: 2.75px 2.5px; /* Equivalent to 0.375rem 0.75rem */
+    -fx-font-size: 16px; /* Equivalent to 1rem */
+    -fx-line-spacing: 1.5;
+    -fx-background-radius: 2.5px; /* Equivalent to 0.25rem */
+    -fx-background-insets: 0;
+    -fx-background: #007bff;
+    -fx-border-insets: 0;
+    -fx-border: #007bff;
+    -fx-content-display: CENTER;
+    -fx-translate-x: 0;
+    -fx-translate-y: 0;
+    -fx-translate-z: 0;
+    -fx-rotate: 0;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-scale-z: 1;
+    -fx-visual-effect: null;
+    -fx-effect: null;
+    -fx-cursor:hand;
+}
+.box{
+    -fx-background-color: transparent; 
+    -fx-border-color: rgba(255,255,255,0.5); 
+    -fx-border-width: 2px ;
+    -fx-border-radius: 20px; 
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 15, 0, 0, 0);
+}
+.input{
+    -fx-position:relative;
+    -fx-margin:30px 0;
+   -fx-width: 200px;
+ -fx-border-style: solid;
+    -fx-border-width: 0 0 2 0;
+   -fx-border-color: #ffffff;
+   
+}
+.inputbox{
+    -fx-font-size: 1em;
+    -fx-width:100%;
+    -fx-height:50px;
+    -fx-background-color:transparent;
+    -fx-border: none;
+    -fx-outline: none;
+    -fx-padding:0 35px 0 5px;
+    -fx-text-fill:#fff;
+   -fx-transition: -fx-translate-y 0.5s;
+}
+.button1{
+    -fx-width:100%;
+    -fx-height:40px;
+    -fx-background-radius:40px;
+    -fx-background-color:#fff;
+     -fx-border: none;
+     -fx-outline:none;
+     -fx-cursor:hand;
+     -fx-font-size:1em;
+     -fx-font-weight:bold;
+}
+.top-form{
+    -fx-background-color:#fff;
+    -fx-border-color:#000;
+    -fx-border-width:.4px .4px .2px .4px;
+}
+.nav2{
+    -fx-background-color:#fff;
+    -fx-background-radius:5px;
+}
+.shadow{
+    -fx-effect:dropshadow(three-pass-box,rgba(0,0,0,0.5),5,0,0,0);
+}
+.nav1{
+    -fx-background-color:linear-gradient(to bottom right,#25bcbf,#3796a7);
+    -fx-background-radius:5px;
+}
+.nav-btn{
+    -fx-background-color:transparent;
+    -fx-font-size:14px;
+    -fx-font-family:Arial;
+    -fx-cursor:hand;
+    -fx-text-fill:#000;
+    -fx-border-color:#ddd;
+    -fx-border-width:1px;
+}
+.nav-btn:hover{
+    -fx-background-color:#3796a7;
+    -fx-text-fill:#fff;
+    -fx-border-width:0px;
+}
+.signout{
+    -fx-background-color:#3796a7;
+    -fx-background-radius:5px;
+    -fx-cursor:hand;
+}
+.signout:hover{
+    -fx-background-color:#25bcbf;
+}
+.header{
+    -fx-background-color:linear-gradient(to bottom right,#4694bb,#2a5178);
+}
+.table-view{
+    -fx-padding:0px;
+    -fx-background-color:transparent;
+    -fx-border-color:linear-gradient(to right, #800000,#800000);
+    -fx-border-radius:9px;
+    -fx-border-width:2px;
+}
+.table-view .column-header-background{
+    -fx-background-color:linear-gradient(to right, #8B0000, #600000);
+    -fx-background-radius:8px 8px 0 0;
+    -fx-background-inset:0 0 0 0;
+}
+.table-view1 .column-header-background{
+    -fx-background-color:linear-gradient(to bottom right,#4694bb,#2a5178);
+    -fx-background-radius:8px 8px 0 0;
+    -fx-background-inset:0 0 0 0;
+}
+.table-view .column-header,.filter{
+    -fx-background-color:transparent;
+    -fx-size:50px;
+}
+
+.table-view .column-header .label{
+    -fx-text-fill:#fff;
+    -fx-font-family:arial;
+}
+.table-view1{
+    -fx-background-color:transparent;
+    -fx-border-color:linear-gradient(to bottom right,#4694bb,#2a5178);
+    -fx-border-width:1.5px;
+    -fx-border-radius:8px;
+    -fx-padding:0px
+}
+.table-view2 .column-header-background{
+    -fx-background-color:#651FFF;
+    -fx-background-radius:8px 8px 0 0;
+    -fx-background-inset:0 0 0 0;
+
+}
