@@ -10,7 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class MainCustomerController implements Initializable {
+public class MainCustomerController extends MainController implements Initializable {
 
     @FXML
     private TableColumn<?, ?> IdCustomer;
@@ -49,7 +49,7 @@ public class MainCustomerController implements Initializable {
 
     @FXML
     void addCustomer(ActionEvent event) {
-
+        
     }
     
     @Override

@@ -102,6 +102,9 @@ public class MainOrderController extends MainController implements Initializable
 
     @FXML
     private MFXComboBox<String> listProduct = new MFXComboBox<>();
+    
+    @FXML
+    private MFXComboBox<String> listCustomer=new MFXComboBox<>();
 
     @FXML
     private TableView<Product> listProductOrder = new TableView<>();
@@ -113,11 +116,28 @@ public class MainOrderController extends MainController implements Initializable
     private MFXTextField quantity = new MFXComboBox();
 
     @FXML
-    private Label totalPrice;
+    private Label totalPrice=new Label();
 
     private Document list_Product;
 
     List<Product> list = new ArrayList<>();
+    
+    @FXML
+    void AddCustomer(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddCustomer.fxml"));
+            AnchorPane anchorPane = loader.load();
+            MainOrderController order=loader.getController();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(anchorPane, 600, 400));
+            order.totalPrice.setText("0");
+            stage.showAndWait();
+            stage.setResizable(false);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @FXML
     void add(ActionEvent event) {
@@ -148,13 +168,27 @@ public class MainOrderController extends MainController implements Initializable
                 colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
                 colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
                 col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
+                colDelete.setCellValueFactory(new PropertyValueFactory<>("Delete"));
+                colTotalPrice.setCellValueFactory(new PropertyValueFactory<>("total_price"));
             }
         }
     }
 
     @FXML
     void create(ActionEvent event) {
-
+        try {
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/CreateOrder.fxml"));
+            AnchorPane anchorPane = loader.load();
+            MainOrderController order=loader.getController();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(anchorPane, 300, 200));
+            order.totalPrice.setText("0");
+            stage.showAndWait();
+            stage.setResizable(false);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrder() {
@@ -415,16 +449,18 @@ public class MainOrderController extends MainController implements Initializable
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddOrder.fxml"));
             AnchorPane anchorPane = loader.load();
+            MainOrderController order=loader.getController();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 648, 480));
+            order.totalPrice.setText("0");
             stage.showAndWait();
             stage.setResizable(false);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-
+    
     public static List<String> ListProductAll() {
         List<String> ArrayProduct = new ArrayList<>();
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
@@ -434,10 +470,21 @@ public class MainOrderController extends MainController implements Initializable
         }
         return ArrayProduct;
     }
+    
+    public static List<String> ListCustomerAll(){
+        List<String> ArrayCustomer = new ArrayList<>();
+        MongoCollection<Document> CustomerCollection = DBConnection.getConnection().getCollection("Customer");
+        MongoIterable<Document> customers = CustomerCollection.find();
+        for (Document customer : customers) {
+            ArrayCustomer.add(customer.getString("Name"));
+        }
+        return ArrayCustomer;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ListOrderCustomer();
         listProduct.getItems().addAll(ListProductAll());
+        listCustomer.getItems().addAll(ListCustomerAll());
     }
 }

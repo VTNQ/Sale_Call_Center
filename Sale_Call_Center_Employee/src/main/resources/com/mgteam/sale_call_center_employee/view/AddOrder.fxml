@@ -40,7 +40,7 @@
                   <Font name="System Bold" size="24.0" />
                </font>
             </Label>
-            <Label fx:id="totalPrice" layoutX="116.0" layoutY="321.0">
+            <Label fx:id="totalPrice" layoutX="116.0" layoutY="321.0" prefHeight="35.0" prefWidth="78.0">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>
