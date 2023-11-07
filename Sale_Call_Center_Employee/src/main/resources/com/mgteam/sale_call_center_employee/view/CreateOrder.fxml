@@ -14,8 +14,8 @@
          </font>
       </Label>
       <Label layoutX="51.0" layoutY="91.0" text="Name Customer" />
-      <MFXComboBox fx:id="listCustomer" layoutX="175.0" layoutY="86.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="113.0" />
-      <MFXButton layoutX="32.0" layoutY="43.0" onAction="#AddCustomer" text="Add new Customer" />
-      <MFXButton layoutX="148.0" layoutY="144.0" text="Create" />
+      <MFXComboBox fx:id="listCustomer" layoutX="175.0" layoutY="86.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="113.0" styleClass="mfx-combo-box" stylesheets="@../css/application.css" />
+      <MFXButton layoutX="32.0" layoutY="43.0" onAction="#AddCustomer" styleClass="mfx-button" stylesheets="@../css/application.css" text="Add new Customer" />
+      <MFXButton layoutX="148.0" layoutY="144.0" styleClass="mfx-button" stylesheets="@../css/application.css" text="Create" />
    </children>
 </AnchorPane>

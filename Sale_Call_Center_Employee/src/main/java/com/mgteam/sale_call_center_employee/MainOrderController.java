@@ -127,11 +127,9 @@ public class MainOrderController extends MainController implements Initializable
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddCustomer.fxml"));
             AnchorPane anchorPane = loader.load();
-            MainOrderController order=loader.getController();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 600, 400));
-            order.totalPrice.setText("0");
             stage.showAndWait();
             stage.setResizable(false);
         } catch (IOException ex) {
