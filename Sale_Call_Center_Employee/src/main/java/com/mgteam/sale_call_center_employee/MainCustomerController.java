@@ -1,5 +1,6 @@
 package com.mgteam.sale_call_center_employee;
 
+import io.github.palexdev.materialfx.controls.MFXComboBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
@@ -41,6 +42,18 @@ public class MainCustomerController extends MainController implements Initializa
 
     @FXML
     private MFXTextField txtSearch;
+    
+    @FXML
+    private MFXTextField address;
+
+    @FXML
+    private MFXComboBox<?> age;
+
+    @FXML
+    private MFXTextField name;
+
+    @FXML
+    private MFXTextField phone;
 
     @FXML
     void Search(ActionEvent event) {
@@ -54,7 +67,7 @@ public class MainCustomerController extends MainController implements Initializa
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        age.setItems();
     }    
     
 }
