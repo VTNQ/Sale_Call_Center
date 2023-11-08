@@ -30,10 +30,10 @@
       </AnchorPane>
       <AnchorPane layoutY="108.0" prefHeight="374.0" prefWidth="648.0">
          <children>
-            <MFXComboBox fx:id="listProduct" layoutX="324.0" layoutY="9.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="123.0" styleClass="mfx-combo-box" stylesheets="@../css/application.css" />
-            <Label layoutX="206.0" layoutY="14.0" text="Product" />
-            <Label layoutX="206.0" layoutY="58.0" text="Quantity" />
-            <MFXTextField fx:id="quantity" layoutX="324.0" layoutY="53.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="123.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
+            <MFXComboBox fx:id="listProduct" layoutX="325.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="123.0" styleClass="mfx-combo-box" stylesheets="@../css/application.css" />
+            <Label layoutX="207.0" layoutY="5.0" text="Product" />
+            <Label layoutX="205.0" layoutY="35.0" text="Quantity" />
+            <MFXTextField fx:id="quantity" layoutX="325.0" layoutY="30.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="123.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
             <MFXButton layoutX="304.0" layoutY="101.0" onAction="#add" styleClass="mfx-button" stylesheets="@../css/application.css" text="Add" />
             <Label layoutY="321.0" text="TOTAL :">
                <font>
@@ -64,6 +64,8 @@
                </content>
             </ScrollPane>
             <MFXButton layoutX="24.0" layoutY="101.0" onAction="#popupcustomer" styleClass="mfx-button" stylesheets="@../css/application.css" text="Add customer" />
+            <Label layoutX="207.0" layoutY="83.0" text="Customer" />
+            <MFXComboBox fx:id="listCustomer" layoutX="325.0" layoutY="70.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="123.0" styleClass="mfx-combo-box" stylesheets="@../css/application.css" />
          </children>
       </AnchorPane>
    </children>

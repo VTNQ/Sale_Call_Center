@@ -11,10 +11,14 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXPagination;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
@@ -24,14 +28,21 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -47,7 +58,13 @@ public class MainOrderController extends MainController implements Initializable
     private TableColumn<Order, Boolean> ListProduct = new TableColumn<>();
     @FXML
     private TableColumn<?, ?> Nameproduct = new TableColumn<>();
-
+    private ObjectId idlastorder;
+    private void setidlastorder(ObjectId idorder){
+       this.idlastorder=idorder;
+    }
+    private ObjectId getidlastorder(){
+        return  idlastorder;
+    }
     @FXML
     private TableColumn<?, ?> colquality = new TableColumn<>();
 
@@ -105,7 +122,8 @@ public class MainOrderController extends MainController implements Initializable
 
     @FXML
     private MFXComboBox<String> listCustomer = new MFXComboBox<>();
-
+    @FXML
+    private TableColumn<Order, Boolean> colprint = new TableColumn<>();
     @FXML
     private TableView<Product> listProductOrder = new TableView<>();
 
@@ -121,6 +139,108 @@ public class MainOrderController extends MainController implements Initializable
     private Document list_Product;
 
     List<Product> list = new ArrayList<>();
+    @FXML
+    private Button buttonsave = new Button();
+
+    @FXML
+    private TextField directoryfield = new TextField();
+
+    @FXML
+    void choice_Direct(ActionEvent event) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        Stage stage = new Stage(); // Tạo một Stage mới
+
+        java.io.File selectedDirectory = directoryChooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            System.out.println("Thư mục đã chọn: " + selectedDirectory.getAbsolutePath());
+            directoryfield.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    @FXML
+void save(ActionEvent event) throws FileNotFoundException, IOException {
+    List<String> idList = displayIdProducts(getidlastorder());
+    List<Integer> Quality = displayQuality(getidlastorder());
+
+    String fileName = directoryfield.getText() +  "\\bill.docx";
+    XWPFDocument document = new XWPFDocument();
+
+    // Create a paragraph and run for the title
+    XWPFParagraph title = document.createParagraph();
+    XWPFRun titleRun = title.createRun();
+    titleRun.setText("Bill");
+
+    // Create a table for the bill
+    XWPFTable table = document.createTable(idList.size() + 1, 2); // +1 for the header row
+
+    // Set the column widths
+    table.setWidth("100%");
+    table.getRows().forEach(row -> row.getCell(0).setWidth("50%"));
+    table.getRows().forEach(row -> row.getCell(1).setWidth("50%"));
+
+    // Set the header row
+    table.getRow(0).getCell(0).setText("Product");
+    table.getRow(0).getCell(1).setText("Quality");
+
+    for (int i = 0; i < idList.size(); i++) {
+        String productName = idList.get(i);
+        int productQuality = Quality.get(i);
+
+        // Fill in the data
+        table.getRow(i + 1).getCell(0).setText(productName);
+        table.getRow(i + 1).getCell(1).setText(Integer.toString(productQuality));
+    }
+
+    try (FileOutputStream out = new FileOutputStream(fileName)) {
+        document.write(out);
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            document.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+private List<String> displayIdProducts(ObjectId id) {
+    List<String> idList = new ArrayList<>();
+    MongoCollection<Document> productCollection = DBConnection.getConnection().getCollection("Product");
+    MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
+    FindIterable<Document> productDocuments = productCollection.find();
+
+    for (Document productDocument : productDocuments) {
+        ObjectId productId = productDocument.getObjectId("_id");
+        String productName = productDocument.getString("Name");
+
+        Document orderQuery = new Document("DetailOrder." + productId, new Document("$exists", true));
+        Document orderDocument = orderCollection.find(orderQuery).first();
+
+        if (orderDocument != null && orderDocument.getObjectId("_id").equals(id)) {
+            idList.add(productName);
+        }
+    }
+
+    return idList;
+}
+private List<Integer> displayQuality( ObjectId idorder) {
+        List<Integer> idList = new ArrayList<>();
+        MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
+        FindIterable<Document> productWarehouse = order.find(new Document("_id", idorder));
+        for (Document document : productWarehouse) {
+           
+          ObjectId id=document.getObjectId("_id");
+          FindIterable<Document>ordercollection=order.find(new Document("_id",idorder));
+            for (Document document1 : ordercollection) {
+                 Document Detail = (Document) document.get("DetailOrder");
+            Document idcol = (Document) Detail.get(String.valueOf(id));
+            if(idcol!=null){
+                idList.add(idcol.getInteger("Quality"));
+            }
+            }
+        }
+        return idList;
+    }
 
     @FXML
     void AddCustomer(ActionEvent event) {
@@ -314,6 +434,41 @@ public class MainOrderController extends MainController implements Initializable
         NameEmployee.setCellValueFactory(new PropertyValueFactory<>("NameEmployee"));
         OrderDay.setCellValueFactory(new PropertyValueFactory<>("Order_date"));
         ShipDay.setCellValueFactory(new PropertyValueFactory<>("Ship_date"));
+        colprint.setCellFactory(column -> new TableCell<Order, Boolean>() {
+            private MFXButton button = new MFXButton("Print");
+
+            {
+                button.setOnAction(event -> {
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("view/Bill.fxml"));
+                    Order orders = getTableView().getItems().get(getIndex());
+                    
+                    try {
+                        AnchorPane Detail = loader.load();
+                        Stage stage = new Stage();
+                        MainOrderController main = loader.getController();
+                        main.displayProduct(orders.getId());
+                        main.setidlastorder(orders.getId());
+                        stage.initModality(Modality.WINDOW_MODAL);
+                        stage.setScene(new Scene(Detail));
+                        stage.setResizable(false);
+                        stage.showAndWait();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null || !empty) {
+                    setGraphic(button);
+                } else {
+                    setGraphic(null);
+                }
+            }
+
+        });
         ListProduct.setCellValueFactory(new PropertyValueFactory<>("Product"));
         ListProduct.setCellFactory(column -> new TableCell<Order, Boolean>() {
             private MFXButton button = new MFXButton("Detail");
@@ -504,6 +659,26 @@ public class MainOrderController extends MainController implements Initializable
             ArrayCustomer.add(customer.getString("Name"));
         }
         return ArrayCustomer;
+    }
+public Map<String, ObjectId> getCategoryNameToIdMap() {
+        MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Customer");
+        Map<String, ObjectId> categoryNameToIdMap = new HashMap<>();
+
+        FindIterable<Document> result = categoryCollection.find();
+        for (Document document : result) {
+            String categoryName = document.getString("Name");
+            ObjectId categoryId = document.getObjectId("_id");
+            categoryNameToIdMap.put(categoryName, categoryId);
+        }
+
+        return categoryNameToIdMap;
+    }
+
+    public ObjectId getCategoryIDByName(String categoryName) {
+        Map<String, ObjectId> categoryNameToIdMap = getCategoryNameToIdMap();
+
+        // Lấy ID từ Map
+        return categoryNameToIdMap.get(categoryName);
     }
 
     @Override

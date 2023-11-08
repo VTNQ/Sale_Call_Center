@@ -37,6 +37,7 @@
                   <TableColumn fx:id="OrderDay" prefWidth="109.0" text="Order Day" />
                   <TableColumn fx:id="ShipDay" prefWidth="109.0" text="Ship Day" />
                   <TableColumn fx:id="ListProduct" prefWidth="85.0" text="Product" />
+                  <TableColumn fx:id="colprint" prefWidth="120.0" text="Print" />
                   <TableColumn fx:id="StatusOrder" prefWidth="120.0" text="Status" />
               </columns>
                <columnResizePolicy>
