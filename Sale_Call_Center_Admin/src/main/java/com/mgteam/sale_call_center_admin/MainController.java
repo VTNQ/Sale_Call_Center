@@ -49,9 +49,10 @@ public class MainController implements Initializable {
     private MFXTextField Email;
 
     @FXML
-    private Pagination pagination;
+    private Pagination pagination=new Pagination();
     @FXML
     private ComboBox<String> Position;
+    
     @FXML
     private TableColumn<Employee, String> colName;
     @FXML
