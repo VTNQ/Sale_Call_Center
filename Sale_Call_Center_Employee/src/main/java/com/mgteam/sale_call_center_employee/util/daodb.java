@@ -110,11 +110,11 @@ public class daodb {
         Set<ObjectId> processedOrders = new HashSet<>();
         try {
             MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
-            MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+          
             MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
             MongoCollection<Document> Employee = DBConnection.getConnection().getCollection("Employee");
             MongoCollection<Document> Customer = DBConnection.getConnection().getCollection("Customer");
-            MongoCollection<Document> Outgoinorder = DBConnection.getConnection().getCollection("OutGoingOrder");
+         
             FindIterable<Document> orders = orderCollection.find(new Document());
             for (Document order : orders) {
                 ObjectId orderid = order.getObjectId("_id");
@@ -125,31 +125,31 @@ public class daodb {
                     Document detail = orderCollection.find(query).first();
                     if (detail != null) {
                         Document query1 = new Document("Detail." + String.valueOf(idproduct), new Document("$exists", true));
-                        Document detailWarehouse = Warehouse.find(query1).first();
-                        if (detailWarehouse != null) {
+
+               
                             ObjectId idEmployee = order.getObjectId("id_Employee");
                             ObjectId idCustomer = order.getObjectId("id_Customer");
                             Document Emp = Employee.find(new Document("_id", idEmployee)).first();
                             Document cus = Customer.find(new Document("_id", idCustomer)).first();
-                            Document incoming = Outgoinorder.find(Filters.and(Filters.eq("ID_Employee", idEmployee), Filters.eq("ID_Order", orderid))).first();
+                         
 
-                            if (Emp != null && cus != null && incoming != null && !processedOrders.contains(orderid)) {
+                            if (Emp != null && cus != null  && !processedOrders.contains(orderid)) {
                                 boolean isSimilar = regexPattern.matcher(String.valueOf(order.getObjectId("_id").hashCode())).matches();
                                 if (isSimilar || regexPattern.matcher(cus.getString("Name")).matches()) {
                                     String nameCustomer = cus.getString("Name");
                                     String EmployeeName = Emp.getString("Name");
-                                    int status = incoming.getInteger("status");
+                                    int status = order.getInteger("status");
                                     ObjectId idEmploye = Emp.getObjectId("_id");
                                     int id_order = order.getObjectId("_id").hashCode();
-                                    ObjectId idWarehouse = detailWarehouse.getObjectId("_id");
-                                    ObjectId id_outgoing = incoming.getObjectId("_id");
-                                    export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, idWarehouse, status, id_outgoing));
+                                
+
+                                    export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, status));
                                     processedOrders.add(orderid);
                                 }
 
                             }
 
-                        }
+                        
                     }
                 }
 
@@ -165,11 +165,9 @@ public class daodb {
         Set<ObjectId> processedOrders = new HashSet<>();
         try {
             MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
-            MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
             MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
             MongoCollection<Document> Employee = DBConnection.getConnection().getCollection("Employee");
             MongoCollection<Document> Customer = DBConnection.getConnection().getCollection("Customer");
-            MongoCollection<Document> Outgoinorder = DBConnection.getConnection().getCollection("OutGoingOrder");
             FindIterable<Document> orders = orderCollection.find(new Document());
             for (Document order : orders) {
                 ObjectId orderid = order.getObjectId("_id");
@@ -179,28 +177,26 @@ public class daodb {
                     Document query = new Document("DetailOrder." + String.valueOf(idproduct), new Document("$exists", true));
                     Document detail = orderCollection.find(query).first();
                     if (detail != null) {
-                        Document query1 = new Document("Detail." + String.valueOf(idproduct), new Document("$exists", true));
-                        Document detailWarehouse = Warehouse.find(query1).first();
-                        if (detailWarehouse != null) {
+ 
+
                             ObjectId idEmployee = order.getObjectId("id_Employee");
                             ObjectId idCustomer = order.getObjectId("id_Customer");
                             Document Emp = Employee.find(new Document("_id", idEmployee)).first();
                             Document cus = Customer.find(new Document("_id", idCustomer)).first();
-                            Document incoming = Outgoinorder.find(Filters.and(Filters.eq("ID_Employee", idEmployee), Filters.eq("ID_Order", orderid))).first();
+    
 
-                            if (Emp != null && cus != null && incoming != null && !processedOrders.contains(orderid)) {
+                            if (Emp != null && cus != null  && !processedOrders.contains(orderid)) {
                                 String nameCustomer = cus.getString("Name");
                                 String EmployeeName = Emp.getString("Name");
-                                int status = incoming.getInteger("status");
+                                int status = order.getInteger("status");
                                 ObjectId idEmploye = Emp.getObjectId("_id");
                                 int id_order = order.getObjectId("_id").hashCode();
-                                ObjectId idWarehouse = detailWarehouse.getObjectId("_id");
-                                ObjectId id_outgoing = incoming.getObjectId("_id");
-                                export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, idWarehouse, status, id_outgoing));
+                                
+                                export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, status));
                                 processedOrders.add(orderid);
                             }
 
-                        }
+                        
                     }
                 }
 

@@ -104,16 +104,16 @@ private String NameProduct;
         this.NameProduct = NameProduct;
     }
 
-    public Export(int order, String Customer, String Employee,ObjectId idEmployee,ObjectId idorder,ObjectId idWarehouse,int status,ObjectId idProduct) {
+    public Export(int order, String Customer, String Employee,ObjectId idEmployee,ObjectId idorder,int status) {
         this.order = order;
         this.Customer = Customer;
         this.Employee = Employee;
         this.Product=true;
         this.idEmployee=idEmployee;
         this.idOrder=idorder;
-        this.idWarehouse=idWarehouse;
+  
         this.status=status;
-        this.idProduct=idProduct;
+       
 
     }
 
