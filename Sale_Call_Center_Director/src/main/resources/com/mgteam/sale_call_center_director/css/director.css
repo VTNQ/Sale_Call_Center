@@ -6,6 +6,36 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Created on : Oct 18, 2023, 5:49:42 PM
     Author     : tranp
 */
+.mfx-text-field {
+    -fx-min-width: 130;
+    -fx-font-family: 'Visby Round CF Medium';
+}
+
+.mfx-text-field .floating-text {
+    -fx-font-family: 'Visby Round CF Medium';
+}
+
+.mfx-button {
+    -fx-font-family: "Open Sans Regular";
+    -fx-text-fill: -mfx-text-he;
+}
+
+.mfx-button:armed,
+.mfx-button:hover,
+.mfx-button:focused,
+.mfx-button {
+    -fx-background-radius: 3px;
+    -fx-background-insets: 0px;
+}
+
+.mfx-button,
+.mfx-button:armed,
+.mfx-button:focused {
+    -fx-background-color: white;
+}   
+.top-panel{
+    -fx-background-color:linear-gradient(to right, #ADD8E6, #87CEEB);
+}
 .button-design{
     -fx-text-fill: #fff;
     -fx-background-color: #007bff;

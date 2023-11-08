@@ -2,6 +2,8 @@ module com.mgteam.sale_call_center_director {
     requires javafx.controls;
     requires javafx.fxml;
     requires org.mongodb.bson;
+    requires java.mail;
+    requires MaterialFX;
     requires org.mongodb.driver.core;
     requires org.mongodb.driver.sync.client;
     requires java.base;

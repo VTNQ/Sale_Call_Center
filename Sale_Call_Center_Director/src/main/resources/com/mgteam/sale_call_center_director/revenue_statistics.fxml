@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
@@ -24,7 +26,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <TableView fx:id="tblrevenue" layoutX="53.0" layoutY="154.0" prefHeight="271.0" prefWidth="446.0" styleClass="table-view1" stylesheets="@css/director.css">
+      <TableView fx:id="tblrevenue" layoutX="55.0" layoutY="175.0" prefHeight="226.0" prefWidth="446.0" styleClass="table-view1" stylesheets="@css/director.css">
         <columns>
           <TableColumn fx:id="colproduct" prefWidth="102.39996337890625" text="Product" />
             <TableColumn fx:id="colcategory" prefWidth="102.39996337890625" text="category" />
@@ -37,5 +39,12 @@
             <Font size="24.0" />
          </font>
       </Label>
+      <Label layoutX="67.0" layoutY="142.0" text="year" />
+      <ComboBox fx:id="year" layoutX="98.0" layoutY="138.0" prefHeight="26.0" prefWidth="104.0" />
+      <Pagination fx:id="pagination" layoutX="150.0" layoutY="411.0" prefHeight="46.0" prefWidth="200.0" />
+      <Label layoutX="222.0" layoutY="143.0" text="precious" />
+      <ComboBox fx:id="precious" layoutX="268.0" layoutY="138.0" prefHeight="26.0" prefWidth="104.0" />
+      <Label layoutX="385.0" layoutY="142.0" text="Month" />
+      <ComboBox fx:id="month" layoutX="432.0" layoutY="138.0" prefHeight="26.0" prefWidth="104.0" />
    </children>
 </AnchorPane>
