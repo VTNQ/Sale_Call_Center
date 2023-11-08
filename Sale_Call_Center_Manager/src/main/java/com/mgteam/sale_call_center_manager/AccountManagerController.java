@@ -539,6 +539,7 @@ public class AccountManagerController implements Initializable{
                                         Username.setText("");
                                         Phone.setText("");
                                         Email.setText("");
+                                        AccountEmployee();
                                     } else if (postion.getValue().equals("SalePerson")) {
                                         DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                         String since = Since.getValue().format(local);
@@ -551,6 +552,7 @@ public class AccountManagerController implements Initializable{
                                         Username.setText("");
                                         Phone.setText("");
                                         Email.setText("");
+                                        AccountEmployee();
                                     }
 
                                 } else {

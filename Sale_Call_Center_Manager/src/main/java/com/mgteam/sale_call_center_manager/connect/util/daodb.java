@@ -470,7 +470,7 @@ public class daodb {
                     Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
 
                     if (EmployeeDocument != null) {
-                        int id_order = order.getObjectId("_id").hashCode();
+                        int id_order = Math.abs(order.getObjectId("_id").hashCode());
                         String EmployeeName = EmployeeDocument.getString("Name");
                         String dayOrder = order.getString("Order_date");
                         LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -570,7 +570,7 @@ public class daodb {
                 Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
                 if (customerDocument != null && EmployeeDocument != null) {
                     String customerName = customerDocument.getString("Name");
-                    int id_order = order.getObjectId("_id").hashCode();
+                    int id_order = Math.abs(order.getObjectId("_id").hashCode());
                     String EmployeeName = EmployeeDocument.getString("Name");
                     String dayOrder = order.getString("Order_date");
                     LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));

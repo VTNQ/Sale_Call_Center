@@ -100,7 +100,8 @@ public class LoginController implements Initializable {
         MongoCollection<Document> empCollection = DBconnect.getdatabase().getCollection("Admin");
         Bson filter = Filters.and(
                 Filters.eq("Username", MD5.encryPassword(username.getText())),
-                Filters.eq("Password", MD5.encryPassword(password.getText()))
+                Filters.eq("Password", MD5.encryPassword(password.getText())),
+                Filters.eq("Usertype",2)
         );
 
         MongoIterable<Document> results = empCollection.find(filter);
@@ -292,12 +293,15 @@ public class LoginController implements Initializable {
 
     @FXML
     void forgot_password(ActionEvent event) {
-        MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Employee");
+        if(email.getText().isEmpty()){
+            Alert.Dialogerror("Enter your Email");
+        }else{
+             MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
 
         String otp = generateOTP();
         Bson filter = Filters.and(
                 Filters.eq("Email", email.getText()),
-                Filters.eq("empMgr", 1)
+                Filters.eq("Usertype", 2)
         );
         Bson updates = Updates.set("OTP", otp);
         UpdateResult update = collection.updateOne(filter, updates);
@@ -312,6 +316,8 @@ public class LoginController implements Initializable {
         } else {
             Alert.Dialogerror("Can't find your gmail");
         }
+        }
+       
     }
 
     @FXML
@@ -387,7 +393,10 @@ public class LoginController implements Initializable {
 
     @FXML
     void submit(ActionEvent event) {
-        MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Employee");
+        if(one.getText().isEmpty() && two.getText().isEmpty() && three.getText().isEmpty() && four.getText().isEmpty()){
+            Alert.Dialogerror("Enter Otp");
+        }else{
+            MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Employee");
         MongoCollection<Document> RequestCollection = DBconnect.getdatabase().getCollection("Request");
         String otp = one.getText() + two.getText() + three.getText() + four.getText();
         Bson filter = Filters.and(
@@ -407,7 +416,9 @@ public class LoginController implements Initializable {
             }
         } else {
             Alert.Dialogerror("request sent failed");
+        } 
         }
+       
     }
 
     @Override
