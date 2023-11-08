@@ -3,6 +3,7 @@ package com.mgteam.sale_call_center_employee;
 import com.mgteam.sale_call_center_employee.dialog.DialogAlert;
 import com.mgteam.sale_call_center_employee.model.Order;
 import com.mgteam.sale_call_center_employee.model.Product;
+import com.mgteam.sale_call_center_employee.model.Warehouse;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -32,6 +33,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -43,6 +45,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -103,13 +106,13 @@ public class MainOrderController extends MainController implements Initializable
     private MFXPagination PaginationProduct = new MFXPagination();
     
     @FXML
-    private TableColumn<?, ?> colPrice;
+    private TableColumn<?, ?> colPrice = new TableColumn<>();
     
     @FXML
     private MFXTextField txtSearch;
     
     @FXML
-    private TableColumn<?, ?> colDelete = new TableColumn<>();
+    private TableColumn<Product, Boolean> colDelete = new TableColumn<>();
     
     @FXML
     private TableColumn<?, ?> colIdProduct = new TableColumn<>();
@@ -132,7 +135,8 @@ public class MainOrderController extends MainController implements Initializable
     private TableColumn<Order, Boolean> colprint = new TableColumn<>();
     @FXML
     private TableView<Product> listProductOrder = new TableView<>();
-    
+    @FXML
+    private Button buttonsave = new Button();
     @FXML
     private TableColumn<?, ?> colTotalPrice;
     
@@ -145,8 +149,6 @@ public class MainOrderController extends MainController implements Initializable
     private Document list_Product;
     
     List<Product> list = new ArrayList<>();
-    @FXML
-    private Button buttonsave = new Button();
     
     @FXML
     private TextField directoryfield = new TextField();
@@ -165,49 +167,78 @@ public class MainOrderController extends MainController implements Initializable
     
     @FXML
     void save(ActionEvent event) throws FileNotFoundException, IOException {
-        List<String> idList = displayIdProducts(getidlastorder());
-        List<Integer> Quality = displayQuality(getidlastorder());
-        
-        String fileName = directoryfield.getText() + "\\bill.docx";
-        XWPFDocument document = new XWPFDocument();
+        if (!directoryfield.getText().isEmpty()) {
+            
+            List<String> idList = displayIdProducts(getidlastorder());
+            List<Integer> Quality = displayQuality(getidlastorder());
+            List<String> Price = displayIdprice(getidlastorder());
 
-        // Create a paragraph and run for the title
-        XWPFParagraph title = document.createParagraph();
-        XWPFRun titleRun = title.createRun();
-        titleRun.setText("Bill");
+            // Tạo một tệp Word mới
+            XWPFDocument document = new XWPFDocument();
 
-        // Create a table for the bill
-        XWPFTable table = document.createTable(idList.size() + 1, 2); // +1 for the header row
+            // Tạo tiêu đề đơn hàng
+            XWPFParagraph orderTitle = document.createParagraph();
+            XWPFRun orderTitleRun = orderTitle.createRun();
+            orderTitleRun.setText("Đơn hàng " + Math.abs(getidlastorder().hashCode()));
+            orderTitleRun.setBold(true);
+            orderTitleRun.setFontSize(14);
 
-        // Set the column widths
-        table.setWidth("100%");
-        table.getRows().forEach(row -> row.getCell(0).setWidth("50%"));
-        table.getRows().forEach(row -> row.getCell(1).setWidth("50%"));
+            // Tạo tiêu đề hóa đơn
+            XWPFParagraph title = document.createParagraph();
+            XWPFRun titleRun = title.createRun();
+            titleRun.setText("Hóa đơn");
+            titleRun.setBold(true);
+            titleRun.setFontSize(16);
+            
+            int totalPrice = 0;
+            String totalstring = null;
 
-        // Set the header row
-        table.getRow(0).getCell(0).setText("Product");
-        table.getRow(0).getCell(1).setText("Quality");
-        
-        for (int i = 0; i < idList.size(); i++) {
-            String productName = idList.get(i);
-            int productQuality = Quality.get(i);
+            // Tạo danh sách sản phẩm, chất lượng và giá
+            for (int i = 0; i < idList.size(); i++) {
+                String product = idList.get(i);
+                Integer quality = Quality.get(i);
+                String price = Price.get(i);
 
-            // Fill in the data
-            table.getRow(i + 1).getCell(0).setText(productName);
-            table.getRow(i + 1).getCell(1).setText(Integer.toString(productQuality));
-        }
-        
-        try (FileOutputStream out = new FileOutputStream(fileName)) {
-            document.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                document.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                // Loại bỏ dấu "," và "$" ra khỏi chuỗi giá và chuyển đổi thành số nguyên
+                int pricestr = Integer.parseInt(price.replaceAll("[^0-9]", ""));
+
+                // Tạo một đoạn văn bản cho mỗi sản phẩm
+                XWPFParagraph item = document.createParagraph();
+                XWPFRun itemRun = item.createRun();
+                itemRun.setText("Sản phẩm: " + product + ", Chất lượng: " + quality + ", Giá: " + price);
+                itemRun.setFontSize(12);
+                totalPrice += pricestr * quality;
+
+                // Định dạng tổng số tiền
+                DecimalFormat formatter = new DecimalFormat("#,### $");
+                totalstring = formatter.format(totalPrice);
             }
+
+            // Tạo khoảng cách giữa danh sách sản phẩm và tổng số tiền
+            for (int i = 0; i < 2; i++) {
+                XWPFParagraph space = document.createParagraph();
+                XWPFRun spaceRun = space.createRun();
+                spaceRun.addBreak();
+            }
+
+            // Tạo tổng số tiền (nếu cần)
+            XWPFParagraph total = document.createParagraph();
+            total.setAlignment(ParagraphAlignment.RIGHT);  // Căn phải tổng số tiền
+            XWPFRun totalRun = total.createRun();
+            totalRun.setText("Tổng số tiền: " + totalstring);
+            totalRun.setBold(true);
+
+            // Lưu tệp Word vào một tên tệp cụ thể (hoặc sử dụng đường dẫn tùy ý)
+            FileOutputStream out = new FileOutputStream(directoryfield.getText() + "\\bill.docx");
+            document.write(out);
+            out.close();
+            DialogAlert.DialogSuccess("Download successfully");
+            Stage stage = (Stage) buttonsave.getScene().getWindow();
+            stage.close();
+        } else {
+            DialogAlert.DialogError("Please select the link");
         }
+        
     }
     
     private List<String> displayIdProducts(ObjectId id) {
@@ -231,16 +262,42 @@ public class MainOrderController extends MainController implements Initializable
         return idList;
     }
     
-    private List<Integer> displayQuality(ObjectId idorder) {
-        List<Integer> idList = new ArrayList<>();
+    private List<String> displayIdprice(ObjectId idorder) {
+        List<String> idList = new ArrayList<>();
         MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
-        FindIterable<Document> productWarehouse = order.find(new Document("_id", idorder));
+        MongoCollection<Document> product = DBConnection.getConnection().getCollection("Product");
+        FindIterable<Document> productWarehouse = product.find();
         for (Document document : productWarehouse) {
             
             ObjectId id = document.getObjectId("_id");
             FindIterable<Document> ordercollection = order.find(new Document("_id", idorder));
             for (Document document1 : ordercollection) {
-                Document Detail = (Document) document.get("DetailOrder");
+                Document Detail = (Document) document1.get("DetailOrder");
+                Document idcol = (Document) Detail.get(String.valueOf(id));
+                if (idcol != null) {
+                    int price = document.getInteger("Price");
+                    DecimalFormat formatter = new DecimalFormat("#,### $");
+                    String formatprice = formatter.format(price);
+                    idList.add(formatprice);
+                    
+                }
+            }
+        }
+        
+        return idList;
+    }
+    
+    private List<Integer> displayQuality(ObjectId idorder) {
+        List<Integer> idList = new ArrayList<>();
+        MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
+        MongoCollection<Document> product = DBConnection.getConnection().getCollection("Product");
+        FindIterable<Document> productWarehouse = product.find();
+        for (Document document : productWarehouse) {
+            
+            ObjectId id = document.getObjectId("_id");
+            FindIterable<Document> ordercollection = order.find(new Document("_id", idorder));
+            for (Document document1 : ordercollection) {
+                Document Detail = (Document) document1.get("DetailOrder");
                 Document idcol = (Document) Detail.get(String.valueOf(id));
                 if (idcol != null) {
                     idList.add(idcol.getInteger("Quality"));
@@ -269,53 +326,82 @@ public class MainOrderController extends MainController implements Initializable
     
     @FXML
     void add(ActionEvent event) {
-        if (!listProduct.getSelectedItem().isEmpty()) {
-            MongoCollection<Document> collection = DBConnection.getConnection().getCollection("Product");
-            FindIterable<Document> documents = collection.find(Filters.eq("Name", listProduct.getSelectedItem()));
-            int index = -1;
-            String selectedProduct = listProduct.getSelectedItem();
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getName().equals(selectedProduct)) {
-                    index = i;
-                    break;
-                }
-            }
-            for (Document document : documents) {
-                if (index == -1) {
-                    Product newProduct = new Product();
-                    newProduct.setName(listProduct.getSelectedItem());
-                    newProduct.setCustomer(listCustomer.getValue());
-                    newProduct.setQuality(Integer.parseInt(quantity.getText()));
-                    newProduct.setId_product(Math.abs(document.getObjectId("_id").hashCode()));
-                    newProduct.setPrice(document.get("Price").hashCode());
-                    list.add(newProduct);
-                    
-                } else {
-                    Product product = list.get(index);
-                    int oldQuantity = product.getQuality();
-                    int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
-                    product.setQuality(newQuantity);
-                    
-                }
-                ObservableList<Product> observableList = FXCollections.observableArrayList(list);
-                listProductOrder.setItems(observableList);
-                
-                listProductOrder.getItems().setAll(list);
-                colIdProduct.setCellValueFactory(new PropertyValueFactory<>("id_product"));
-                colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
-                colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
-                col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
-                
+        
+        MongoCollection<Document> collection = DBConnection.getConnection().getCollection("Product");
+        FindIterable<Document> documents = collection.find(Filters.eq("Name", listProduct.getSelectedItem()));
+        int index = -1;
+        if (listCustomer.getValue() == null && listProduct != null) {
+            DialogAlert.DialogError("Please enter in full");
+            return;
+        }
+        String selectedProduct = listProduct.getSelectedItem();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getName().equals(selectedProduct)) {
+                index = i;
+                break;
             }
         }
+        for (Document document : documents) {
+            if (index == -1) {
+                
+                Product newProduct = new Product();
+                newProduct.setName(listProduct.getSelectedItem());
+                newProduct.setCustomer(listCustomer.getValue());
+                newProduct.setQuality(Integer.parseInt(quantity.getText()));
+                newProduct.setId_product(Math.abs(document.getObjectId("_id").hashCode()));
+                newProduct.setPrice(document.get("Price").hashCode());
+                list.add(newProduct);
+                listCustomer.setDisable(true);
+                
+            } else {
+                Product product = list.get(index);
+                int oldQuantity = product.getQuality();
+                int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
+                product.setQuality(newQuantity);
+                
+            }
+            ObservableList<Product> observableList = FXCollections.observableArrayList(list);
+            listProductOrder.setItems(observableList);
+            
+            listProductOrder.getItems().setAll(list);
+            colIdProduct.setCellValueFactory(new PropertyValueFactory<>("id_product"));
+            colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
+            colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+            col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
+            colDelete.setCellFactory(column -> new TableCell<Product, Boolean>() {
+                private Button button = new Button("Delete");
+                
+                {
+                    button.setOnAction(event -> {
+                        Product selectedWarehouse = getTableView().getItems().get(getIndex());
+                        listProductOrder.getItems().remove(selectedWarehouse);
+                        
+                    });
+                }
+                
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    button.getStyleClass().add("button-error");
+                    if (item != null || !empty) {
+                        setGraphic(button);
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            });
+        }
+        
     }
     
     @FXML
     void create(ActionEvent event) {
         
         ObservableList<Product> productList = listProductOrder.getItems();
-        
-        MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
+        if(productList.isEmpty()){
+              DialogAlert.DialogError("Not entered yet to add");
+        }else{
+              MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
         boolean isboolean = true;
         ObjectId insertedId = null;
         Document productDetails = new Document();
@@ -335,8 +421,18 @@ public class MainOrderController extends MainController implements Initializable
         warehouseDocument.append("id_Customer", idcustomer);
         warehouseDocument.append("Order_date", formattedDate);
         warehouseDocument.append("id_Employee", LoginController.id_employee);
+        warehouseDocument.append("Ship_date", "");
         warehouseDocument.append("status", 0);
         order.insertOne(warehouseDocument);
+        DialogAlert.DialogSuccess("Add successfully");
+        productList.clear();
+        listProductOrder.setItems(FXCollections.observableArrayList(productList));
+        listCustomer.setDisable(false);
+        quantity.setText("");
+        listProduct.setValue(null);
+        listCustomer.setValue(null);
+        }
+      
     }
     
     public ObjectId getproductName(String productName) {
@@ -557,6 +653,41 @@ public class MainOrderController extends MainController implements Initializable
         NameEmployee.setCellValueFactory(new PropertyValueFactory<>("NameEmployee"));
         OrderDay.setCellValueFactory(new PropertyValueFactory<>("Order_date"));
         ShipDay.setCellValueFactory(new PropertyValueFactory<>("Ship_date"));
+        colprint.setCellFactory(column -> new TableCell<Order, Boolean>() {
+            private MFXButton button = new MFXButton("Print");
+            
+            {
+                button.setOnAction(event -> {
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("view/Bill.fxml"));
+                    Order orders = getTableView().getItems().get(getIndex());
+                    
+                    try {
+                        AnchorPane Detail = loader.load();
+                        Stage stage = new Stage();
+                        MainOrderController main = loader.getController();
+                        main.displayProduct(orders.getId());
+                        main.setidlastorder(orders.getId());
+                        stage.initModality(Modality.WINDOW_MODAL);
+                        stage.setScene(new Scene(Detail));
+                        stage.setResizable(false);
+                        stage.showAndWait();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+            
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null || !empty) {
+                    setGraphic(button);
+                } else {
+                    setGraphic(null);
+                }
+            }
+            
+        });
         ListProduct.setCellValueFactory(new PropertyValueFactory<>("Product"));
         ListProduct.setCellFactory(column -> new TableCell<Order, Boolean>() {
             private MFXButton button = new MFXButton("Detail");
@@ -672,6 +803,9 @@ public class MainOrderController extends MainController implements Initializable
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 648, 480));
+            stage.setOnCloseRequest(closeEvent -> {
+                ListOrderCustomer();
+            });
             order.totalPrice.setText("0");
             stage.showAndWait();
             stage.setResizable(false);

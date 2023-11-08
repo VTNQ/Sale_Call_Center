@@ -60,8 +60,8 @@ public class ListWarehouseController implements Initializable {
 
     @FXML
     private TextField txtsearch = new TextField();
-        @FXML
-    private TextField txtfield=new TextField();
+    @FXML
+    private TextField txtfield = new TextField();
     @FXML
     private Pagination pagination1 = new Pagination();
     private int totalItems;
@@ -102,10 +102,12 @@ public class ListWarehouseController implements Initializable {
     @FXML
     private TableColumn<?, ?> colNameproduct = new TableColumn<>();
     private ObjectId id;
-    private void setid(ObjectId id){
-        this.id=id;
+
+    private void setid(ObjectId id) {
+        this.id = id;
     }
-    private ObjectId getid(){
+
+    private ObjectId getid() {
         return id;
     }
     @FXML
@@ -219,9 +221,10 @@ public class ListWarehouseController implements Initializable {
         }
         return idList;
     }
-    private void searchListdetailWarehouse(String name,ObjectId id,int pageindex){
-        displaymode=2;
-        List<Warehouse>warehouse=daodb.SearchDetailProductWarehouse(name, id);
+
+    private void searchListdetailWarehouse(String name, ObjectId id, int pageindex) {
+        displaymode = 2;
+        List<Warehouse> warehouse = daodb.SearchDetailProductWarehouse(name, id);
         ObservableList<Warehouse> obserable = FXCollections.observableArrayList(warehouse);
         totalItems = obserable.size();
         int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
@@ -242,8 +245,9 @@ public class ListWarehouseController implements Initializable {
         colprice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colNameCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
     }
+
     private void listdetailWarehouse(ObjectId id) {
-        displaymode=1;
+        displaymode = 1;
         List<Warehouse> warehouse = daodb.DetailProductWarehouse(id);
         ObservableList<Warehouse> obserable = FXCollections.observableArrayList(warehouse);
         totalItems = obserable.size();
@@ -263,7 +267,7 @@ public class ListWarehouseController implements Initializable {
     }
 
     private void ListWarehouse() {
-        displaymode=1;
+        displaymode = 1;
         List<Warehouse> ware = daodb.WarehouseReceipt();
         ObservableList<Warehouse> obserable = FXCollections.observableArrayList(ware);
         totalItems = obserable.size();
@@ -350,79 +354,87 @@ public class ListWarehouseController implements Initializable {
             return;
             // Hiển thị cảnh báo cho người dùng hoặc thực hiện xử lý cần thiết
         }
-
-        int quality = Integer.parseInt(qualityString);
-
-        // Tiếp theo, thực hiện kiểm tra sản phẩm đã tồn tại trong danh sách chưa và thêm sản phẩm
-        boolean exists = false;
-
-        for (Warehouse warehouse : productList) {
-            if (warehouse.getNameProduct().equals(nameValue)) {
-                exists = true;
-                int qualityOld = warehouse.getQuality();
-                int qualityTotal = qualityOld + quality;
-                warehouse.setQuality(qualityTotal); // Cập nhật chất lượng
-                break;
-            }
-        }
-
-        if (!exists) {
-            if (!isNamesupplySet) {
-                Warehouse warehouse = new Warehouse();
-                warehouse.setNameProduct(nameValue);
-                warehouse.setQuality(quality);
-                warehouse.setId(Math.abs(getproductName(nameValue).hashCode()));
-                warehouse.setPrice(getFormattedPrice(nameValue));
-                warehouse.setSuppliers(nameSupply);
-                isNamesupplySet = true;
-                Namesupply.setEditable(false);
-                productList.add(warehouse);
+        try {
+            int quality = Integer.parseInt(qualityString);
+            if (quality < 0) {
+                DialogAlert.DialogError("Quality must be a non-negative integer");
             } else {
-                Warehouse warehouse = new Warehouse();
-                warehouse.setNameProduct(nameValue);
-                warehouse.setQuality(quality);
-                warehouse.setId(Math.abs(getproductName(nameValue).hashCode()));
-                warehouse.setPrice(getFormattedPrice(nameValue));
-                warehouse.setSuppliers(nameSupply);
-                warehouse.setIdProduct(getproductName(nameValue));
-                isNamesupplySet = false;
-                productList.add(warehouse);
-            }
+                boolean exists = false;
 
-        }
-
-        if (isDataValid) {
-            // Chỉ khi dữ liệu là hợp lệ, bạn mới thực hiện các thay đổi liên quan đến TableView và cột
-            // Refresh TableView và các cột
-            tblAddlist.setItems(FXCollections.observableArrayList(productList));
-            tblAddlist.getItems().setAll(productList);
-            colidproduct.setCellValueFactory(new PropertyValueFactory<>("id"));
-            colNamproduct.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
-            colQuality.setCellValueFactory(new PropertyValueFactory<>("quality"));
-            colProce.setCellValueFactory(new PropertyValueFactory<>("price"));
-            colSupplier.setCellValueFactory(new PropertyValueFactory<>("suppliers"));
-            coldelete.setCellFactory(column -> new TableCell<Warehouse, Boolean>() {
-                private Button button = new Button("Delete");
-
-                {
-                    button.setOnAction(event -> {
-                        Warehouse selectedWarehouse = getTableView().getItems().get(getIndex());
-                        tblAddlist.getItems().remove(selectedWarehouse);
-                    });
-                }
-
-                @Override
-                protected void updateItem(Boolean item, boolean empty) {
-                    super.updateItem(item, empty);
-                    button.getStyleClass().add("button-error");
-                    if (item != null || !empty) {
-                        setGraphic(button);
-                    } else {
-                        setGraphic(null);
+                for (Warehouse warehouse : productList) {
+                    if (warehouse.getNameProduct().equals(nameValue)) {
+                        exists = true;
+                        int qualityOld = warehouse.getQuality();
+                        int qualityTotal = qualityOld + quality;
+                        warehouse.setQuality(qualityTotal); // Cập nhật chất lượng
+                        break;
                     }
                 }
-            });
+
+                if (!exists) {
+                    if (!isNamesupplySet) {
+                        Warehouse warehouse = new Warehouse();
+                        warehouse.setNameProduct(nameValue);
+                        warehouse.setQuality(quality);
+                        warehouse.setId(Math.abs(getproductName(nameValue).hashCode()));
+                        warehouse.setPrice(getFormattedPrice(nameValue));
+                        warehouse.setSuppliers(nameSupply);
+                        isNamesupplySet = true;
+                        Namesupply.setEditable(false);
+                        productList.add(warehouse);
+                    } else {
+                        Warehouse warehouse = new Warehouse();
+                        warehouse.setNameProduct(nameValue);
+                        warehouse.setQuality(quality);
+                        warehouse.setId(Math.abs(getproductName(nameValue).hashCode()));
+                        warehouse.setPrice(getFormattedPrice(nameValue));
+                        warehouse.setSuppliers(nameSupply);
+                        warehouse.setIdProduct(getproductName(nameValue));
+                        isNamesupplySet = false;
+                        productList.add(warehouse);
+                    }
+
+                }
+
+                if (isDataValid) {
+                    // Chỉ khi dữ liệu là hợp lệ, bạn mới thực hiện các thay đổi liên quan đến TableView và cột
+                    // Refresh TableView và các cột
+                    tblAddlist.setItems(FXCollections.observableArrayList(productList));
+                    tblAddlist.getItems().setAll(productList);
+                    colidproduct.setCellValueFactory(new PropertyValueFactory<>("id"));
+                    colNamproduct.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
+                    colQuality.setCellValueFactory(new PropertyValueFactory<>("quality"));
+                    colProce.setCellValueFactory(new PropertyValueFactory<>("price"));
+                    colSupplier.setCellValueFactory(new PropertyValueFactory<>("suppliers"));
+                    coldelete.setCellFactory(column -> new TableCell<Warehouse, Boolean>() {
+                        private Button button = new Button("Delete");
+
+                        {
+                            button.setOnAction(event -> {
+                                Warehouse selectedWarehouse = getTableView().getItems().get(getIndex());
+                                tblAddlist.getItems().remove(selectedWarehouse);
+                                
+                            });
+                        }
+
+                        @Override
+                        protected void updateItem(Boolean item, boolean empty) {
+                            super.updateItem(item, empty);
+                            button.getStyleClass().add("button-error");
+                            if (item != null || !empty) {
+                                setGraphic(button);
+                            } else {
+                                setGraphic(null);
+                            }
+                        }
+                    });
+                }
+            }
+
+        } catch (NumberFormatException e) {
+             DialogAlert.DialogError("Quality must be a valid non-negative integer");
         }
+
     }
 
     @FXML
@@ -530,19 +542,21 @@ public class ListWarehouseController implements Initializable {
 
         return categoryNameToIdMap.get(productName);
     }
+
     @FXML
     void searchdetail(ActionEvent event) {
-         currentPageIndex=0;
-         searchListdetailWarehouse(txtfield.getText(),getid(),currentPageIndex);
-         if (currentPageIndex != 0) {
+        currentPageIndex = 0;
+        searchListdetailWarehouse(txtfield.getText(), getid(), currentPageIndex);
+        if (currentPageIndex != 0) {
             currentPageIndex = 0;
             pagination1.setCurrentPageIndex(currentPageIndex);
-        }else if(currentPageIndex==0){
+        } else if (currentPageIndex == 0) {
             currentPageIndex = 0;
             pagination1.setCurrentPageIndex(currentPageIndex);
         }
-      
+
     }
+
     @FXML
     void search(ActionEvent event) {
         currentPageIndex = 0;
@@ -560,21 +574,21 @@ public class ListWarehouseController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         ListWarehouse();
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            currentPageIndex=newIndex.intValue();
-            if(displaymode==1){
+            currentPageIndex = newIndex.intValue();
+            if (displaymode == 1) {
                 ListWarehouse();
-            }else if(displaymode==2){
+            } else if (displaymode == 2) {
                 searchdisplay(txtsearch.getText(), currentPageIndex);
             }
-            
+
         });
         pagination1.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-            currentPageIndex=newIndex.intValue();
-         if(displaymode==1){
-             listdetailWarehouse(getid());
-         }else if(displaymode==2){
-             searchListdetailWarehouse(txtfield.getText(), getid(), currentPageIndex);
-         }
+            currentPageIndex = newIndex.intValue();
+            if (displaymode == 1) {
+                listdetailWarehouse(getid());
+            } else if (displaymode == 2) {
+                searchListdetailWarehouse(txtfield.getText(), getid(), currentPageIndex);
+            }
         });
         MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Product");
         ObservableList<String> categoryList = FXCollections.observableArrayList();

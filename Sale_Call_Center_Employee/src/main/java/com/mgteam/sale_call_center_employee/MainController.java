@@ -81,6 +81,15 @@ public class MainController implements Initializable {
     private Label totalgoing = new Label();
 
     @FXML
+    void Homewarehouse(ActionEvent event) {
+        try {
+            App.setRoot("WarehouseStaff");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @FXML
     void changePassword(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("view/changePassword.fxml"));
         try {
@@ -116,6 +125,7 @@ public class MainController implements Initializable {
         }
         return totaloutgoing;
     }
+
     @FXML
     void Warehouse(ActionEvent event) {
         try {

@@ -23,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -116,6 +117,21 @@ public class LoginController implements Initializable {
                         phone = result.getString("Phone");
                         since = result.getString("Since");
                         App.setRoot("SalePerson");
+                         if (istatus(user)) {
+                            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/popupWarehouse.fxml"));
+                            AnchorPane popup = loader.load();
+                            Stage popupstage = new Stage();
+                            popupstage.initModality(Modality.APPLICATION_MODAL);
+                            popupstage.setScene(new Scene(popup));
+                            popupstage.setOnCloseRequest(closeEvent -> {
+                                MongoCollection<Document> updatecollection = DBConnection.getConnection().getCollection("Employee");
+                                Bson filterupdate = Filters.eq("Username", user);
+                                Bson updateStatus = Updates.set("status", 1);
+                                UpdateResult updates = updatecollection.updateOne(filterupdate, updateStatus);
+                            });
+                            popupstage.setResizable(true);
+                            popupstage.showAndWait();
+                        }
                     }
                     if (result.getInteger("usertype") == 2) {
                         DialogAlert.DialogSuccess("Login Success");
@@ -268,6 +284,8 @@ public class LoginController implements Initializable {
                 InsertOneResult insertOneResult = Reports.insertOne(request);
                 DialogAlert.DialogSuccess("Send Success");
             }
+        }else{
+            DialogAlert.DialogError("Enter otp");
         }
 
     }
