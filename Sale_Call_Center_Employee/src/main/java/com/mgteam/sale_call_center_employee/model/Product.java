@@ -7,6 +7,15 @@ public class Product {
     private String Name;
     private ObjectId id_category;
     private Integer Price;
+    private String customer;
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
     private int Quality;
     private int Id_product;
     private String priceformat;

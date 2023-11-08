@@ -1,5 +1,6 @@
 package com.mgteam.sale_call_center_employee;
 
+import com.mgteam.sale_call_center_employee.dialog.DialogAlert;
 import com.mgteam.sale_call_center_employee.model.Order;
 import com.mgteam.sale_call_center_employee.model.Product;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
@@ -15,6 +16,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,103 +52,105 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 public class MainOrderController extends MainController implements Initializable {
-
+    
     private static int id_order;
-
+    
     @FXML
     private TableColumn<?, ?> IdOrder = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<Order, Boolean> ListProduct = new TableColumn<>();
     @FXML
     private TableColumn<?, ?> Nameproduct = new TableColumn<>();
     private ObjectId idlastorder;
-    private void setidlastorder(ObjectId idorder){
-       this.idlastorder=idorder;
+    
+    private void setidlastorder(ObjectId idorder) {
+        this.idlastorder = idorder;
     }
-    private ObjectId getidlastorder(){
-        return  idlastorder;
+    
+    private ObjectId getidlastorder() {
+        return idlastorder;
     }
     @FXML
     private TableColumn<?, ?> colquality = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> idproduct = new TableColumn<>();
-
+    
     @FXML
     private TableView<Product> tblProduct = new TableView<>();
     @FXML
     private TableColumn<?, ?> NameCustomer = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> NameEmployee = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> OrderDay = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> ShipDay = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> StatusOrder = new TableColumn<>();
     @FXML
     private TableView<Order> tblOrder = new TableView<>();
-
+    
     @FXML
     private MFXPagination pagination = new MFXPagination();
-
+    
     @FXML
     private MFXPagination PaginationProduct = new MFXPagination();
-
+    
     @FXML
     private TableColumn<?, ?> colPrice;
-
+    
     @FXML
     private MFXTextField txtSearch;
-
+    
     @FXML
     private TableColumn<?, ?> colDelete = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> colIdProduct = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> colNameProduct = new TableColumn<>();
     String nameproduct;
     @FXML
     private TableColumn<?, ?> col_Price = new TableColumn<>();
-
+    
     @FXML
     private TableColumn<?, ?> colQuantity = new TableColumn<>();
-
+    
     @FXML
     private MFXComboBox<String> listProduct = new MFXComboBox<>();
-
+    
     @FXML
     private MFXComboBox<String> listCustomer = new MFXComboBox<>();
     @FXML
     private TableColumn<Order, Boolean> colprint = new TableColumn<>();
     @FXML
     private TableView<Product> listProductOrder = new TableView<>();
-
+    
     @FXML
     private TableColumn<?, ?> colTotalPrice;
-
+    
     @FXML
     private MFXTextField quantity = new MFXComboBox();
-
+    
     @FXML
     private Label totalPrice = new Label();
-
+    
     private Document list_Product;
-
+    
     List<Product> list = new ArrayList<>();
     @FXML
     private Button buttonsave = new Button();
-
+    
     @FXML
     private TextField directoryfield = new TextField();
-
+    
     @FXML
     void choice_Direct(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -156,92 +162,94 @@ public class MainOrderController extends MainController implements Initializable
             directoryfield.setText(selectedDirectory.getAbsolutePath());
         }
     }
-
+    
     @FXML
-void save(ActionEvent event) throws FileNotFoundException, IOException {
-    List<String> idList = displayIdProducts(getidlastorder());
-    List<Integer> Quality = displayQuality(getidlastorder());
+    void save(ActionEvent event) throws FileNotFoundException, IOException {
+        List<String> idList = displayIdProducts(getidlastorder());
+        List<Integer> Quality = displayQuality(getidlastorder());
+        
+        String fileName = directoryfield.getText() + "\\bill.docx";
+        XWPFDocument document = new XWPFDocument();
 
-    String fileName = directoryfield.getText() +  "\\bill.docx";
-    XWPFDocument document = new XWPFDocument();
+        // Create a paragraph and run for the title
+        XWPFParagraph title = document.createParagraph();
+        XWPFRun titleRun = title.createRun();
+        titleRun.setText("Bill");
 
-    // Create a paragraph and run for the title
-    XWPFParagraph title = document.createParagraph();
-    XWPFRun titleRun = title.createRun();
-    titleRun.setText("Bill");
+        // Create a table for the bill
+        XWPFTable table = document.createTable(idList.size() + 1, 2); // +1 for the header row
 
-    // Create a table for the bill
-    XWPFTable table = document.createTable(idList.size() + 1, 2); // +1 for the header row
+        // Set the column widths
+        table.setWidth("100%");
+        table.getRows().forEach(row -> row.getCell(0).setWidth("50%"));
+        table.getRows().forEach(row -> row.getCell(1).setWidth("50%"));
 
-    // Set the column widths
-    table.setWidth("100%");
-    table.getRows().forEach(row -> row.getCell(0).setWidth("50%"));
-    table.getRows().forEach(row -> row.getCell(1).setWidth("50%"));
+        // Set the header row
+        table.getRow(0).getCell(0).setText("Product");
+        table.getRow(0).getCell(1).setText("Quality");
+        
+        for (int i = 0; i < idList.size(); i++) {
+            String productName = idList.get(i);
+            int productQuality = Quality.get(i);
 
-    // Set the header row
-    table.getRow(0).getCell(0).setText("Product");
-    table.getRow(0).getCell(1).setText("Quality");
-
-    for (int i = 0; i < idList.size(); i++) {
-        String productName = idList.get(i);
-        int productQuality = Quality.get(i);
-
-        // Fill in the data
-        table.getRow(i + 1).getCell(0).setText(productName);
-        table.getRow(i + 1).getCell(1).setText(Integer.toString(productQuality));
-    }
-
-    try (FileOutputStream out = new FileOutputStream(fileName)) {
-        document.write(out);
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            document.close();
+            // Fill in the data
+            table.getRow(i + 1).getCell(0).setText(productName);
+            table.getRow(i + 1).getCell(1).setText(Integer.toString(productQuality));
+        }
+        
+        try (FileOutputStream out = new FileOutputStream(fileName)) {
+            document.write(out);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                document.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
-}
-private List<String> displayIdProducts(ObjectId id) {
-    List<String> idList = new ArrayList<>();
-    MongoCollection<Document> productCollection = DBConnection.getConnection().getCollection("Product");
-    MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
-    FindIterable<Document> productDocuments = productCollection.find();
-
-    for (Document productDocument : productDocuments) {
-        ObjectId productId = productDocument.getObjectId("_id");
-        String productName = productDocument.getString("Name");
-
-        Document orderQuery = new Document("DetailOrder." + productId, new Document("$exists", true));
-        Document orderDocument = orderCollection.find(orderQuery).first();
-
-        if (orderDocument != null && orderDocument.getObjectId("_id").equals(id)) {
-            idList.add(productName);
+    
+    private List<String> displayIdProducts(ObjectId id) {
+        List<String> idList = new ArrayList<>();
+        MongoCollection<Document> productCollection = DBConnection.getConnection().getCollection("Product");
+        MongoCollection<Document> orderCollection = DBConnection.getConnection().getCollection("Order");
+        FindIterable<Document> productDocuments = productCollection.find();
+        
+        for (Document productDocument : productDocuments) {
+            ObjectId productId = productDocument.getObjectId("_id");
+            String productName = productDocument.getString("Name");
+            
+            Document orderQuery = new Document("DetailOrder." + productId, new Document("$exists", true));
+            Document orderDocument = orderCollection.find(orderQuery).first();
+            
+            if (orderDocument != null && orderDocument.getObjectId("_id").equals(id)) {
+                idList.add(productName);
+            }
         }
+        
+        return idList;
     }
-
-    return idList;
-}
-private List<Integer> displayQuality( ObjectId idorder) {
+    
+    private List<Integer> displayQuality(ObjectId idorder) {
         List<Integer> idList = new ArrayList<>();
         MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
         FindIterable<Document> productWarehouse = order.find(new Document("_id", idorder));
         for (Document document : productWarehouse) {
-           
-          ObjectId id=document.getObjectId("_id");
-          FindIterable<Document>ordercollection=order.find(new Document("_id",idorder));
+            
+            ObjectId id = document.getObjectId("_id");
+            FindIterable<Document> ordercollection = order.find(new Document("_id", idorder));
             for (Document document1 : ordercollection) {
-                 Document Detail = (Document) document.get("DetailOrder");
-            Document idcol = (Document) Detail.get(String.valueOf(id));
-            if(idcol!=null){
-                idList.add(idcol.getInteger("Quality"));
-            }
+                Document Detail = (Document) document.get("DetailOrder");
+                Document idcol = (Document) Detail.get(String.valueOf(id));
+                if (idcol != null) {
+                    idList.add(idcol.getInteger("Quality"));
+                }
             }
         }
         return idList;
     }
-
+    
     @FXML
     void AddCustomer(ActionEvent event) {
         try {
@@ -250,15 +258,15 @@ private List<Integer> displayQuality( ObjectId idorder) {
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane, 600, 400));
-
+            
             stage.setResizable(false);
             stage.showAndWait();
-
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-
+    
     @FXML
     void add(ActionEvent event) {
         if (!listProduct.getSelectedItem().isEmpty()) {
@@ -276,50 +284,81 @@ private List<Integer> displayQuality( ObjectId idorder) {
                 if (index == -1) {
                     Product newProduct = new Product();
                     newProduct.setName(listProduct.getSelectedItem());
-
+                    newProduct.setCustomer(listCustomer.getValue());
                     newProduct.setQuality(Integer.parseInt(quantity.getText()));
                     newProduct.setId_product(Math.abs(document.getObjectId("_id").hashCode()));
                     newProduct.setPrice(document.get("Price").hashCode());
                     list.add(newProduct);
-
+                    
                 } else {
                     Product product = list.get(index);
                     int oldQuantity = product.getQuality();
                     int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
                     product.setQuality(newQuantity);
-
+                    
                 }
                 ObservableList<Product> observableList = FXCollections.observableArrayList(list);
                 listProductOrder.setItems(observableList);
-
+                
                 listProductOrder.getItems().setAll(list);
                 colIdProduct.setCellValueFactory(new PropertyValueFactory<>("id_product"));
                 colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
                 colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
                 col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
-
+                
             }
         }
     }
-
+    
     @FXML
     void create(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/CreateOrder.fxml"));
-            AnchorPane anchorPane = loader.load();
-            MainOrderController order = loader.getController();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(anchorPane, 300, 200));
-            order.totalPrice.setText("0");
-            stage.setResizable(false);
-            stage.showAndWait();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        
+        ObservableList<Product> productList = listProductOrder.getItems();
+        
+        MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
+        boolean isboolean = true;
+        ObjectId insertedId = null;
+        Document productDetails = new Document();
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
+        ObjectId idcustomer = null;
+        for (Product warehouse : productList) {
+            Document productDetail = new Document();
+            idcustomer = getCategoryIDByName(warehouse.getCustomer());
+            productDetail.append("Quality", warehouse.getQuality());
+            productDetails.append(String.valueOf(getproductName(warehouse.getName())), productDetail);
+            
         }
+        Document warehouseDocument = new Document();
+        warehouseDocument.append("DetailOrder", productDetails);
+        warehouseDocument.append("id_Customer", idcustomer);
+        warehouseDocument.append("Order_date", formattedDate);
+        warehouseDocument.append("id_Employee", LoginController.id_employee);
+        warehouseDocument.append("status", 0);
+        order.insertOne(warehouseDocument);
     }
-
+    
+    public ObjectId getproductName(String productName) {
+        Map<String, ObjectId> categoryNameToIdMap = getproductNameToIdMap();
+        
+        return categoryNameToIdMap.get(productName);
+    }
+    
+    public Map<String, ObjectId> getproductNameToIdMap() {
+        MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Product");
+        Map<String, ObjectId> categoryNameToIdMap = new HashMap<>();
+        
+        FindIterable<Document> result = categoryCollection.find();
+        for (Document document : result) {
+            String categoryName = document.getString("Name");
+            ObjectId categoryId = document.getObjectId("_id");
+            categoryNameToIdMap.put(categoryName, categoryId);
+        }
+        
+        return categoryNameToIdMap;
+    }
+    
     public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrder() {
         List<com.mgteam.sale_call_center_employee.model.Order> ArrayOrder = new ArrayList<>();
         try {
@@ -327,7 +366,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
             MongoCollection<Document> customerCollection = DBConnection.getConnection().getCollection("Customer");
             MongoCollection<Document> employeeCollection = DBConnection.getConnection().getCollection("Employee");
             Bson filterWithID = Filters.eq("id_Employee", LoginController.id_employee);
-
+            
             FindIterable<Document> result = orderCollection.find(filterWithID);
             for (Document document : result) {
                 id_order = document.getObjectId("_id").hashCode();
@@ -364,10 +403,10 @@ private List<Integer> displayQuality( ObjectId idorder) {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return ArrayOrder;
     }
-
+    
     public static List<com.mgteam.sale_call_center_employee.model.Order> ListOrderWithKey(String Key) {
         List<com.mgteam.sale_call_center_employee.model.Order> ArrayOrder = new ArrayList<>();
         try {
@@ -375,7 +414,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
             MongoCollection<Document> customerCollection = DBConnection.getConnection().getCollection("Customer");
             MongoCollection<Document> employeeCollection = DBConnection.getConnection().getCollection("Employee");
             Bson filterWithID = Filters.and(Filters.eq("id_Employee", LoginController.id_employee));
-
+            
             FindIterable<Document> result = orderCollection.find(filterWithID);
             for (Document document : result) {
                 id_order = document.getObjectId("_id").hashCode();
@@ -416,15 +455,15 @@ private List<Integer> displayQuality( ObjectId idorder) {
                         ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
                     }
                 }
-
+                
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return ArrayOrder;
     }
-
+    
     private void ListOrderCustomer() {
         List<Order> OrderCustomer = ListOrder();
         ObservableList<Order> obserableList = FXCollections.observableArrayList(OrderCustomer);
@@ -436,7 +475,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
         ShipDay.setCellValueFactory(new PropertyValueFactory<>("Ship_date"));
         colprint.setCellFactory(column -> new TableCell<Order, Boolean>() {
             private MFXButton button = new MFXButton("Print");
-
+            
             {
                 button.setOnAction(event -> {
                     FXMLLoader loader = new FXMLLoader(App.class.getResource("view/Bill.fxml"));
@@ -457,7 +496,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
                     }
                 });
             }
-
+            
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
@@ -467,12 +506,12 @@ private List<Integer> displayQuality( ObjectId idorder) {
                     setGraphic(null);
                 }
             }
-
+            
         });
         ListProduct.setCellValueFactory(new PropertyValueFactory<>("Product"));
         ListProduct.setCellFactory(column -> new TableCell<Order, Boolean>() {
             private MFXButton button = new MFXButton("Detail");
-
+            
             {
                 button.setOnAction(event -> {
                     FXMLLoader loader = new FXMLLoader(App.class.getResource("view/DetailProduct.fxml"));
@@ -492,7 +531,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
                     }
                 });
             }
-
+            
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
@@ -502,13 +541,13 @@ private List<Integer> displayQuality( ObjectId idorder) {
                     setGraphic(null);
                 }
             }
-
+            
         });
         StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
         pagination.setCurrentPage(0);
         pagination.setMaxPage(OrderCustomer.size());
     }
-
+    
     private void ListOrderCustomerWithKey() {
         List<Order> OrderCustomer = ListOrderWithKey(txtSearch.getText());
         ObservableList<Order> obserableList = FXCollections.observableArrayList(OrderCustomer);
@@ -521,7 +560,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
         ListProduct.setCellValueFactory(new PropertyValueFactory<>("Product"));
         ListProduct.setCellFactory(column -> new TableCell<Order, Boolean>() {
             private MFXButton button = new MFXButton("Detail");
-
+            
             {
                 button.setOnAction(event -> {
                     FXMLLoader loader = new FXMLLoader(App.class.getResource("view/DetailProduct.fxml"));
@@ -541,7 +580,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
                     }
                 });
             }
-
+            
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
@@ -551,13 +590,13 @@ private List<Integer> displayQuality( ObjectId idorder) {
                     setGraphic(null);
                 }
             }
-
+            
         });
         StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
         pagination.setCurrentPage(0);
         pagination.setMaxPage(OrderCustomer.size());
     }
-
+    
     private void displayProduct(ObjectId idorder) {
         List<Product> productshow = ListProduct(idorder);
         ObservableList<Product> obserable = FXCollections.observableArrayList(productshow);
@@ -567,7 +606,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
         colquality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("Price"));
     }
-
+    
     public static List<com.mgteam.sale_call_center_employee.model.Product> ListProduct(ObjectId idorder) {
         List<com.mgteam.sale_call_center_employee.model.Product> ArrayProduct = new ArrayList<>();
         MongoCollection<Document> OrderCollection = DBConnection.getConnection().getCollection("Order");
@@ -587,10 +626,10 @@ private List<Integer> displayQuality( ObjectId idorder) {
                 }
             }
         }
-
+        
         return ArrayProduct;
     }
-
+    
     private static int getidProduct(MongoCollection<Document> productCollection, String productName) {
         Document product = productCollection.find(new Document("Name", productName)).first();
         if (product != null) {
@@ -598,7 +637,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
         }
         return 0;
     }
-
+    
     @FXML
     void Search(ActionEvent event) {
         if (txtSearch.getText().isEmpty()) {
@@ -607,7 +646,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
             ListOrderCustomerWithKey();
         }
     }
-
+    
     @FXML
     void popupcustomer(ActionEvent event) {
         try {
@@ -618,12 +657,12 @@ private List<Integer> displayQuality( ObjectId idorder) {
             stage.setScene(new Scene(anchorPane));
             stage.setResizable(false);
             stage.showAndWait();
-
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-
+    
     @FXML
     void addOrder(ActionEvent event) {
         try {
@@ -640,7 +679,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
             ex.printStackTrace();
         }
     }
-
+    
     public static List<String> ListProductAll() {
         List<String> ArrayProduct = new ArrayList<>();
         MongoCollection<Document> ProductCollection = DBConnection.getConnection().getCollection("Product");
@@ -650,7 +689,7 @@ private List<Integer> displayQuality( ObjectId idorder) {
         }
         return ArrayProduct;
     }
-
+    
     public static List<String> ListCustomerAll() {
         List<String> ArrayCustomer = new ArrayList<>();
         MongoCollection<Document> CustomerCollection = DBConnection.getConnection().getCollection("Customer");
@@ -660,27 +699,28 @@ private List<Integer> displayQuality( ObjectId idorder) {
         }
         return ArrayCustomer;
     }
-public Map<String, ObjectId> getCategoryNameToIdMap() {
+    
+    public Map<String, ObjectId> getCategoryNameToIdMap() {
         MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Customer");
         Map<String, ObjectId> categoryNameToIdMap = new HashMap<>();
-
+        
         FindIterable<Document> result = categoryCollection.find();
         for (Document document : result) {
             String categoryName = document.getString("Name");
             ObjectId categoryId = document.getObjectId("_id");
             categoryNameToIdMap.put(categoryName, categoryId);
         }
-
+        
         return categoryNameToIdMap;
     }
-
+    
     public ObjectId getCategoryIDByName(String categoryName) {
         Map<String, ObjectId> categoryNameToIdMap = getCategoryNameToIdMap();
 
         // Lấy ID từ Map
         return categoryNameToIdMap.get(categoryName);
     }
-
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ListOrderCustomer();
