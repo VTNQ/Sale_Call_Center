@@ -24,8 +24,8 @@
                            </image>
                         </ImageView>
                         <Label alignment="CENTER" layoutX="47.0" layoutY="150.0" prefHeight="23.0" prefWidth="72.0" text="Welcome," textFill="WHITE" />
-                        <Label alignment="CENTER" layoutX="19.0" layoutY="173.0" prefHeight="18.0" prefWidth="37.0" text="UN:" textFill="WHITE" />
-                        <Label fx:id="label" layoutX="54.0" layoutY="168.0" prefHeight="18.0" prefWidth="129.0" text="MarcoMan" textFill="WHITE">
+                        <Label alignment="CENTER" layoutX="19.0" layoutY="173.0" prefHeight="18.0" prefWidth="37.0" text="User:" textFill="WHITE" />
+                        <Label fx:id="label" layoutX="54.0" layoutY="168.0" prefHeight="18.0" prefWidth="129.0" textFill="WHITE">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>

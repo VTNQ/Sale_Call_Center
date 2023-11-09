@@ -214,7 +214,7 @@
                         </ComboBox>
                      </children>
                   </AnchorPane>
-                  <Label layoutX="14.0" layoutY="-1.0" prefHeight="26.0" prefWidth="139.0" text="Data Chart">
+                  <Label layoutX="14.0" layoutY="-1.0" prefHeight="26.0" prefWidth="139.0" text="order statistics">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>

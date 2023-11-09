@@ -101,7 +101,7 @@ public class LoginController implements Initializable {
         Bson filter = Filters.and(
                 Filters.eq("Username", MD5.encryPassword(username.getText())),
                 Filters.eq("Password", MD5.encryPassword(password.getText())),
-                Filters.eq("Usertype",2)
+                Filters.eq("Usertype", 2)
         );
 
         MongoIterable<Document> results = empCollection.find(filter);
@@ -293,31 +293,31 @@ public class LoginController implements Initializable {
 
     @FXML
     void forgot_password(ActionEvent event) {
-        if(email.getText().isEmpty()){
+        if (email.getText().isEmpty()) {
             Alert.Dialogerror("Enter your Email");
-        }else{
-             MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
-
-        String otp = generateOTP();
-        Bson filter = Filters.and(
-                Filters.eq("Email", email.getText()),
-                Filters.eq("Usertype", 2)
-        );
-        Bson updates = Updates.set("OTP", otp);
-        UpdateResult update = collection.updateOne(filter, updates);
-
-        if (update.getModifiedCount() > 0) {
-            sendOTP(email.getText(), otp);
-            Alert.DialogSuccess("Update successfully");
-            setEmail(email.getText());
-            forgot.setVisible(false);
-            OTP.setVisible(true);
-
         } else {
-            Alert.Dialogerror("Can't find your gmail");
+            MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
+
+            String otp = generateOTP();
+            Bson filter = Filters.and(
+                    Filters.eq("Email", email.getText()),
+                    Filters.eq("Usertype", 2)
+            );
+            Bson updates = Updates.set("OTP", otp);
+            UpdateResult update = collection.updateOne(filter, updates);
+
+            if (update.getModifiedCount() > 0) {
+                sendOTP(email.getText(), otp);
+                Alert.DialogSuccess("Update successfully");
+                setEmail(email.getText());
+                forgot.setVisible(false);
+                OTP.setVisible(true);
+
+            } else {
+                Alert.Dialogerror("Can't find your gmail");
+            }
         }
-        }
-       
+
     }
 
     @FXML
@@ -393,32 +393,42 @@ public class LoginController implements Initializable {
 
     @FXML
     void submit(ActionEvent event) {
-        if(one.getText().isEmpty() && two.getText().isEmpty() && three.getText().isEmpty() && four.getText().isEmpty()){
+        if (one.getText().isEmpty() && two.getText().isEmpty() && three.getText().isEmpty() && four.getText().isEmpty()) {
             Alert.Dialogerror("Enter Otp");
-        }else{
-            MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Employee");
-        MongoCollection<Document> RequestCollection = DBconnect.getdatabase().getCollection("Request");
-        String otp = one.getText() + two.getText() + three.getText() + four.getText();
-        Bson filter = Filters.and(
-                Filters.eq("Email", getEmail()),
-                Filters.eq("OTP", otp)
-        );
-        Document result = collection.find(filter).first();
-        Document doc1 = new Document("EmailEmployee", email.getText()).append("status", 0);
-        InsertOneResult insertOneResult = RequestCollection.insertOne(doc1);
-        if (result != null) {
-            Alert.DialogSuccess("request sent successfully");
-
-            try {
-                App.setRoot("Login");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
         } else {
-            Alert.Dialogerror("request sent failed");
-        } 
+            MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Admin");
+            MongoCollection<Document> RequestCollection = DBconnect.getdatabase().getCollection("Request");
+            String otp = one.getText() + two.getText() + three.getText() + four.getText();
+            Bson filter = Filters.and(
+                    Filters.eq("Email", getEmail()),
+                    Filters.eq("OTP", otp)
+            );
+            Document result = collection.find(filter).first();
+            Document doc1 = new Document("EmailEmployee", email.getText()).append("status", 0);
+
+            if (result != null) {
+                MongoCollection<Document> reports = DBconnect.getdatabase().getCollection("Request");
+                Document existingRequest = reports.find(Filters.eq("EmailEmployee", getEmail())).first();
+                if (existingRequest != null) {
+                    reports.updateOne(Filters.eq("EmailEmployee", getEmail()), Updates.set("status", 0));
+                    Alert.DialogSuccess("request sent successfully");
+
+                } else {
+                    InsertOneResult insertOneResult = RequestCollection.insertOne(doc1);
+                    Alert.DialogSuccess("request sent successfully");
+
+                }
+
+                try {
+                    App.setRoot("Login");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                Alert.Dialogerror("request sent failed");
+            }
         }
-       
+
     }
 
     @Override

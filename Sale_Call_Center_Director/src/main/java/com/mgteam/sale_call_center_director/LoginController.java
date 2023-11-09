@@ -255,7 +255,8 @@ public class LoginController implements Initializable {
             for (Document result : results) {
                 isFound = true;
                 try {
-                    if (result.getInteger("Usertype") == 3) {
+                    
+                    if (result.getInteger("Usertype") == 3 || result!=null) {
                         Dialog.DialogSuccess("Login Success");
                         id_employee = result.getObjectId("_id");
                         username = Username.getText();

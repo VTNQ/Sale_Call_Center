@@ -138,9 +138,9 @@ public class Revenue_EmployeeController implements Initializable {
             renueEmployeeyear(year.getValue());
         });
         ObservableList<String> precious = FXCollections.observableArrayList(
-                "All Q", "Q1", "Q2", "Q3", "Q4");
+                "All ", "1", "2", "3", "4");
         this.precious.setItems(precious);
-        this.precious.setValue("All Q");
+        this.precious.setValue("All");
          this.precious.setOnAction(event->{
             revenEmployeeprice(this.precious.getValue());
         });
@@ -148,15 +148,22 @@ public class Revenue_EmployeeController implements Initializable {
               revenEmployeemonth(this.month.getValue());
           });
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
-           if(displaymode==1){
-               revenueEmployee();
-           } else if(displaymode==2){
-               renueEmployeeyear(year.getValue());
-           }else if(displaymode==3){
-                revenEmployeeprice(this.precious.getValue());
-           }else if(displaymode==4){
-                 revenEmployeemonth(this.month.getValue());
-           }
+            switch (displaymode) {
+                case 1:
+                    revenueEmployee();
+                    break;
+                case 2:
+                    renueEmployeeyear(year.getValue());
+                    break;
+                case 3:
+                    revenEmployeeprice(this.precious.getValue());
+                    break;
+                case 4:
+                    revenEmployeemonth(this.month.getValue());
+                    break;
+                default:
+                    break;
+            }
             revenueEmployee();
            
         });
