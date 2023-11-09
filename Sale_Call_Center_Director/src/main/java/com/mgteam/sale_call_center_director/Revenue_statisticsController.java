@@ -151,9 +151,9 @@ private void filterprince(String prince){
         ObservableList<String> months = FXCollections.observableArrayList(
                 "All Years", "2022", "2023", "2024");
         ObservableList<String> precious = FXCollections.observableArrayList(
-                "All Q", "Q1", "Q2", "Q3", "Q4");
+                "All", "1", "2", "3", "4");
         this.precious.setItems(precious);
-        this.precious.setValue("All Q");
+        this.precious.setValue("All");
         year.setItems(months);
         year.setValue("All Years");
         reverse.setText(daodb.calculateTotalRevenue());

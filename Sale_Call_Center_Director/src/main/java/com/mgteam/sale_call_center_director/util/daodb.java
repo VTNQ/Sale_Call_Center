@@ -111,7 +111,7 @@ public static List<revenue_statistics> filterQuarter(String selectedQuarter) {
                 FindIterable<Document>ordercollecion=orderCollection.find(query1);
                 for (Document productDocument1 : ordercollecion) {
                     String date = productDocument1.getString("Order_date");
-                    if ("All Q".equals(selectedQuarter) || dateMatchesSelectedQuarter(date, selectedQuarter)) {
+                    if ("All".equals(selectedQuarter) || dateMatchesSelectedQuarter(date, selectedQuarter)) {
 
 
                         Document detailOrder = (Document) productDocument1.get("DetailOrder");
@@ -214,8 +214,8 @@ public static boolean dateMatchesSelectedMonth(String date, String selectedMonth
     }
 }
 private static boolean dateMatchesSelectedQuarter(String date, String selectedQuarter) {
-    if (date == null || "All Q".equals(selectedQuarter)) {
-        return false; // Handle the case where date is null or selectedQuarter is "All Q"
+    if (date == null || "All".equals(selectedQuarter)) {
+        return false; // Handle the case where date is null or selectedQuarter is "All"
     }
 
     // Parse the date string and extract the month
@@ -226,16 +226,16 @@ private static boolean dateMatchesSelectedQuarter(String date, String selectedQu
         calendar.setTime(parsedDate);
         int month = calendar.get(Calendar.MONTH);
 
-        if ("Q1".equals(selectedQuarter)) {
+        if ("1".equals(selectedQuarter)) {
             // Quarter 1: January to March
             return (month >= Calendar.JANUARY && month <= Calendar.MARCH);
-        } else if ("Q2".equals(selectedQuarter)) {
+        } else if ("2".equals(selectedQuarter)) {
             // Quarter 2: April to June
             return (month >= Calendar.APRIL && month <= Calendar.JUNE);
-        } else if ("Q3".equals(selectedQuarter)) {
+        } else if ("3".equals(selectedQuarter)) {
             // Quarter 3: July to September
             return (month >= Calendar.JULY && month <= Calendar.SEPTEMBER);
-        } else if ("Q4".equals(selectedQuarter)) {
+        } else if ("4".equals(selectedQuarter)) {
             // Quarter 4: October to December
             return (month >= Calendar.OCTOBER && month <= Calendar.DECEMBER);
         } else {
@@ -384,7 +384,7 @@ public static List<revenue_statistics> revenue_Employeeprince(String selectedyea
                             Integer quality = productDetail.getInteger("Quality");
                             Integer price = productDocument.getInteger("Price");
                             String date = orderDocument.getString("Order_date");
-                            if ("All Q".equals(selectedyear) || dateMatchesSelectedQuarter(date, selectedyear)) {
+                            if ("All".equals(selectedyear) || dateMatchesSelectedQuarter(date, selectedyear)) {
                                 if (quality != null && price != null) {
                                     totalQuality += quality;
                                     totalPrice += quality * price;
