@@ -411,10 +411,18 @@ public class ListWarehouseController implements Initializable {
 
                         {
                             button.setOnAction(event -> {
-                                Warehouse selectedWarehouse = getTableView().getItems().get(getIndex());
-                                tblAddlist.getItems().remove(selectedWarehouse);
+                        Warehouse selectedProduct = getTableView().getItems().get(getIndex());
+                        tblAddlist.getItems().remove(selectedProduct);
+                        ObservableList<Warehouse> productList = tblAddlist.getItems();
+                        for (Warehouse originalProduct :  productList) {
+                            if (originalProduct.getNameProduct().equals(selectedProduct.getNameProduct())) {
                                 
-                            });
+                                originalProduct.setQuality(0);
+                                originalProduct.setQuality(originalProduct.getQuality() + selectedProduct.getQuality());
+                                break;
+                            }
+                        }
+                    });
                         }
 
                         @Override

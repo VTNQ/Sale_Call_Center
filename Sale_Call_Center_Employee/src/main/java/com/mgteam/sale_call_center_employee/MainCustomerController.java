@@ -167,7 +167,7 @@ public class MainCustomerController extends MainController implements Initializa
         List<Customer> customers = listCustomer();
         ObservableList<Customer> observableList = FXCollections.observableArrayList(customers);
         tblCustomer.setItems(observableList);
-        IdCustomer.setCellValueFactory(new PropertyValueFactory<>("Id_Customer"));
+        IdCustomer.setCellValueFactory(new PropertyValueFactory<>("id_customer"));
         NameCustomer.setCellValueFactory(new PropertyValueFactory<>("Name"));
         AgeCustomer.setCellValueFactory(new PropertyValueFactory<>("Age"));
         PhoneCustomer.setCellValueFactory(new PropertyValueFactory<>("Phone"));

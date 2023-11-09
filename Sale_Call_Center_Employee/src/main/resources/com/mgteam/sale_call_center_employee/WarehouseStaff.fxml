@@ -35,7 +35,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <Button layoutX="6.0" layoutY="196.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Dashboard" />
+                              <Button layoutX="6.0" layoutY="196.0" mnemonicParsing="false" onAction="#Homewarehouse" prefHeight="28.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Dashboard" />
                               <Button layoutX="7.0" layoutY="234.0" mnemonicParsing="false" onAction="#Change" prefHeight="30.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="ChangePassword" />
                               <Button layoutX="6.0" layoutY="271.0" mnemonicParsing="false" onAction="#Import" prefHeight="30.0" prefWidth="170.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Import" />
                               <Button layoutX="7.0" layoutY="313.0" mnemonicParsing="false" onAction="#Export" prefHeight="27.0" prefWidth="167.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Export" />

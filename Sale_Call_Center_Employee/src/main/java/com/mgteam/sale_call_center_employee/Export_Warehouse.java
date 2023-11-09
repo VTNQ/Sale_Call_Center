@@ -513,15 +513,15 @@ public class Export_Warehouse implements Initializable {
 
                                         if (lastWarehouseId != null) {
                                             // Update Warehouse_OutGoingOrder collection
-                                            MongoCollection<Document> warehouseOutgoingCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                            Document document = new Document("ID_WareHouse", id)
-                                                    .append("ID_OutGoingOrder", idGoing)
-                                                    .append("ID_Product", productId)
-                                                    .append("Quality", quality);
 
-                                            warehouseOutgoingCollection.insertOne(document);
                                         }
+                                        MongoCollection<Document> warehouseOutgoingCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                        Document document = new Document("ID_WareHouse", id)
+                                                .append("ID_OutGoingOrder", idGoing)
+                                                .append("ID_Product", productId)
+                                                .append("Quality", requiredQuality);
 
+                                        warehouseOutgoingCollection.insertOne(document);
                                         int totalQuality = quality - requiredQuality;
                                         Bson filter1 = Filters.eq("_id", id);
 
@@ -584,11 +584,10 @@ public class Export_Warehouse implements Initializable {
                             }
                             if (responsive == ButtonType.OK) {
                                 try {
-                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
-                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                    Document filter = new Document("_id", ex.getIdProduct());
+                                    MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
+                                    Document filter = new Document("_id", ex.getIdOrder());
                                     Document update = new Document("$set", new Document("status", 2));
-                                    collection.updateOne(filter, update);
+                                    order.updateOne(filter, update);
                                     ListExport();
                                 } catch (Exception e) {
                                 }
@@ -752,7 +751,7 @@ public class Export_Warehouse implements Initializable {
 
             {
 
-               button.setOnAction(event -> {
+                button.setOnAction(event -> {
                     Export ex = getTableView().getItems().get(getIndex());
                     List<ObjectId> idList = displayIdProduct(ex.getIdOrder());
 
@@ -797,15 +796,15 @@ public class Export_Warehouse implements Initializable {
 
                                         if (lastWarehouseId != null) {
                                             // Update Warehouse_OutGoingOrder collection
-                                            MongoCollection<Document> warehouseOutgoingCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                            Document document = new Document("ID_WareHouse", id)
-                                                    .append("ID_OutGoingOrder", idGoing)
-                                                    .append("ID_Product", productId)
-                                                    .append("Quality", quality);
 
-                                            warehouseOutgoingCollection.insertOne(document);
                                         }
+                                        MongoCollection<Document> warehouseOutgoingCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+                                        Document document = new Document("ID_WareHouse", id)
+                                                .append("ID_OutGoingOrder", idGoing)
+                                                .append("ID_Product", productId)
+                                                .append("Quality", requiredQuality);
 
+                                        warehouseOutgoingCollection.insertOne(document);
                                         int totalQuality = quality - requiredQuality;
                                         Bson filter1 = Filters.eq("_id", id);
 
@@ -870,11 +869,10 @@ public class Export_Warehouse implements Initializable {
                             }
                             if (responsive == ButtonType.OK) {
                                 try {
-                                    MongoCollection<Document> collection = DBConnection.getConnection().getCollection("OutGoingOrder");
-                                    MongoCollection<Document> WarehouseOutgoing = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-                                    Document filter = new Document("_id", ex.getIdProduct());
+                                    MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
+                                    Document filter = new Document("_id", ex.getIdOrder());
                                     Document update = new Document("$set", new Document("status", 2));
-                                    collection.updateOne(filter, update);
+                                    order.updateOne(filter, update);
                                     ListExport();
                                 } catch (Exception e) {
                                 }

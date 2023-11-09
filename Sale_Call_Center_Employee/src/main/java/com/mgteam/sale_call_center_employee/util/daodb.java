@@ -140,7 +140,7 @@ public class daodb {
                                     String EmployeeName = Emp.getString("Name");
                                     int status = order.getInteger("status");
                                     ObjectId idEmploye = Emp.getObjectId("_id");
-                                    int id_order = order.getObjectId("_id").hashCode();
+                                    int id_order = Math.abs(order.getObjectId("_id").hashCode());
                                 
 
                                     export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, status));
@@ -190,7 +190,7 @@ public class daodb {
                                 String EmployeeName = Emp.getString("Name");
                                 int status = order.getInteger("status");
                                 ObjectId idEmploye = Emp.getObjectId("_id");
-                                int id_order = order.getObjectId("_id").hashCode();
+                                int id_order = Math.abs(order.getObjectId("_id").hashCode());
                                 
                                 export.add(new Export(id_order, nameCustomer, EmployeeName, idEmploye, orderid, status));
                                 processedOrders.add(orderid);
