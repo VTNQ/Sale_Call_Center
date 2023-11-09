@@ -5,30 +5,10 @@ import org.bson.types.ObjectId;
 public class Customer {
     private ObjectId _id;
     private String Name;
-    private int Age;
+    private String Age;
     private String Phone;
     private String Address;
     private int id_customer;
-    private String nameEmployee;
-    private boolean Product;
-    private String startDay;
-    private String nearDay;
-
-    public String getStartDay() {
-        return startDay;
-    }
-
-    public void setStartDay(String startDay) {
-        this.startDay = startDay;
-    }
-
-    public String getNearDay() {
-        return nearDay;
-    }
-
-    public void setNearDay(String nearDay) {
-        this.nearDay = nearDay;
-    }
 
     public int getId_customer() {
         return id_customer;
@@ -37,36 +17,17 @@ public class Customer {
     public void setId_customer(int id_customer) {
         this.id_customer = id_customer;
     }
-
-    public String getNameEmployee() {
-        return nameEmployee;
-    }
-
-    public void setNameEmployee(String nameEmployee) {
-        this.nameEmployee = nameEmployee;
-    }
-
-    public boolean isProduct() {
-        return Product;
-    }
-
-    public void setProduct(boolean Product) {
-        this.Product = Product;
-    }
-
+    
     public Customer() {
     }
 
-    public Customer(ObjectId _id, String Name, int Age, String Phone, String Address,String nameEmployee,String startDay,String nearDay,int id_customer) {
+    public Customer(ObjectId _id, String Name, String Age, String Phone,String Address,int id_customer) {
         this._id = _id;
         this.Name = Name;
         this.Age = Age;
         this.Phone = Phone;
-        this.Address = Address;
-        this.nameEmployee=nameEmployee;
+        this.Address=Address;
         this.id_customer=id_customer;
-        this.startDay=startDay;
-        this.nearDay=nearDay;
     }
 
     public ObjectId getId() {
@@ -85,11 +46,11 @@ public class Customer {
         this.Name = Name;
     }
 
-    public int getAge() {
+    public String getAge() {
         return Age;
     }
 
-    public void setAge(int Age) {
+    public void setAge(String Age) {
         this.Age = Age;
     }
 

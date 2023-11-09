@@ -475,6 +475,7 @@ public class MainOrderController extends MainController implements Initializable
                 String OrderDate = document.getString("Order_date");
                 String ShipDate = document.getString("Ship_date");
                 int status = document.getInteger("status");
+                int id_filter = Math.abs(id_order);
                 String Status = "";
                 switch (status) {
                     case 0:
@@ -494,7 +495,7 @@ public class MainOrderController extends MainController implements Initializable
                         break;
                 }
                 Document detailOrder = (Document) document.get("DetailOrder");
-                ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
+                ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_filter));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -548,7 +549,7 @@ public class MainOrderController extends MainController implements Initializable
                     boolean isSimilar2 = regexPattern.matcher(nameCustomer).matches();
                     if (String.valueOf(id_order).matches(Key) || nameCustomer.matches(Key) || isSimilar1 || isSimilar2) {
                         Document detailOrder = (Document) document.get("DetailOrder");
-                        ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_order));
+                        ArrayOrder.add(new Order(document.getObjectId("_id"), IdCustomer, IdEmployee, OrderDate, ShipDate, Status, detailOrder, nameCustomer, nameemployee, id_filter));
                     }
                 }
                 

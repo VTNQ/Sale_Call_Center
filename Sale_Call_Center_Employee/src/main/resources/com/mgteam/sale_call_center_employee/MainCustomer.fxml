@@ -13,7 +13,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainCustomerController">
    <children>
-      <AnchorPane prefHeight="54.0" prefWidth="641.0" style="-fx-background-color: #e2772f;" stylesheets="@css/application.css">
+      <AnchorPane fx:id="tblCustomer" prefHeight="54.0" prefWidth="641.0" style="-fx-background-color: #e2772f;" stylesheets="@css/application.css">
          <children>
             <Label layoutX="73.0" layoutY="9.0" style="-fx-text-fill: white;" text="LIST CUSTOMER">
                <font>
@@ -32,17 +32,16 @@
             <TableView fx:id="tblOrder" layoutX="23.0" layoutY="40.0" prefHeight="267.0" prefWidth="600.0" stylesheets="@css/application.css">
                <columns>
                   <TableColumn fx:id="IdCustomer" prefWidth="93.0" text="Id Customer" />
-                  <TableColumn fx:id="NameCustomer" prefWidth="93.0" text="Customer" />
-                  <TableColumn fx:id="NameEmployee" prefWidth="89.0" text="Employee" />
-                  <TableColumn fx:id="StartBuy" prefWidth="109.0" text="Start To Buy" />
-                  <TableColumn fx:id="NearBuy" prefWidth="109.0" text="Near To Buy" />
-                  <TableColumn fx:id="ListProduct" prefWidth="85.0" text="Product" />
+                  <TableColumn fx:id="NameCustomer" prefWidth="93.0" text="Name" />
+                  <TableColumn fx:id="AgeCustomer" prefWidth="75.0" text="Age" />
+                  <TableColumn fx:id="PhoneCustomer" prefWidth="75.0" text="Phone" />
+                  <TableColumn fx:id="AddressCustomer" prefWidth="75.0" text="Address" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <MFXPagination fx:id="pagination" layoutX="255.0" layoutY="309.0" styleClass="mfx-pagination" stylesheets="@css/application.css" />
+            <MFXPagination fx:id="pagination" layoutX="278.0" layoutY="307.0" styleClass="mfx-pagination" stylesheets="@css/application.css" />
             <MFXButton layoutX="23.0" layoutY="3.0" onAction="#addCustomer" prefHeight="34.0" prefWidth="158.0" style="-fx-background-color: #F4CE14; -fx-text-fill: white; -fx-font-weight: bold;" text="Add New Cusomer" AnchorPane.bottomAnchor="310.0">
                <font>
                   <Font name="System Bold" size="12.0" />

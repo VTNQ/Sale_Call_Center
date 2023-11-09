@@ -21,7 +21,7 @@
       <MFXTextField fx:id="phone" layoutX="159.0" layoutY="173.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
       <Label layoutX="76.0" layoutY="232.0" text="Address" />
       <MFXTextField fx:id="address" layoutX="159.0" layoutY="227.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
-      <MFXButton layoutX="173.0" layoutY="260.0" onAction="#add" styleClass="mfx-button" stylesheets="@../css/application.css" />
+      <MFXButton layoutX="173.0" layoutY="260.0" onAction="#add" styleClass="mfx-button" stylesheets="@../css/application.css" text="ADD" />
       <MFXDatePicker fx:id="age" layoutX="159.0" layoutY="117.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-date-picker" stylesheets="@../css/application.css" />
    </children>
 </AnchorPane>
