@@ -343,15 +343,22 @@ public class daodb {
                         String Email = EmployeeDocument.getString("Email");
                         String statusString = "";
                         switch (status) {
-                            case 1:
-                                statusString = "Delivering";
-                                break;
-                            case 2:
-                                statusString = "Cancelled";
-                                break;
-                            case 3:
-                                statusString = "delivered";
-                                break;
+                             case 0:
+                            statusString = "pending";
+                            break;
+                        case 1:
+                            statusString = "Waiting for delivery";
+                            break;
+                        case 2:
+                            statusString = "Ongoing deliveries";
+                            break;
+                        case 3:
+                            statusString = "Delivered";
+                            break;
+                        case 4:
+                            statusString = "Cancelled";
+                            break;
+
                             default:
 
                                 throw new AssertionError();
@@ -437,17 +444,21 @@ public class daodb {
 
                         switch (status) {
                             case 0:
-                                statusString = "Importing goods";
-                                break;
-                            case 1:
-                                statusString = "Delivering";
-                                break;
-                            case 2:
-                                statusString = "Cancelled";
-                                break;
-                            case 3:
-                                statusString = "Delivered";
-                                break;
+                            statusString = "pending";
+                            break;
+                        case 1:
+                            statusString = "Waiting for delivery";
+                            break;
+                        case 2:
+                            statusString = "Ongoing deliveries";
+                            break;
+                        case 3:
+                            statusString = "Delivered";
+                            break;
+                        case 4:
+                            statusString = "Cancelled";
+                            break;
+
                             default:
                                 throw new AssertionError();
                         }
@@ -544,18 +555,22 @@ public class daodb {
                     String Email = EmployeeDocument.getString("Email");
                     String statusString = "";
                     switch (status) {
-                        case 0:
-                            statusString = "Importing goods";
+                         case 0:
+                            statusString = "pending";
                             break;
                         case 1:
-                            statusString = "Delivering";
+                            statusString = "Waiting for delivery";
                             break;
                         case 2:
-                            statusString = "Cancelled";
+                            statusString = "Ongoing deliveries";
                             break;
                         case 3:
-                            statusString = "delivered";
+                            statusString = "Delivered";
                             break;
+                        case 4:
+                            statusString = "Cancelled";
+                            break;
+
                         default:
 
                             throw new AssertionError();
