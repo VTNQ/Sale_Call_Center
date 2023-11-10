@@ -1,4 +1,9 @@
 package com.mgteam.sale_call_center_director;
+
+import com.mgteam.sale_call_center_director.connect.DBConnect;
+import com.mgteam.sale_call_center_director.util.daodb;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoIterable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -14,14 +19,23 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import org.bson.Document;
 
-public class SecondaryController implements Initializable{
+public class SecondaryController implements Initializable {
 
     @FXML
-    private Label label=new Label();
+    private Label product;
+
+    @FXML
+    private Label product1;
+    @FXML
+    private Label product11;
+    @FXML
+    private Label label = new Label();
     @FXML
     private AnchorPane maindisplay = new AnchorPane();
-        @FXML
+
+    @FXML
     void home(ActionEvent event) {
         try {
             App.setRoot("secondary");
@@ -30,9 +44,9 @@ public class SecondaryController implements Initializable{
         }
     }
 
-     @FXML
-   void logout(ActionEvent event) {
-       javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+    @FXML
+    void logout(ActionEvent event) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
         alert.setTitle("CONFIRMATION");
         alert.setHeaderText(null);
         alert.setContentText("Are you Logout?");
@@ -47,10 +61,30 @@ public class SecondaryController implements Initializable{
                 }
             }
         });
-   }
-  @FXML
+    }
+
+    private int Totalproduct() {
+        int count = 0;
+        MongoCollection<Document> totalCustomer = DBConnect.getConnection().getCollection("Product");
+        MongoIterable<Document> result = totalCustomer.find();
+        for (Document document : result) {
+            count++;
+        }
+        return count;
+    }
+ private int TotalEmployee() {
+        int count = 0;
+        MongoCollection<Document> totalCustomer = DBConnect.getConnection().getCollection("Employee");
+        MongoIterable<Document> result = totalCustomer.find(new Document("usertype",2));
+        for (Document document : result) {
+            count++;
+        }
+        return count;
+    }
+
+    @FXML
     void change(ActionEvent event) {
-  try {
+        try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_director/forgotpassword.fxml"));
             AnchorPane newPane = loader.load();
             FadeTransition fadeIn = new FadeTransition(Duration.millis(1000), newPane);
@@ -82,7 +116,7 @@ public class SecondaryController implements Initializable{
 
     @FXML
     void revenue_Employee(ActionEvent event) {
- try {
+        try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_director/revenue_Employee.fxml"));
             AnchorPane newPane = loader.load();
             maindisplay.getChildren().clear();
@@ -97,6 +131,7 @@ public class SecondaryController implements Initializable{
             e.printStackTrace();
         }
     }
+
     @FXML
     void revenue_statistics(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_director/revenue_statistics.fxml"));
@@ -123,8 +158,10 @@ public class SecondaryController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-       label.setText(LoginController.username);
-       
+        label.setText(LoginController.username);
+        product.setText(String.valueOf(Totalproduct()));
+        product1.setText(daodb.calculateTotalRevenue());
+        product11.setText(String.valueOf(TotalEmployee()));
     }
 
 }
