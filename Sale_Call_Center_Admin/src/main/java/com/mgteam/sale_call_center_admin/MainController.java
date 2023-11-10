@@ -14,6 +14,7 @@ import com.mongodb.client.result.UpdateResult;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
@@ -25,6 +26,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
@@ -83,8 +85,7 @@ public class MainController implements Initializable {
     @FXML
     private MFXTextField username;
     private String reset_username;
-    @FXML
-    private TableColumn<Employee, String> colCancel;
+  
 
     @FXML
     void Addsubmit(ActionEvent event) {
@@ -171,7 +172,7 @@ public class MainController implements Initializable {
 
     private void searchdisplay(String search,int pageindex) {
         displaymode=2;
-        List<Employee> listAccout = daodb.getAcccountwithKey(search);
+        List<Employee> listAccout = daodb.getAccountWithKey(search);
         ObservableList<Employee> observableList = FXCollections.observableArrayList(listAccout);
         totalItems=observableList.size();
         int Pagecount=(totalItems+itemsperPage-1)/itemsperPage;
@@ -189,7 +190,7 @@ public class MainController implements Initializable {
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         isreset.setCellValueFactory(new PropertyValueFactory<>("isReset"));
         isreset.setCellFactory(column -> new TableCell<Employee, String>() {
-            private final MFXButton sumit = new MFXButton("Approve");
+            private final MFXButton sumit = new MFXButton("reset");
 
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -203,7 +204,7 @@ public class MainController implements Initializable {
                         Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 1);
                         Document result = collection.find(query).first();
                         if (result != null) {
-                            Alert.Dialogerror("Approved");
+                            Alert.Dialogerror("reseted");
                         } else {
                             Document requestDocument = collection.find(eq("EmailEmployee", emp.getEmail())).first();
                             if (requestDocument != null) {
@@ -239,53 +240,7 @@ public class MainController implements Initializable {
             }
 
         });
-        colCancel.setCellValueFactory(new PropertyValueFactory<>("isReset"));
-        colCancel.setCellFactory(column -> new TableCell<Employee, String>() {
-            private final MFXButton sumit = new MFXButton("Cancel");
-
-            {
-                sumit.setOnAction(even -> {
-                    Employee emp = getTableView().getItems().get(getIndex());
-                    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
-                    Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 2);
-                    Document result = collection.find(query).first();
-                    if (result != null) {
-                        Alert.Dialogerror("Canceled");
-                    } else {
-                        Bson Filter = Filters.eq("EmailEmployee", emp.getEmail());
-                        Bson updates = Updates.set("status", 2);
-                        UpdateResult update = collection.updateOne(Filter, updates);
-                        if (update.getModifiedCount() > 0) {
-                            Alert.DialogSuccess("Update successfully");
-                            displayrecord();
-                        }
-                    }
-
-                });
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                sumit.getStyleClass().add("button-error");
-                if (!empty || item != null) {
-                    setGraphic(sumit);
-                    if (item == null) {
-                        setGraphic(null);
-                    } else if (item.equals("")) {
-                        setGraphic(null);
-                    } else if (item.equals("1")) {
-                        setGraphic(sumit);
-                        sumit.setDisable(true);
-                    } else {
-                        setGraphic(sumit);
-                    }
-                } else {
-                    setGraphic(null);
-                }
-            }
-
-        });
+        
         colPostion.setCellValueFactory(new PropertyValueFactory<>("position"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
         colSince.setCellValueFactory(new PropertyValueFactory<>("since"));
@@ -359,7 +314,7 @@ public class MainController implements Initializable {
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         isreset.setCellValueFactory(new PropertyValueFactory<>("isReset"));
         isreset.setCellFactory(column -> new TableCell<Employee, String>() {
-            private final MFXButton sumit = new MFXButton("Approve");
+            private final MFXButton sumit = new MFXButton("reset");
 
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -373,7 +328,7 @@ public class MainController implements Initializable {
                         Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 1);
                         Document result = collection.find(query).first();
                         if (result != null) {
-                            Alert.Dialogerror("Approved");
+                            Alert.Dialogerror("reseted");
                         } else {
                             Document requestDocument = collection.find(eq("EmailEmployee", emp.getEmail())).first();
                             if (requestDocument != null) {
@@ -410,54 +365,7 @@ public class MainController implements Initializable {
             }
 
         });
-        colCancel.setCellValueFactory(new PropertyValueFactory<>("isReset"));
-        colCancel.setCellFactory(column -> new TableCell<Employee, String>() {
-            private final MFXButton sumit = new MFXButton("Cancel");
-
-            {
-                sumit.setOnAction(even -> {
-                    Employee emp = getTableView().getItems().get(getIndex());
-                    MongoCollection<Document> collection = DBConnect.getdatabase().getCollection("Request");
-                    Document query = new Document("EmailEmployee", emp.getEmail()).append("status", 2);
-                    Document result = collection.find(query).first();
-                    if (result != null) {
-                        Alert.Dialogerror("Canceled");
-                    } else {
-                        Bson Filter = Filters.eq("EmailEmployee", emp.getEmail());
-                        Bson updates = Updates.set("status", 2);
-                        UpdateResult update = collection.updateOne(Filter, updates);
-                        if (update.getModifiedCount() > 0) {
-                            Alert.DialogSuccess("Update successfully");
-                            displayrecord();
-                            sendCancel(emp.getEmail());
-                        }
-                    }
-
-                });
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                sumit.getStyleClass().add("button-error");
-                if (!empty || item != null) {
-                    setGraphic(sumit);
-                    if (item == null) {
-                        setGraphic(null);
-                    } else if (item.equals("")) {
-                        setGraphic(null);
-                    } else if (item.equals("1")) {
-                        setGraphic(sumit);
-                        sumit.setDisable(true);
-                    } else {
-                        setGraphic(sumit);
-                    }
-                } else {
-                    setGraphic(null);
-                }
-            }
-
-        });
+      
         colPostion.setCellValueFactory(new PropertyValueFactory<>("position"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("Email"));
         colSince.setCellValueFactory(new PropertyValueFactory<>("since"));
@@ -538,5 +446,17 @@ public class MainController implements Initializable {
        }
        displayrecord();
        });
+         Since.setDayCellFactory(picker -> new DateCell() {
+    @Override
+    public void updateItem(LocalDate item, boolean empty) {
+        super.updateItem(item, empty);
+
+        // Calculate the minimum allowed date (18 years ago from today)
+        LocalDate minDate = LocalDate.now().minusYears(18);
+
+        // Disable dates that are less than 18 years ago
+        setDisable(item.isAfter(minDate));
+    }
+});
     }
 }

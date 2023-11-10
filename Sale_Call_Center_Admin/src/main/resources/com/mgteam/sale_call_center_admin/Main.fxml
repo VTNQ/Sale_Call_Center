@@ -82,8 +82,10 @@
                   <TableColumn fx:id="colphone" prefWidth="72.79998779296875" text="Phone" />
                   <TableColumn fx:id="colPostion" minWidth="0.0" prefWidth="62.4000244140625" text="Position" />
                   <TableColumn fx:id="isreset" prefWidth="76.800048828125" text="Approve" />
-                  <TableColumn fx:id="colCancel" minWidth="0.0" prefWidth="92.7999267578125" text="Cancle" />
               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
             </TableView>
             <Label layoutX="35.0" layoutY="5.0" text="Search" />
             <TextField fx:id="txtName" layoutX="86.0" layoutY="1.0" promptText="Name" />
