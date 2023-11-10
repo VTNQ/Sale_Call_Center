@@ -398,7 +398,7 @@ public class daodb {
                         String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
                         String Email = EmployeeDocument.getString("Email");
-                        String statusString = "Importing goods";
+                         String statusString = "pending";
 
                         Ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
                     }

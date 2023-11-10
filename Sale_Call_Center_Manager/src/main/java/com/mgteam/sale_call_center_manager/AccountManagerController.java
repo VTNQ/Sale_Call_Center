@@ -302,7 +302,6 @@ public class AccountManagerController implements Initializable{
         totalItems = observableList.size();
         int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
         pagination.setPageCount(pageCounts);
-        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
         int startIndex = currentPageIndex * itemsperPage;
         int endIndex = Math.min(startIndex + itemsperPage, totalItems);
         startIndex = Math.max(startIndex, 0);
