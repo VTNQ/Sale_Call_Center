@@ -145,7 +145,7 @@ public class List_Customer implements Initializable {
         colEndorder.setCellValueFactory(new PropertyValueFactory<>("EndDate"));
         colOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
         colOrder.setCellFactory(column -> new TableCell<Customer, Boolean>() {
-            private MFXButton button = new MFXButton("purchased order");
+            private MFXButton button = new MFXButton("History order");
 
             {
                 button.setOnAction(event -> {

@@ -49,9 +49,6 @@ public class Order_Customer implements Initializable {
 
     private int displayingOrder = 1;
     private int id_order;
-    
-    @FXML
-    private DatePicker orderDate=new DatePicker();
     @FXML
     private MFXTextField textfield;
     @FXML
@@ -527,125 +524,7 @@ public class Order_Customer implements Initializable {
             pagnation.setCurrentPageIndex(currentPageIndex);
         }
     }
-    private void filterDay(String Date){
-        displayingOrder=5;
-        List<Order>orderfilter=daodb.getdateOrder(Date);
-   ObservableList<Order> observableList = FXCollections.observableArrayList(orderfilter);
-        totalItems = observableList.size();
-        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
-        pagnation.setPageCount(pageCounts);
-        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
-        int startIndex = currentPageIndex * itemsperPage;
-        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
-        startIndex = Math.max(startIndex, 0);
-        List<Order> As = observableList.subList(startIndex, endIndex);
-        tblOrder.setItems(FXCollections.observableArrayList(As));
-        colcustomer.setCellValueFactory(new PropertyValueFactory<>("name"));
-        colEmployee.setCellValueFactory(new PropertyValueFactory<>("Employee"));
-        colDay.setCellValueFactory(new PropertyValueFactory<>("Day"));
-        colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colstatus.setCellFactory(tc -> new TableCell<Order, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    Text text = new Text(item);
-                    text.wrappingWidthProperty().bind(colstatus.widthProperty()); // Set the wrapping width to the column width
-                    setGraphic(text);
-                }
-            }
-        });
-        colid.setCellValueFactory(new PropertyValueFactory<>("IdOrder"));
-        colRequest.setCellValueFactory(new PropertyValueFactory<>("Detail"));
-        colRequest.setCellFactory(column -> new TableCell<Order, Boolean>() {
-            private final MFXButton button = new MFXButton("Request");
-
-            {
-                button.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/create_request.fxml"));
-                    try {
-                        AnchorPane newpopup = loader.load();
-                        Stage popupStage = new Stage();
-                        Order_Customer Order = loader.getController();
-                        Order.setEmail(order.getEmail());
-                        Order.setEmployee(order.getEmployee());
-                        popupStage.initModality(Modality.APPLICATION_MODAL);
-                        popupStage.setScene(new Scene(newpopup));
-                        popupStage.setResizable(false);
-                        popupStage.showAndWait();
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null || !empty) {
-                    String status = getTableView().getItems().get(getIndex()).getStatus();
-                    if (status != null && status.equals("Importing goods")) {
-                        button.getStyleClass().add("btn-design");
-                        setGraphic(button);
-                    } else {
-                        setGraphic(null);
-                    }
-                } else {
-                    setGraphic(null);
-                }
-            }
-
-        });
-        coldetail.setCellValueFactory(new PropertyValueFactory<>("Detail"));
-        coldetail.setCellFactory(column -> new TableCell<Order, Boolean>() {
-            private final MFXButton button = new MFXButton("Detail");
-
-            {
-                button.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_manager/Detail_order.fxml"));
-                    try {
-                        AnchorPane newpopup = loader.load();
-                        Order_Customer Order = loader.getController();
-                        Stage popupStage = new Stage();
-                        popupStage.initModality(Modality.APPLICATION_MODAL);
-                        popupStage.setScene(new Scene(newpopup));
-                        Order.setcustomer(order.getName());
-                        Order.id_order=order.getIdOrder();
-                        Order.detailorder(order.getName(), order.getIdOrder());
-                        List<Order> orders = daodb.getdetailCustomer(order.getName(), order.getIdOrder());
-                        int totalprice = daodb.calculateTotalPrice(orders);
-                        DecimalFormat formatter = new DecimalFormat("#,### $");
-                        String formatterprice = formatter.format(totalprice);
-                        Order.total.setText(formatterprice);
-                        popupStage.setResizable(false);
-                        popupStage.showAndWait();
-
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-            }
-
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                button.getStyleClass().add("btn-design");
-                super.updateItem(item, empty);
-                if (item != null || !empty) {
-                    setGraphic(button);
-                } else {
-                    setGraphic(null);
-                }
-            }
-
-        });
-    }
+   
     private void displayorder() {
 
         List<Order> OrderList = daodb.getorderCustomer();
@@ -799,12 +678,7 @@ public class Order_Customer implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         displayorder();
-        orderDate.valueProperty().addListener((obs,oldValue,newValue)->{
-        if(newValue!=null){
-            String selectedDate=newValue.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            filterDay(selectedDate);
-        }
-        });
+       
         detailPagination.currentPageIndexProperty().addListener((obs,oldIndex,newIndex)->{
         currentPageIndex=newIndex.intValue();
             detailorder(getNameCustomer(), displayingOrder);
@@ -819,8 +693,6 @@ public class Order_Customer implements Initializable {
                 searchorder(textfield.getText(), currentPageIndex);
             }else if(displayingOrder==4){
                 orderyet();
-            }else if(displayingOrder==5){
-                filterDay(orderDate.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
             
             displayorder();

@@ -41,6 +41,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 public class LoginController implements Initializable {
 
@@ -68,6 +69,7 @@ public class LoginController implements Initializable {
     private String Email;
     public static String userName;
     public static String user;
+    public static ObjectId idEmployee;
     @FXML
     private AnchorPane maindisplay;
 
@@ -139,6 +141,7 @@ public class LoginController implements Initializable {
 
                             if (progressDialogStage.isShowing()) {
                                 App.setRoot("secondary");
+                                idEmployee = result.getObjectId("_id");
                                 Platform.runLater(() -> progressDialogStage.close());
                                 break;
                             }

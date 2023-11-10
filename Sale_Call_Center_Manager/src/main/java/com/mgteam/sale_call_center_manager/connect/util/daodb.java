@@ -4,6 +4,7 @@
  */
 package com.mgteam.sale_call_center_manager.connect.util;
 
+import com.mgteam.sale_call_center_manager.LoginController;
 import com.mgteam.sale_call_center_manager.connect.DBconnect;
 import com.mgteam.sale_call_center_manager.model.Customer;
 import com.mgteam.sale_call_center_manager.model.Iventory;
@@ -16,6 +17,7 @@ import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.eq;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -36,55 +38,6 @@ import org.bson.types.ObjectId;
  * @author tranp
  */
 public class daodb {
-
-    public static List<Order> getdateOrder(String date) {
-        List<Order> Listorder = new ArrayList<>();
-        try {
-            MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
-            MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
-            MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate searchDate = LocalDate.parse(date, formatter);
-            FindIterable<Document> orders = Order.find(Filters.eq("Order_date", searchDate.toString()));
-            for (Document order : orders) {
-                ObjectId idCustomer = order.getObjectId("id_Customer");
-                ObjectId idEmployee = order.getObjectId("id_Employee");
-                Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
-                Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
-                if (customerDocument != null && EmployeeDocument != null) {
-                    String customerName = customerDocument.getString("Name");
-                    int id_order = order.getObjectId("_id").hashCode();
-                    String EmployeeName = EmployeeDocument.getString("Name");
-                    String dayOrder = order.getString("Order_date");
-                    LocalDate sincedate = LocalDate.parse(dayOrder, formatter);
-                    String formattedSince = sincedate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                    int status = order.getInteger("status");
-                    String Email = EmployeeDocument.getString("Email");
-                    String statusString = "";
-                    switch (status) {
-                        case 0:
-                            statusString = "Importing goods";
-                            break;
-                        case 1:
-                            statusString = "Delivering";
-                            break;
-                        case 2:
-                            statusString = "Cancelled";
-                            break;
-                        case 3:
-                            statusString = "delivered";
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
-                    Listorder.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Listorder;
-    }
 
     public static Map<ObjectId, Date[]> getdateOrder() {
         MongoCollection<Document> Employee = DBconnect.getdatabase().getCollection("Employee");
@@ -136,7 +89,7 @@ public class daodb {
             Document Employee = EmployeeCollection.find(new Document("_id", idEmployee)).first();
             String NameCustomer = customer.getString("Name");
             if (customer != null && Employee != null && NameCustomer.equals(Name)) {
-                int id_order = id.hashCode();
+                int id_order = Math.abs(id.hashCode());
                 String demand = customer.getString("Demand");
                 String nameEmployee = Employee.getString("Name");
                 Array.add(new Customer(nameEmployee, demand, id_order));
@@ -293,7 +246,7 @@ public class daodb {
             Set<ObjectId> processedCustomers = new HashSet<>();
 
             FindIterable<Document> orderDocuments = orderCollection.find()
-                    .projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+                    .projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status")).sort(Sorts.descending("_id"));
 
             for (Document orderDoc : orderDocuments) {
                 ObjectId idCustomer = orderDoc.getObjectId("id_Customer");
@@ -305,7 +258,7 @@ public class daodb {
                             Filters.regex("Name", regexPattern)
                     )).first();
 
-                    Document employeeDoc = employeeCollection.find(Filters.eq("_id", idEmployee)).first();
+                    Document employeeDoc = employeeCollection.find(Filters.and(Filters.eq("_id", idEmployee),Filters.eq("id_Manager",LoginController.idEmployee))).first();
 
                     if (customerDoc != null && employeeDoc != null) {
                         String customerName = customerDoc.getString("Name");
@@ -343,17 +296,19 @@ public class daodb {
                 ObjectId idEmployee = document.getObjectId("id_Employee");
                 if (!processedCustomer.contains(idCustomer)) {
                     Document customerAll = Customer.find(Filters.eq("_id", idCustomer)).first();
-                    Document EmployeeProcess = Employee.find(Filters.eq("_id", idEmployee)).first();
+                    Document EmployeeProcess = Employee.find(Filters.and(Filters.eq("_id", idEmployee),Filters.eq("id_Manager",LoginController.idEmployee))).first();
                     if (customerAll != null && EmployeeProcess != null) {
-                        String nameCustomer = customerAll.getString("Name");
+                             String nameCustomer = customerAll.getString("Name");
                         Date[] Orderdate = Ordermap.get(idCustomer);
                         Date StartDate = Orderdate[0];
                         Date EndDate = Orderdate[1];
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                         String formatStart = sdf.format(StartDate);
                         String formatEnd = sdf.format(EndDate);
-                        customer.add(new Customer(nameCustomer, formatStart, formatEnd));
+                        customer.add(new Customer(nameCustomer, formatEnd,formatStart ));
                         processedCustomer.add(idCustomer);
+                       
+                       
                     }
                 }
 
@@ -370,17 +325,17 @@ public class daodb {
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status")).sort(Sorts.descending("_id"));
             for (Document order : orders) {
                 ObjectId idCustomer = order.getObjectId("id_Customer");
                 ObjectId idEmployee = order.getObjectId("id_Employee");
                 Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
-                Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
+                Document EmployeeDocument = collections.find(Filters.and(Filters.eq("_id", idEmployee),Filters.eq("id_Manager",LoginController.idEmployee))).first();
                 if (customerDocument != null && EmployeeDocument != null) {
                     int status = order.getInteger("status");
                     if (status != 0) {
                         String customerName = customerDocument.getString("Name");
-                        int id_order = order.getObjectId("_id").hashCode();
+                        int id_order = Math.abs(order.getObjectId("_id").hashCode());
                         String EmployeeName = EmployeeDocument.getString("Name");
                         String dayOrder = order.getString("Order_date");
                         LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -419,17 +374,17 @@ public class daodb {
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status")).sort(Sorts.descending("_id"));
             for (Document order : orders) {
                 ObjectId idCustomer = order.getObjectId("id_Customer");
                 ObjectId idEmployee = order.getObjectId("id_Employee");
                 Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
-                Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
+                Document EmployeeDocument = collections.find(Filters.and(Filters.eq("_id", idEmployee),Filters.eq("id_Manager",LoginController.idEmployee))).first();
                 if (customerDocument != null && EmployeeDocument != null) {
                     int status = order.getInteger("status");
                     if (status == 0) {
                         String customerName = customerDocument.getString("Name");
-                        int id_order = order.getObjectId("_id").hashCode();
+                        int id_order = Math.abs(order.getObjectId("_id").hashCode());
                         String EmployeeName = EmployeeDocument.getString("Name");
                         String dayOrder = order.getString("Order_date");
                         LocalDate sinceDate = LocalDate.parse(dayOrder, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -455,7 +410,7 @@ public class daodb {
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status")) .sort(Sorts.descending("_id"));
             Pattern regexPattern = Pattern.compile(".*" + Name + ".*", Pattern.CASE_INSENSITIVE);
 
             for (Document order : orders) {
@@ -467,9 +422,10 @@ public class daodb {
                 if (customerDocument != null) {
                     String customerName = customerDocument.getString("Name");
 
-                    Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
+                    Document EmployeeDocument = collections.find(Filters.and(Filters.eq("_id", idEmployee),Filters.eq("id_Manager",LoginController.idEmployee))).first();
 
                     if (EmployeeDocument != null) {
+                  
                         int id_order = Math.abs(order.getObjectId("_id").hashCode());
                         String EmployeeName = EmployeeDocument.getString("Name");
                         String dayOrder = order.getString("Order_date");
@@ -497,7 +453,9 @@ public class daodb {
                         }
 
                         ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
-
+    
+                        
+                        
                     }
                 }
             }
@@ -512,41 +470,44 @@ public class daodb {
         try {
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> requestCollection = DBconnect.getdatabase().getCollection("Request");
-            Document query = new Document("Name", new Document("$regex", ".*" + search + ".*"));
-            FindIterable<Document> cursor = collections.find(query);
+
+            Document query = new Document("Name", new Document("$regex", ".*" + search + ".*")).append("id_Manager", LoginController.idEmployee);
+            FindIterable<Document> cursor = collections.find(query).sort(Sorts.descending("_id"));
             for (Document document : cursor) {
                 int usertype = document.getInteger("usertype");
-                if (usertype == 1 || usertype == 2) {
-                    if (usertype == 1) {
-                        String name = document.getString("Name");
-                        String phone = document.getString("Phone");
-                        String sinceString = document.getString("Since");
-                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                        String username = document.getString("Username");
-                        String email = document.getString("Email");
+                    if (usertype == 1 || usertype == 2) {
+                        if (usertype == 1) {
+                            String name = document.getString("Name");
+                            String phone = document.getString("Phone");
+                            String sinceString = document.getString("Since");
+                            LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                            String username = document.getString("Username");
+                            String email = document.getString("Email");
 
-                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
-                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
-                        String value = (requestDocument != null) ? String.valueOf(status) : "";
-                        String postion = "Warehouse";
-                        MG.add(new Manager(name, email, formattedSince, phone, value, username, postion));
-                    } else if (usertype == 2) {
-                        String name = document.getString("Name");
-                        String phone = document.getString("Phone");
-                        String sinceString = document.getString("Since");
-                        LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                        String username = document.getString("Username");
-                        String email = document.getString("Email");
+                            Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                            int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                            String value = (requestDocument != null) ? String.valueOf(status) : "";
+                            String postion = "Warehouse";
+                            MG.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                        } else if (usertype == 2) {
+                            String name = document.getString("Name");
+                            String phone = document.getString("Phone");
+                            String sinceString = document.getString("Since");
+                            LocalDate sinceDate = LocalDate.parse(sinceString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            String formattedSince = sinceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                            String username = document.getString("Username");
+                            String email = document.getString("Email");
 
-                        Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
-                        int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
-                        String value = (requestDocument != null) ? String.valueOf(status) : "";
-                        String postion = "SalePerson";
-                        MG.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                            Document requestDocument = requestCollection.find(eq("EmailEmployee", email)).first();
+                            int status = (requestDocument != null) ? requestDocument.getInteger("status") : 1;
+                            String value = (requestDocument != null) ? String.valueOf(status) : "";
+                            String postion = "SalePerson";
+                            MG.add(new Manager(name, email, formattedSince, phone, value, username, postion));
+                        }
                     }
-                }
+                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -562,14 +523,18 @@ public class daodb {
             MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
             MongoCollection<Document> Order = DBconnect.getdatabase().getCollection("Order");
             MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-            FindIterable<Document> orders = Order.find(new Document()).projection(Projections.include("id_Customer", "id_Employee", "Order_date", "status"));
+            
+             FindIterable<Document> orders = Order.find().projection(
+                    Projections.include("id_Customer", "id_Employee", "Order_date", "status"))
+                    .sort(Sorts.descending("_id"));
             for (Document order : orders) {
                 ObjectId idCustomer = order.getObjectId("id_Customer");
                 ObjectId idEmployee = order.getObjectId("id_Employee");
                 Document customerDocument = Customer.find(Filters.eq("_id", idCustomer)).first();
-                Document EmployeeDocument = collections.find(Filters.eq("_id", idEmployee)).first();
+                Document EmployeeDocument = collections.find(Filters.and(Filters.eq("_id", idEmployee),Filters.eq("id_Manager",LoginController.idEmployee))).first();
                 if (customerDocument != null && EmployeeDocument != null) {
-                    String customerName = customerDocument.getString("Name");
+                  
+                         String customerName = customerDocument.getString("Name");
                     int id_order = Math.abs(order.getObjectId("_id").hashCode());
                     String EmployeeName = EmployeeDocument.getString("Name");
                     String dayOrder = order.getString("Order_date");
@@ -597,6 +562,8 @@ public class daodb {
                     }
                     Ordercustomer.add(new Order(customerName, formattedSince, EmployeeName, statusString, Email, id_order));
 
+                    
+                   
                 }
             }
         } catch (Exception e) {
@@ -610,17 +577,18 @@ public class daodb {
         MongoCollection<Document> collections = DBconnect.getdatabase().getCollection("Employee");
         MongoCollection<Document> requestCollection = DBconnect.getdatabase().getCollection("Request");
 
-        try (MongoCursor<Document> cursor = collections.find().iterator()) {
+        try (MongoCursor<Document> cursor = collections.find(new Document("id_Manager",LoginController.idEmployee)).sort(Sorts.descending("_id")).iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 int usertype = document.getInteger("usertype");
-
-                if (usertype == 1 || usertype == 2) {
-                    Manager manager = createManagerFromDocument(document, usertype, requestCollection);
-                    if (manager != null) {
-                        Mg.add(manager);
+                    if (usertype == 1 || usertype == 2) {
+                        Manager manager = createManagerFromDocument(document, usertype, requestCollection);
+                        if (manager != null) {
+                            Mg.add(manager);
+                        }
                     }
-                }
+
+                
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -18,6 +18,7 @@ import com.mongodb.client.result.UpdateResult;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
@@ -28,6 +29,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
@@ -530,7 +532,7 @@ public class AccountManagerController implements Initializable{
                                     if (postion.getValue().equals("Warehouse")) {
                                         DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                         String since = Since.getValue().format(local);
-                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 1).append("status", 0).append("Phone", Phone.getText());
+                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 1).append("status", 0).append("Phone", Phone.getText()).append("id_Manager", LoginController.idEmployee);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee Successfully");
                                         sendConfirmationEmailEmployee(Email.getText());
@@ -543,7 +545,7 @@ public class AccountManagerController implements Initializable{
                                     } else if (postion.getValue().equals("SalePerson")) {
                                         DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                         String since = Since.getValue().format(local);
-                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 2).append("status", 0).append("Phone", Phone.getText());
+                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 2).append("status", 0).append("Phone", Phone.getText()).append("id_Manager", LoginController.idEmployee);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee Successfully");
                                         sendConfirmationEmailEmployee(Email.getText());
@@ -639,6 +641,18 @@ public class AccountManagerController implements Initializable{
             ObservableList<String> data = FXCollections.observableArrayList("SalePerson", "Warehouse");
         postion.setItems(data);
         postion.setValue("SalePerson");
+     Since.setDayCellFactory(picker -> new DateCell() {
+    @Override
+    public void updateItem(LocalDate item, boolean empty) {
+        super.updateItem(item, empty);
+
+        // Calculate the minimum allowed date (18 years ago from today)
+        LocalDate minDate = LocalDate.now().minusYears(18);
+
+        // Disable dates that are less than 18 years ago
+        setDisable(item.isAfter(minDate));
+    }
+});
        
     }
 }
