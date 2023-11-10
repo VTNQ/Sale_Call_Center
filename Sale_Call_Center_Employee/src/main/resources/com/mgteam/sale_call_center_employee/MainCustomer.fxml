@@ -36,6 +36,7 @@
                   <TableColumn fx:id="AgeCustomer" prefWidth="75.0" text="Age" />
                   <TableColumn fx:id="PhoneCustomer" prefWidth="75.0" text="Phone" />
                   <TableColumn fx:id="AddressCustomer" prefWidth="75.0" text="Address" />
+                  <TableColumn fx:id="colupdate" prefWidth="75.0" text="Update" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

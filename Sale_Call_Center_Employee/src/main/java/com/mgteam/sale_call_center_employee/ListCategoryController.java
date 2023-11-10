@@ -206,10 +206,9 @@ public class ListCategoryController implements Initializable {
         totalItems = obserable.size();
         int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
         pagination.setPageCount(pageCounts);
-        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
         int startIndex = currentPageIndex * itemsperPage;
         int endIndex = Math.min(startIndex + itemsperPage, totalItems);
-        startIndex = Math.max(startIndex, 0);
+        startIndex = Math.max(startIndex, totalItems);
         List<Category> as = obserable.subList(startIndex, endIndex);
         tblcategory.setItems(FXCollections.observableArrayList(as));
         colName.setCellValueFactory(new PropertyValueFactory<>("Name"));

@@ -267,78 +267,77 @@ public class ListWarehouseController implements Initializable {
         colNameCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
     }
 
-    private void ListWarehouse() {
-        displaymode = 1;
-        List<Warehouse> ware = daodb.WarehouseReceipt();
-        ObservableList<Warehouse> obserable = FXCollections.observableArrayList(ware);
-        totalItems = obserable.size();
-        int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
-        pagination.setPageCount(pageCounts);
-        currentPageIndex = Math.min(currentPageIndex, pageCounts - 1);
-        int startIndex = currentPageIndex * itemsperPage;
-        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
-        startIndex = Math.max(startIndex, 0);
-        List<Warehouse> as = obserable.subList(startIndex, endIndex);
-        tblWarehouse.setItems(FXCollections.observableArrayList(as));
-        colid.setCellValueFactory(new PropertyValueFactory<>("id"));
-        coldate.setCellValueFactory(new PropertyValueFactory<>("Date"));
-        colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colstatus.setCellFactory(column -> new TableCell<Warehouse, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    Text text = new Text(item);
-                    text.wrappingWidthProperty().bind(colstatus.widthProperty());
-                    setGraphic(text);
-                }
-            }
-
-        });
-
-        colProduct.setCellFactory(column -> new TableCell<Warehouse, Boolean>() {
-            private Button button = new Button("Product");
-
-            {
-                button.setOnAction(event -> {
-                    Warehouse ware = getTableView().getItems().get(getIndex());
-                    try {
-                        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/detailProductWarehouse.fxml"));
-                        AnchorPane newpopup;
-                        newpopup = loader.load();
-                        Stage popupStage = new Stage();
-                        ListWarehouseController list = loader.getController();
-                        popupStage.initModality(Modality.APPLICATION_MODAL);
-                        popupStage.setScene(new Scene(newpopup));
-                        ListWarehouseController List = loader.getController();
-                        List.listdetailWarehouse(ware.getIdwarehouse());
-                        list.setid(ware.getIdwarehouse());
-                        popupStage.setResizable(false);
-                        popupStage.show();
-
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
+        private void ListWarehouse() {
+            displaymode = 1;
+            List<Warehouse> ware = daodb.WarehouseReceipt();
+            ObservableList<Warehouse> obserable = FXCollections.observableArrayList(ware);
+            totalItems = obserable.size();
+            int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
+            pagination.setPageCount(pageCounts);
+            int startIndex = currentPageIndex * itemsperPage;
+            int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+            startIndex = Math.max(startIndex, 0);
+            List<Warehouse> as = obserable.subList(startIndex, endIndex);
+            tblWarehouse.setItems(FXCollections.observableArrayList(as));
+            colid.setCellValueFactory(new PropertyValueFactory<>("id"));
+            coldate.setCellValueFactory(new PropertyValueFactory<>("Date"));
+            colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+            colstatus.setCellFactory(column -> new TableCell<Warehouse, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Text text = new Text(item);
+                        text.wrappingWidthProperty().bind(colstatus.widthProperty());
+                        setGraphic(text);
                     }
-                });
-            }
-
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                button.getStyleClass().add("btn-design");
-                if (item != null || !empty) {
-                    setGraphic(button);
-                } else {
-                    setGraphic(null);
                 }
-            }
 
-        });
-        colSuppliers.setCellValueFactory(new PropertyValueFactory<>("suppliers"));
-    }
+            });
+
+            colProduct.setCellFactory(column -> new TableCell<Warehouse, Boolean>() {
+                private Button button = new Button("Product");
+
+                {
+                    button.setOnAction(event -> {
+                        Warehouse ware = getTableView().getItems().get(getIndex());
+                        try {
+                            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/detailProductWarehouse.fxml"));
+                            AnchorPane newpopup;
+                            newpopup = loader.load();
+                            Stage popupStage = new Stage();
+                            ListWarehouseController list = loader.getController();
+                            popupStage.initModality(Modality.APPLICATION_MODAL);
+                            popupStage.setScene(new Scene(newpopup));
+                            ListWarehouseController List = loader.getController();
+                            List.listdetailWarehouse(ware.getIdwarehouse());
+                            list.setid(ware.getIdwarehouse());
+                            popupStage.setResizable(false);
+                            popupStage.show();
+
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+                }
+
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    button.getStyleClass().add("btn-design");
+                    if (item != null || !empty) {
+                        setGraphic(button);
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+
+            });
+            colSuppliers.setCellValueFactory(new PropertyValueFactory<>("suppliers"));
+        }
 
     @FXML
     void AddWarehouse(ActionEvent event) {
@@ -510,22 +509,26 @@ public class ListWarehouseController implements Initializable {
 
     @FXML
     void Appreceipt(ActionEvent event) {
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Add_Receipt.fxml"));
-        AnchorPane newpopup;
-        try {
-            newpopup = loader.load();
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setScene(new Scene(newpopup));
-            popupStage.setResizable(false);
-            popupStage.show();
-            popupStage.setOnCloseRequest(closeEvent -> {
-                ListWarehouse();
-            });
+         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Add_Receipt.fxml"));
+    AnchorPane newpopup;
+    try {
+        newpopup = loader.load();
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setScene(new Scene(newpopup));
+        popupStage.setResizable(false);
 
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        // Set the event handler for when the popup is hidden (closed)
+        
+
+        popupStage.show();
+        popupStage.setOnHidden(hiddenEvent -> {
+            ListWarehouse();
+        });
+
+    } catch (IOException ex) {
+        ex.printStackTrace();
+    }
     }
 
     public Map<String, ObjectId> getproductNameToIdMap() {
@@ -623,7 +626,7 @@ public class ListWarehouseController implements Initializable {
             } else if (displaymode == 2) {
                 searchdisplay(txtsearch.getText(), currentPageIndex);
             }
-
+            ListWarehouse();
         });
         pagination1.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             currentPageIndex = newIndex.intValue();
