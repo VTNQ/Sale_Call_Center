@@ -192,7 +192,7 @@ public class Order_Customer implements Initializable {
                 super.updateItem(item, empty);
                 if (item != null || !empty) {
                     String status = getTableView().getItems().get(getIndex()).getStatus();
-                    if (status != null && status.equals("Importing goods")) {
+                        if (status != null && status.equals("pending")) {
                         button.getStyleClass().add("btn-design");
                         setGraphic(button);
                     } else {
@@ -328,7 +328,7 @@ public class Order_Customer implements Initializable {
                 super.updateItem(item, empty);
                 if (item != null || !empty) {
                     String status = getTableView().getItems().get(getIndex()).getStatus();
-                    if (status != null && status.equals("Importing goods")) {
+                    if (status != null && status.equals("pending")) {
                         button.getStyleClass().add("btn-design");
                         setGraphic(button);
                     } else {
@@ -458,7 +458,7 @@ public class Order_Customer implements Initializable {
                 super.updateItem(item, empty);
                 if (item != null || !empty) {
                     String status = getTableView().getItems().get(getIndex()).getStatus();
-                    if (status != null && status.equals("Importing goods")) {
+                    if (status != null && status.equals("pending")) {
                         button.getStyleClass().add("btn-design");
                         setGraphic(button);
                     } else {
@@ -588,7 +588,7 @@ public class Order_Customer implements Initializable {
                 super.updateItem(item, empty);
                 if (item != null || !empty) {
                     String status = getTableView().getItems().get(getIndex()).getStatus();
-                    if (status != null && status.equals("Importing goods")) {
+                    if (status != null && status.equals("pending")) {
                         button.getStyleClass().add("btn-design");
                         setGraphic(button);
                     } else {

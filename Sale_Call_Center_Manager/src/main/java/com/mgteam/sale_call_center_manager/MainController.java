@@ -317,7 +317,7 @@ public class MainController implements Initializable {
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), monthvalue, 1);
         LocalDate Enddate = startDate.plusMonths(1).minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("WareHouse");
+        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("Order");
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         List<String> dateStrings = new ArrayList<>();
@@ -326,14 +326,14 @@ public class MainController implements Initializable {
         }
 
         List<Bson> filters = new ArrayList<>();
-        filters.add(Filters.in("Date", dateStrings));
+        filters.add(Filters.in("Order_date", dateStrings));
         filters.add(Filters.exists("_id"));
 
         long[] counts = new long[dateStrings.size()];
         int index = 0;
 
         for (String dateString : dateStrings) {
-            filters.set(0, Filters.eq("Date", dateString));
+            filters.set(0, Filters.eq("Order_date", dateString));
             long count = orders.countDocuments(Filters.and(filters));
             counts[index++] = count;
         }
@@ -352,7 +352,7 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         User.setText(LoginController.user);
         customer.setText(totalCustomer());
-        
+        order.setText(coutTotalorder());
         inventory.setText(totalIventory());
         ObservableList<String> months = FXCollections.observableArrayList(
                 "January", "February", "March", "April", "May", "June",
