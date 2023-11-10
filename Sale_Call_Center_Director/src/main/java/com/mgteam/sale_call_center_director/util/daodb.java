@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -55,12 +56,11 @@ public class daodb {
                 nameProduct = productDocument.getString("Name");
                 nameCategory = category.getString("Name");
                 Document query1 = new Document("DetailOrder." + String.valueOf(productId), new Document("$exists", true));
-                FindIterable<Document>ordercollecion=orderCollection.find(query1);
+                FindIterable<Document> ordercollecion = orderCollection.find(query1);
                 for (Document productDocument1 : ordercollecion) {
                     String date = productDocument1.getString("Order_date");
                     if ("All Years".equals(selectedYear) || dateMatchesSelectedYear(date, selectedYear)) {
 
-
                         Document detailOrder = (Document) productDocument1.get("DetailOrder");
                         Document productDetail = (Document) detailOrder.get(productId.toString());
 
@@ -84,11 +84,12 @@ public class daodb {
                 revenueList.add(new revenue_statistics(nameProduct, nameCategory, totalQualitySold, formatPrice));
             }
         }
-
+        Collections.sort(revenueList, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return revenueList;
     }
-public static List<revenue_statistics> filterQuarter(String selectedQuarter) {
-   ArrayList<revenue_statistics> revenueList = new ArrayList<>();
+
+    public static List<revenue_statistics> filterQuarter(String selectedQuarter) {
+        ArrayList<revenue_statistics> revenueList = new ArrayList<>();
         MongoCollection<Document> productCollection = DBConnect.getConnection().getCollection("Product");
         MongoCollection<Document> orderCollection = DBConnect.getConnection().getCollection("Order");
         MongoCollection<Document> categoryCollection = DBConnect.getConnection().getCollection("Category");
@@ -108,12 +109,11 @@ public static List<revenue_statistics> filterQuarter(String selectedQuarter) {
                 nameProduct = productDocument.getString("Name");
                 nameCategory = category.getString("Name");
                 Document query1 = new Document("DetailOrder." + String.valueOf(productId), new Document("$exists", true));
-                FindIterable<Document>ordercollecion=orderCollection.find(query1);
+                FindIterable<Document> ordercollecion = orderCollection.find(query1);
                 for (Document productDocument1 : ordercollecion) {
                     String date = productDocument1.getString("Order_date");
                     if ("All".equals(selectedQuarter) || dateMatchesSelectedQuarter(date, selectedQuarter)) {
 
-
                         Document detailOrder = (Document) productDocument1.get("DetailOrder");
                         Document productDetail = (Document) detailOrder.get(productId.toString());
 
@@ -137,11 +137,12 @@ public static List<revenue_statistics> filterQuarter(String selectedQuarter) {
                 revenueList.add(new revenue_statistics(nameProduct, nameCategory, totalQualitySold, formatPrice));
             }
         }
-
+        Collections.sort(revenueList, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return revenueList;
-}
-public static List<revenue_statistics> filtermonth(String selectedQuarter) {
-   ArrayList<revenue_statistics> revenueList = new ArrayList<>();
+    }
+
+    public static List<revenue_statistics> filtermonth(String selectedQuarter) {
+        ArrayList<revenue_statistics> revenueList = new ArrayList<>();
         MongoCollection<Document> productCollection = DBConnect.getConnection().getCollection("Product");
         MongoCollection<Document> orderCollection = DBConnect.getConnection().getCollection("Order");
         MongoCollection<Document> categoryCollection = DBConnect.getConnection().getCollection("Category");
@@ -161,11 +162,10 @@ public static List<revenue_statistics> filtermonth(String selectedQuarter) {
                 nameProduct = productDocument.getString("Name");
                 nameCategory = category.getString("Name");
                 Document query1 = new Document("DetailOrder." + String.valueOf(productId), new Document("$exists", true));
-                FindIterable<Document>ordercollecion=orderCollection.find(query1);
+                FindIterable<Document> ordercollecion = orderCollection.find(query1);
                 for (Document productDocument1 : ordercollecion) {
                     String date = productDocument1.getString("Order_date");
                     if ("All year".equals(selectedQuarter) || dateMatchesSelectedMonth(date, selectedQuarter)) {
-
 
                         Document detailOrder = (Document) productDocument1.get("DetailOrder");
                         Document productDetail = (Document) detailOrder.get(productId.toString());
@@ -190,84 +190,81 @@ public static List<revenue_statistics> filtermonth(String selectedQuarter) {
                 revenueList.add(new revenue_statistics(nameProduct, nameCategory, totalQualitySold, formatPrice));
             }
         }
-
+        Collections.sort(revenueList, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return revenueList;
-}
-public static boolean dateMatchesSelectedMonth(String date, String selectedMonth) {
-    if (date == null || selectedMonth == null) {
-        return false; // Handle the case where date or selectedMonth is null
     }
 
-    try {
-        // Parse the date string
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate parsedDate = LocalDate.parse(date, formatter);
-
-        // Extract the month from the parsed date
-        String month = parsedDate.getMonth().toString();
-
-        // Compare the extracted month with the selected month
-        return month.equalsIgnoreCase(selectedMonth);
-    } catch (DateTimeParseException e) {
-        // Handle parsing errors if the date is in an incorrect format
-        return false;
-    }
-}
-private static boolean dateMatchesSelectedQuarter(String date, String selectedQuarter) {
-    if (date == null || "All".equals(selectedQuarter)) {
-        return false; // Handle the case where date is null or selectedQuarter is "All"
-    }
-
-    // Parse the date string and extract the month
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    try {
-        Date parsedDate = dateFormat.parse(date);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(parsedDate);
-        int month = calendar.get(Calendar.MONTH);
-
-        if ("1".equals(selectedQuarter)) {
-            // Quarter 1: January to March
-            return (month >= Calendar.JANUARY && month <= Calendar.MARCH);
-        } else if ("2".equals(selectedQuarter)) {
-            // Quarter 2: April to June
-            return (month >= Calendar.APRIL && month <= Calendar.JUNE);
-        } else if ("3".equals(selectedQuarter)) {
-            // Quarter 3: July to September
-            return (month >= Calendar.JULY && month <= Calendar.SEPTEMBER);
-        } else if ("4".equals(selectedQuarter)) {
-            // Quarter 4: October to December
-            return (month >= Calendar.OCTOBER && month <= Calendar.DECEMBER);
-        } else {
-            return false; // Invalid quarter
+    public static boolean dateMatchesSelectedMonth(String date, String selectedMonth) {
+        if (date == null || selectedMonth == null) {
+            return false; // Handle the case where date or selectedMonth is null
         }
-    } catch (ParseException e) {
-        // Handle date parsing error
-        e.printStackTrace();
-        return false;
+
+        try {
+            // Parse the date string
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate parsedDate = LocalDate.parse(date, formatter);
+
+            // Extract the month from the parsed date
+            String month = parsedDate.getMonth().toString();
+
+            // Compare the extracted month with the selected month
+            return month.equalsIgnoreCase(selectedMonth);
+        } catch (DateTimeParseException e) {
+            // Handle parsing errors if the date is in an incorrect format
+            return false;
+        }
     }
-}
- public static List<revenue_statistics>revenue_Employeemonth(String selectedmonth){
+
+    private static boolean dateMatchesSelectedQuarter(String date, String selectedQuarter) {
+        if (date == null || "All".equals(selectedQuarter)) {
+            return false; // Handle the case where date is null or selectedQuarter is "All"
+        }
+
+        // Parse the date string and extract the month
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date parsedDate = dateFormat.parse(date);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parsedDate);
+            int month = calendar.get(Calendar.MONTH);
+
+            if ("1".equals(selectedQuarter)) {
+                // Quarter 1: January to March
+                return (month >= Calendar.JANUARY && month <= Calendar.MARCH);
+            } else if ("2".equals(selectedQuarter)) {
+                // Quarter 2: April to June
+                return (month >= Calendar.APRIL && month <= Calendar.JUNE);
+            } else if ("3".equals(selectedQuarter)) {
+                // Quarter 3: July to September
+                return (month >= Calendar.JULY && month <= Calendar.SEPTEMBER);
+            } else if ("4".equals(selectedQuarter)) {
+                // Quarter 4: October to December
+                return (month >= Calendar.OCTOBER && month <= Calendar.DECEMBER);
+            } else {
+                return false; // Invalid quarter
+            }
+        } catch (ParseException e) {
+            // Handle date parsing error
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static List<revenue_statistics> revenue_Employeemonth(String selectedmonth) {
         ArrayList<revenue_statistics> arr = new ArrayList<>();
         MongoCollection<Document> Product = DBConnect.getConnection().getCollection("Product");
         MongoCollection<Document> Order = DBConnect.getConnection().getCollection("Order");
         MongoCollection<Document> Employee = DBConnect.getConnection().getCollection("Employee");
         FindIterable<Document> ProductCollection = Product.find();
-
-        // Lặp qua tất cả nhân viên
         for (Document employeeDocument : Employee.find()) {
             ObjectId idEmployee = employeeDocument.getObjectId("_id");
             String NameEmployee = employeeDocument.getString("Name");
             int totalQuality = 0;
             int totalPrice = 0;
-
-            // Lặp qua tất cả sản phẩm
             for (Document productDocument : ProductCollection) {
                 ObjectId idproduct = productDocument.getObjectId("_id");
                 Document query = new Document("DetailOrder." + idproduct, new Document("$exists", true));
                 FindIterable<Document> orderDocuments = Order.find(query);
-
-                // Lặp qua tất cả đơn hàng của sản phẩm
                 for (Document orderDocument : orderDocuments) {
                     if (idEmployee.equals(orderDocument.getObjectId("id_Employee"))) {
                         Document detailOrder = (Document) orderDocument.get("DetailOrder");
@@ -293,9 +290,10 @@ private static boolean dateMatchesSelectedQuarter(String date, String selectedQu
             String totalprice = formatter.format(totalPrice);
             arr.add(new revenue_statistics(totalQuality, totalprice, NameEmployee));
         }
-
+        Collections.sort(arr, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return arr;
-    } 
+    }
+
     private static boolean dateMatchesSelectedYear(String date, String selectedYear) {
         if (date == null) {
             return false; // Handle the case where date is null
@@ -352,29 +350,27 @@ private static boolean dateMatchesSelectedQuarter(String date, String selectedQu
             }
             Product.add(new product(productDocument.getString("Name"), categoryName, totalQualitySold, orderCount, productId));
         }
+        Collections.sort(Product, Comparator.comparingInt(product::getTotalproduct).reversed());
         return Product;
     }
-public static List<revenue_statistics> revenue_Employeeprince(String selectedyear) {
+
+    public static List<revenue_statistics> revenue_Employeeprince(String selectedyear) {
         ArrayList<revenue_statistics> arr = new ArrayList<>();
         MongoCollection<Document> Product = DBConnect.getConnection().getCollection("Product");
         MongoCollection<Document> Order = DBConnect.getConnection().getCollection("Order");
         MongoCollection<Document> Employee = DBConnect.getConnection().getCollection("Employee");
         FindIterable<Document> ProductCollection = Product.find();
 
-        // Lặp qua tất cả nhân viên
         for (Document employeeDocument : Employee.find()) {
             ObjectId idEmployee = employeeDocument.getObjectId("_id");
             String NameEmployee = employeeDocument.getString("Name");
             int totalQuality = 0;
             int totalPrice = 0;
-
-            // Lặp qua tất cả sản phẩm
             for (Document productDocument : ProductCollection) {
                 ObjectId idproduct = productDocument.getObjectId("_id");
                 Document query = new Document("DetailOrder." + idproduct, new Document("$exists", true));
                 FindIterable<Document> orderDocuments = Order.find(query);
 
-                // Lặp qua tất cả đơn hàng của sản phẩm
                 for (Document orderDocument : orderDocuments) {
                     if (idEmployee.equals(orderDocument.getObjectId("id_Employee"))) {
                         Document detailOrder = (Document) orderDocument.get("DetailOrder");
@@ -400,9 +396,10 @@ public static List<revenue_statistics> revenue_Employeeprince(String selectedyea
             String totalprice = formatter.format(totalPrice);
             arr.add(new revenue_statistics(totalQuality, totalprice, NameEmployee));
         }
-
+        Collections.sort(arr, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return arr;
     }
+
     public static List<revenue_statistics> revenue_Statistics() {
         ArrayList<revenue_statistics> reverse = new ArrayList<>();
         MongoCollection<Document> productCollection = DBConnect.getConnection().getCollection("Product");
@@ -442,61 +439,63 @@ public static List<revenue_statistics> revenue_Employeeprince(String selectedyea
                         }
                     }
                 }
+
                 reverse.add(new revenue_statistics(nameProduct, namecategory, totalQualitySold, formatprice));
 
             }
         }
+        Collections.sort(reverse, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return reverse;
     }
-public static List<revenue_statistics> revenue_Employeeyear(String selectedYear) {
-    ArrayList<revenue_statistics> arr = new ArrayList<>();
-    MongoCollection<Document> Product = DBConnect.getConnection().getCollection("Product");
-    MongoCollection<Document> Order = DBConnect.getConnection().getCollection("Order");
-    MongoCollection<Document> Employee = DBConnect.getConnection().getCollection("Employee");
-    FindIterable<Document> ProductCollection = Product.find();
 
-    // Lặp qua tất cả nhân viên
-    for (Document employeeDocument : Employee.find()) {
-        ObjectId idEmployee = employeeDocument.getObjectId("_id");
-        String NameEmployee = employeeDocument.getString("Name");
-        int totalQuality = 0;
-        int totalPrice = 0;
+    public static List<revenue_statistics> revenue_Employeeyear(String selectedYear) {
+        ArrayList<revenue_statistics> arr = new ArrayList<>();
+        MongoCollection<Document> Product = DBConnect.getConnection().getCollection("Product");
+        MongoCollection<Document> Order = DBConnect.getConnection().getCollection("Order");
+        MongoCollection<Document> Employee = DBConnect.getConnection().getCollection("Employee");
+        FindIterable<Document> ProductCollection = Product.find();
+        for (Document employeeDocument : Employee.find()) {
+            ObjectId idEmployee = employeeDocument.getObjectId("_id");
+            String NameEmployee = employeeDocument.getString("Name");
+            int totalQuality = 0;
+            int totalPrice = 0;
 
-        // Lặp qua tất cả sản phẩm
-        for (Document productDocument : ProductCollection) {
-            ObjectId idproduct = productDocument.getObjectId("_id");
-            Document query = new Document("DetailOrder." + idproduct, new Document("$exists", true));
-            FindIterable<Document> orderDocuments = Order.find(query);
+            // Lặp qua tất cả sản phẩm
+            for (Document productDocument : ProductCollection) {
+                ObjectId idproduct = productDocument.getObjectId("_id");
+                Document query = new Document("DetailOrder." + idproduct, new Document("$exists", true));
+                FindIterable<Document> orderDocuments = Order.find(query);
 
-            // Lặp qua tất cả đơn hàng của sản phẩm
-            for (Document orderDocument : orderDocuments) {
-                if (idEmployee.equals(orderDocument.getObjectId("id_Employee"))) {
-                    Document detailOrder = (Document) orderDocument.get("DetailOrder");
-                    Document productDetail = (Document) detailOrder.get(idproduct.toString());
+                // Lặp qua tất cả đơn hàng của sản phẩm
+                for (Document orderDocument : orderDocuments) {
+                    if (idEmployee.equals(orderDocument.getObjectId("id_Employee"))) {
+                        Document detailOrder = (Document) orderDocument.get("DetailOrder");
+                        Document productDetail = (Document) detailOrder.get(idproduct.toString());
 
-                    if (productDetail != null) {
-                        Integer quality = productDetail.getInteger("Quality");
-                        Integer price = productDocument.getInteger("Price");
-                        String date = orderDocument.getString("Order_date");
-                        
-                        if (selectedYear != null && ("All Years".equals(selectedYear) || dateMatchesSelectedYear(date, selectedYear))) {
-                            if (quality != null && price != null) {
-                                totalQuality += quality;
-                                totalPrice += quality * price;
+                        if (productDetail != null) {
+                            Integer quality = productDetail.getInteger("Quality");
+                            Integer price = productDocument.getInteger("Price");
+                            String date = orderDocument.getString("Order_date");
+
+                            if (selectedYear != null && ("All Years".equals(selectedYear) || dateMatchesSelectedYear(date, selectedYear))) {
+                                if (quality != null && price != null) {
+                                    totalQuality += quality;
+                                    totalPrice += quality * price;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        DecimalFormat formatter = new DecimalFormat("#,### $");
-        String totalprice = formatter.format(totalPrice);
-        arr.add(new revenue_statistics(totalQuality, totalprice, NameEmployee));
+            DecimalFormat formatter = new DecimalFormat("#,### $");
+            String totalprice = formatter.format(totalPrice);
+            arr.add(new revenue_statistics(totalQuality, totalprice, NameEmployee));
+        }
+        Collections.sort(arr, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
+        return arr;
     }
 
-    return arr;
-}
     public static List<revenue_statistics> revenue_Employee() {
         ArrayList<revenue_statistics> arr = new ArrayList<>();
         MongoCollection<Document> Product = DBConnect.getConnection().getCollection("Product");
@@ -540,7 +539,7 @@ public static List<revenue_statistics> revenue_Employeeyear(String selectedYear)
             String totalprice = formatter.format(totalPrice);
             arr.add(new revenue_statistics(totalQuality, totalprice, NameEmployee));
         }
-
+        Collections.sort(arr, Comparator.comparingInt(revenue_statistics::getQuality).reversed());
         return arr;
     }
 
@@ -577,64 +576,64 @@ public static List<revenue_statistics> revenue_Employeeyear(String selectedYear)
         return formattedTotalRevenue;
     }
 
-  public static List<product> orderNotYetProcessed(Object idProduct) {
-    ArrayList<product> products = new ArrayList<>();
-    MongoCollection<Document> orderCollection = DBConnect.getConnection().getCollection("Order");
-    MongoCollection<Document> customerCollection = DBConnect.getConnection().getCollection("Customer");
-    FindIterable<Document> orders = orderCollection.find(new Document("status", 0));
+    public static List<product> orderNotYetProcessed(Object idProduct) {
+        ArrayList<product> products = new ArrayList<>();
+        MongoCollection<Document> orderCollection = DBConnect.getConnection().getCollection("Order");
+        MongoCollection<Document> customerCollection = DBConnect.getConnection().getCollection("Customer");
+        FindIterable<Document> orders = orderCollection.find(new Document("status", 0));
 
-    List<Document> orderList = new ArrayList<>();
-    String customerName = "Unknown Customer"; // Giá trị mặc định
+        List<Document> orderList = new ArrayList<>();
+        String customerName = "Unknown Customer"; // Giá trị mặc định
 
-    for (Document document : orders) {
-        Document detailOrder = document.get("DetailOrder", Document.class);
-        Document productDetail = detailOrder.get(idProduct.toString(), Document.class);
-        ObjectId idCustomer = document.getObjectId("id_Customer");
-        Document customer = customerCollection.find(Filters.eq("_id", idCustomer)).first();
+        for (Document document : orders) {
+            Document detailOrder = document.get("DetailOrder", Document.class);
+            Document productDetail = detailOrder.get(idProduct.toString(), Document.class);
+            ObjectId idCustomer = document.getObjectId("id_Customer");
+            Document customer = customerCollection.find(Filters.eq("_id", idCustomer)).first();
 
-        if (customer != null) {
-            customerName = customer.getString("Name");
+            if (customer != null) {
+                customerName = customer.getString("Name");
+            }
+
+            String dateString = document.getString("Order_date");
+
+            if (dateString != null) {
+                // Chuyển đổi chuỗi ngày thành đối tượng Date
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date orderDate = null;
+
+                try {
+                    orderDate = dateFormat.parse(dateString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if (orderDate != null) {
+                    document.append("parsedOrderDate", orderDate);
+                    orderList.add(document);
+                }
+            }
         }
 
-        String dateString = document.getString("Order_date");
+        orderList.sort(Comparator.comparing(doc -> doc.getDate("parsedOrderDate")));
 
-        if (dateString != null) {
-            // Chuyển đổi chuỗi ngày thành đối tượng Date
+        for (Document sortedOrder : orderList) {
+            ObjectId orderId = sortedOrder.getObjectId("_id");
+            Date orderDate = sortedOrder.getDate("parsedOrderDate");
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date orderDate = null;
+            String formattedOrderDate = dateFormat.format(orderDate);
+            int status = sortedOrder.getInteger("status");
+            String statusString = "";
 
-            try {
-                orderDate = dateFormat.parse(dateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (status == 0) {
+                statusString = "no process";
             }
 
-            if (orderDate != null) {
-                document.append("parsedOrderDate", orderDate);
-                orderList.add(document);
-            }
-        }
-    }
-
-    orderList.sort(Comparator.comparing(doc -> doc.getDate("parsedOrderDate")));
-
-    for (Document sortedOrder : orderList) {
-        ObjectId orderId = sortedOrder.getObjectId("_id");
-        Date orderDate = sortedOrder.getDate("parsedOrderDate");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedOrderDate = dateFormat.format(orderDate);
-        int status = sortedOrder.getInteger("status");
-        String statusString = "";
-
-        if (status == 0) {
-            statusString = "no process";
+            products.add(new product(formattedOrderDate, Math.abs(orderId.hashCode()), customerName, statusString));
         }
 
-        products.add(new product(formattedOrderDate, Math.abs(orderId.hashCode()), customerName, statusString));
+        return products;
     }
-
-    return products;
-}
 
     public static List<product> listProductTotalQualitySoldAndCategoryName() {
         ArrayList<product> Product = new ArrayList<>();
@@ -671,6 +670,7 @@ public static List<revenue_statistics> revenue_Employeeyear(String selectedYear)
             }
             Product.add(new product(productDocument.getString("Name"), categoryName, totalQualitySold, orderCount, productId));
         }
+        Collections.sort(Product, Comparator.comparingInt(product::getTotalproduct).reversed());
         return Product;
     }
 

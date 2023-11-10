@@ -138,7 +138,7 @@ public class Revenue_EmployeeController implements Initializable {
             renueEmployeeyear(year.getValue());
         });
         ObservableList<String> precious = FXCollections.observableArrayList(
-                "All ", "1", "2", "3", "4");
+                "All", "1", "2", "3", "4");
         this.precious.setItems(precious);
         this.precious.setValue("All");
          this.precious.setOnAction(event->{
