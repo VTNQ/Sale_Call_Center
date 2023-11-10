@@ -71,8 +71,6 @@ public class AccountManagerController implements Initializable{
     @FXML
     private TableColumn<Manager, String> colApprove;
 
-    @FXML
-    private TableColumn<Manager, String> colCancle;
 
     @FXML
     private TableColumn<Manager, String> colEmail;
@@ -197,7 +195,7 @@ public class AccountManagerController implements Initializable{
         });
         colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
         colApprove.setCellFactory(column -> new TableCell<Manager, String>() {
-            private final MFXButton button = new MFXButton("Approve");
+            private final MFXButton button = new MFXButton("Reset");
 
             {
                 button.setOnAction(event -> {
@@ -207,7 +205,7 @@ public class AccountManagerController implements Initializable{
                     Document query = new Document("EmailEmployee", mg.getEmail()).append("status", 1);
                     Document result = collection.find(query).first();
                     if (result != null) {
-                        Alert.Dialogerror("Approved");
+                        Alert.Dialogerror("Reseted");
                     } else {
                         Document requestDocument = collection.find(eq("EmailEmployee", mg.getEmail())).first();
                         if (requestDocument != null) {
@@ -246,53 +244,7 @@ public class AccountManagerController implements Initializable{
             }
 
         });
-        colCancle.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colCancle.setCellFactory(column -> new TableCell<Manager, String>() {
-            private final MFXButton button = new MFXButton("Cancel");
-
-            {
-                button.setOnAction(event -> {
-                    Manager mg = getTableView().getItems().get(getIndex());
-                    MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Request");
-                    Document query = new Document("EmailEmployee", mg.getEmail()).append("status", 2);
-                    Document result = collection.find(query).first();
-                    if (result != null) {
-                        Alert.Dialogerror("Canceled");
-                    } else {
-                        Bson Filter = Filters.eq("EmailEmployee", mg.getEmail());
-                        Bson updates = Updates.set("status", 2);
-                        UpdateResult update = collection.updateOne(Filter, updates);
-                        if (update.getModifiedCount() > 0) {
-                            Alert.DialogSuccess("Update successfully");
-                            AccountEmployee();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                button.getStyleClass().add("button-error");
-                if (!empty || item != null) {
-                    setGraphic(button);
-                    if (item == null) {
-                        setGraphic(null);
-                    } else if (item.equals("")) {
-                        setGraphic(null);
-                    } else if (item.equals("1")) {
-                        setGraphic(button);
-                        button.setDisable(true);
-                    } else {
-                        setGraphic(button);
-                    }
-                } else {
-                    setGraphic(null);
-                }
-
-            }
-
-        });
+       
     }
 
     private void AccountEmployee() {
@@ -388,7 +340,7 @@ public class AccountManagerController implements Initializable{
         });
         colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
         colApprove.setCellFactory(column -> new TableCell<Manager, String>() {
-            private final MFXButton button = new MFXButton("Approve");
+            private final MFXButton button = new MFXButton("Reset");
 
             {
                 button.setOnAction(event -> {
@@ -398,7 +350,7 @@ public class AccountManagerController implements Initializable{
                     Document query = new Document("EmailEmployee", mg.getEmail()).append("status", 1);
                     Document result = collection.find(query).first();
                     if (result != null) {
-                        Alert.Dialogerror("Approved");
+                        Alert.Dialogerror("Reseted");
                     } else {
                         Document requestDocument = collection.find(eq("EmailEmployee", mg.getEmail())).first();
                         if (requestDocument != null) {
@@ -437,53 +389,7 @@ public class AccountManagerController implements Initializable{
             }
 
         });
-        colCancle.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colCancle.setCellFactory(column -> new TableCell<Manager, String>() {
-            private final MFXButton button = new MFXButton("Cancel");
-
-            {
-                button.setOnAction(event -> {
-                    Manager mg = getTableView().getItems().get(getIndex());
-                    MongoCollection<Document> collection = DBconnect.getdatabase().getCollection("Request");
-                    Document query = new Document("EmailEmployee", mg.getEmail()).append("status", 2);
-                    Document result = collection.find(query).first();
-                    if (result != null) {
-                        Alert.Dialogerror("Canceled");
-                    } else {
-                        Bson Filter = Filters.eq("EmailEmployee", mg.getEmail());
-                        Bson updates = Updates.set("status", 2);
-                        UpdateResult update = collection.updateOne(Filter, updates);
-                        if (update.getModifiedCount() > 0) {
-                            Alert.DialogSuccess("Update successfully");
-                            AccountEmployee();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                button.getStyleClass().add("button-error");
-                if (!empty || item != null) {
-                    setGraphic(button);
-                    if (item == null) {
-                        setGraphic(null);
-                    } else if (item.equals("")) {
-                        setGraphic(null);
-                    } else if (item.equals("1")) {
-                        setGraphic(button);
-                        button.setDisable(true);
-                    } else {
-                        setGraphic(button);
-                    }
-                } else {
-                    setGraphic(null);
-                }
-
-            }
-
-        });
+        
 
     }
 

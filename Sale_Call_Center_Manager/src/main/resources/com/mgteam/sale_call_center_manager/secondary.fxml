@@ -32,7 +32,7 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <Label fx:id="User" layoutX="100.0" layoutY="76.0" prefHeight="38.0" prefWidth="74.0" textFill="WHITE">
+            <Label fx:id="User" layoutX="100.0" layoutY="76.0" prefHeight="38.0" prefWidth="101.0" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
@@ -118,7 +118,7 @@
                <children>
                   <ScrollPane layoutY="2.0" prefHeight="126.0" prefWidth="646.0">
                      <content>
-                        <AnchorPane prefHeight="111.0" prefWidth="681.0">
+                        <AnchorPane prefHeight="111.0" prefWidth="643.0">
                            <children>
                               <AnchorPane layoutX="14.0" layoutY="6.0" prefHeight="100.0" prefWidth="191.0" styleClass="nav" stylesheets="@css/Employee.css">
                                  <children>
@@ -139,26 +139,7 @@
                                     </Label>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane layoutX="223.0" layoutY="6.0" prefHeight="100.0" prefWidth="191.0" styleClass="nav" stylesheets="@css/Employee.css">
-                                 <children>
-                                    <ImageView fitHeight="66.0" fitWidth="63.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@asset/order.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label layoutX="148.0" layoutY="14.0" text="Order" textFill="WHITE">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="order" alignment="TOP_RIGHT" layoutX="66.0" layoutY="55.0" prefHeight="22.0" prefWidth="122.0" text="0" textFill="WHITE">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane layoutX="427.0" layoutY="6.0" prefHeight="100.0" prefWidth="238.0" styleClass="nav" stylesheets="@css/Employee.css">
+                              <AnchorPane layoutX="257.0" layoutY="6.0" prefHeight="100.0" prefWidth="238.0" styleClass="nav" stylesheets="@css/Employee.css">
                                  <children>
                                     <ImageView fitHeight="66.0" fitWidth="63.0" layoutX="17.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -197,7 +178,7 @@
                         <String fx:value="shadow" />
                      </styleClass>
                      <children>
-                        <LineChart fx:id="chartOrder" layoutX="-169.0" layoutY="39.0" prefHeight="159.0" prefWidth="267.0" title="Number of orders" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="39.0">
+                        <LineChart fx:id="chartOrder" layoutX="-169.0" layoutY="39.0" prefHeight="159.0" prefWidth="267.0" title="Number of Inventory" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="39.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>
@@ -214,7 +195,7 @@
                         </ComboBox>
                      </children>
                   </AnchorPane>
-                  <Label layoutX="14.0" layoutY="-1.0" prefHeight="26.0" prefWidth="139.0" text="order statistics">
+                  <Label layoutX="14.0" layoutY="-1.0" prefHeight="30.0" prefWidth="191.0" text="Inventory statistics">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>

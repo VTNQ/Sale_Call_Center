@@ -129,7 +129,7 @@ public class daodb {
                         DecimalFormat formatter = new DecimalFormat("#,### $");
                         int price = document1.getInteger("Price");
                         String formatPrice = formatter.format(price);
-                        Inventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, name_product));
+                        Inventory.add(new Iventory(Math.abs(id_Iventory), id_Productint, Quality, formattedSince, formatPrice, name_product));
                     }
                 }
             }
@@ -165,7 +165,7 @@ public class daodb {
                         DecimalFormat formatter = new DecimalFormat("#,### $");
                         int price = document1.getInteger("Price");
                         String formatPrice = formatter.format(price);
-                        Iventory.add(new Iventory(id_Iventory, id_Productint, Quality, formattedSince, formatPrice, name_product));
+                        Iventory.add(new Iventory(Math.abs(id_Iventory), id_Productint, Quality, formattedSince, formatPrice, name_product));
                     }
                 }
 
