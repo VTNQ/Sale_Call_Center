@@ -35,8 +35,10 @@
             <TableColumn fx:id="colproduct" prefWidth="90.4000244140625" text="Product" />
             <TableColumn fx:id="colprint" prefWidth="74.39996337890625" text="Print" />
             <TableColumn fx:id="colApprove" prefWidth="86.4000244140625" text="Approve" />
-            <TableColumn fx:id="colcancle" prefWidth="74.4000244140625" text="Cancle" />
         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
       <Pagination fx:id="pagination" layoutX="189.0" layoutY="397.0" prefHeight="15.0" prefWidth="200.0" />
       <Label layoutX="290.0" layoutY="150.0" text="Search" />

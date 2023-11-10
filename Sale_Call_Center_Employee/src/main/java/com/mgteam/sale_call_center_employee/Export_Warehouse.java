@@ -76,8 +76,6 @@ public class Export_Warehouse implements Initializable {
     @FXML
     private TableColumn<?, ?> colOrder = new TableColumn<>();
 
-    @FXML
-    private TableColumn<Export, Integer> colcancle = new TableColumn<>();
     private int itemsperPage = 5;
     private int totalItems;
     private int displaymode = 1;
@@ -132,7 +130,7 @@ public class Export_Warehouse implements Initializable {
         return Customer;
     }
     @FXML
-    private TableColumn<Export, Integer> Qualityremaning=new TableColumn<>();
+    private TableColumn<Export, Integer> Qualityremaning = new TableColumn<>();
 
     @FXML
     private TableColumn<?, ?> colprice = new TableColumn<>();
@@ -166,7 +164,7 @@ public class Export_Warehouse implements Initializable {
 
         java.io.File selectedDirectory = directoryChooser.showDialog(stage);
         if (selectedDirectory != null) {
-            System.out.println("Thư mục đã chọn: " + selectedDirectory.getAbsolutePath());
+
             directoryfield.setText(selectedDirectory.getAbsolutePath());
         }
     }
@@ -217,9 +215,8 @@ public class Export_Warehouse implements Initializable {
             }
             String idString = idStringBuilder.length() > 0 ? idStringBuilder.substring(0, idStringBuilder.length() - 2) : "";
 
-            // Define values for the table cells
             String[] values = {
-                String.valueOf(getidorder().hashCode()),
+                String.valueOf(Math.abs(getidorder().hashCode())),
                 Customer,
                 LoginController.username,
                 idString
@@ -269,28 +266,28 @@ public class Export_Warehouse implements Initializable {
         colNameCategory.setCellValueFactory(new PropertyValueFactory<>("NameCategory"));
         Qualityremaning.setCellValueFactory(new PropertyValueFactory<>("totalQuality"));
         Qualityremaning.setCellFactory(column -> new TableCell<Export, Integer>() {
-    @Override
-    protected void updateItem(Integer item, boolean empty) {
-        super.updateItem(item, empty);
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
 
-        if (empty || item == null) {
-            setText(null);
-            setStyle("");
-        } else {
-            Export export = getTableView().getItems().get(getIndex());
-            int totalQuality = export.getTotalQuality();
-            int quality = export.getQuality();
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    Export export = getTableView().getItems().get(getIndex());
+                    int totalQuality = export.getTotalQuality();
+                    int quality = export.getQuality();
 
-            if (totalQuality < quality) {
-                setText("Not Enough");
-                setStyle("-fx-text-fill: red;"); 
-            } else {
-                setText(String.valueOf(totalQuality));
-                setStyle(""); // Reset style
+                    if (totalQuality < quality) {
+                        setText("quantity in stock:" + totalQuality);
+                        setStyle("-fx-text-fill: red;");
+                    } else {
+                        setText(String.valueOf(totalQuality));
+                        setStyle(""); // Reset style
+                    }
+                }
             }
-        }
-    }
-});
+        });
     }
 
     private void Detailexportproduct(String Name, ObjectId idOrder) {
@@ -312,28 +309,28 @@ public class Export_Warehouse implements Initializable {
         colNameCategory.setCellValueFactory(new PropertyValueFactory<>("NameCategory"));
         Qualityremaning.setCellValueFactory(new PropertyValueFactory<>("totalQuality"));
         Qualityremaning.setCellFactory(column -> new TableCell<Export, Integer>() {
-    @Override
-    protected void updateItem(Integer item, boolean empty) {
-        super.updateItem(item, empty);
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
 
-        if (empty || item == null) {
-            setText(null);
-            setStyle("");
-        } else {
-            Export export = getTableView().getItems().get(getIndex());
-            int totalQuality = export.getTotalQuality();
-            int quality = export.getQuality();
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    Export export = getTableView().getItems().get(getIndex());
+                    int totalQuality = export.getTotalQuality();
+                    int quality = export.getQuality();
 
-            if (totalQuality < quality) {
-                setText("Not Enough");
-                setStyle("-fx-text-fill: red;"); 
-            } else {
-                setText(String.valueOf(totalQuality));
-                setStyle(""); // Reset style
+                    if (totalQuality < quality) {
+                        setText("Not Enough");
+                        setStyle("-fx-text-fill: red;");
+                    } else {
+                        setText(String.valueOf(totalQuality));
+                        setStyle(""); // Reset style
+                    }
+                }
             }
-        }
-    }
-});
+        });
     }
 
     private List<ObjectId> displayIdProduct(ObjectId id) {
@@ -598,67 +595,14 @@ public class Export_Warehouse implements Initializable {
                 super.updateItem(item, empty);
                 button.getStyleClass().add("button-success");
                 if (item != null || !empty) {
-                    if (item == 2) {
-                        setGraphic(button);
-                        button.setDisable(true);
 
-                    } else {
-                        setGraphic(button);
-                    }
+                    setGraphic(button);
+
                 }
             }
 
         });
-        colcancle.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colcancle.setCellFactory(column -> new TableCell<Export, Integer>() {
-            private MFXButton button = new MFXButton("cancel");
 
-            {
-                button.setOnAction(event -> {
-                    Export ex = getTableView().getItems().get(getIndex());
-                    if (ex.getStatus() == 0) {
-                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("CONFIRMATION");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Are you cancel?");
-                        alert.showAndWait().ifPresent(responsive -> {
-                            if (responsive == ButtonType.CLOSE) {
-                                alert.close();
-                            }
-                            if (responsive == ButtonType.OK) {
-                                try {
-                                    MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
-                                    Document filter = new Document("_id", ex.getIdOrder());
-                                    Document update = new Document("$set", new Document("status", 2));
-                                    order.updateOne(filter, update);
-                                    ListExport();
-                                } catch (Exception e) {
-                                }
-                            }
-                        });
-                    } else {
-                        DialogAlert.DialogError("canceled");
-                    }
-
-                });
-            }
-
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                button.getStyleClass().add("button-error");
-                if (item != null || !empty) {
-                    if (item == 1) {
-                        setGraphic(button);
-                        button.setDisable(true);
-
-                    } else {
-                        setGraphic(button);
-                    }
-                }
-            }
-
-        });
     }
 
     public boolean areAllProductsAboveThreshold(List<ObjectId> productIds, Export ex) {
@@ -882,68 +826,14 @@ public class Export_Warehouse implements Initializable {
                 super.updateItem(item, empty);
                 button.getStyleClass().add("button-success");
                 if (item != null || !empty) {
-                    if (item == 2) {
-                        setGraphic(button);
-                        button.setDisable(true);
 
-                    } else {
-                        setGraphic(button);
-                    }
+                    setGraphic(button);
+
                 }
             }
 
         }
         );
-        colcancle.setCellValueFactory(new PropertyValueFactory<>("status"));
-        colcancle.setCellFactory(column -> new TableCell<Export, Integer>() {
-            private MFXButton button = new MFXButton("cancel");
-
-            {
-                button.setOnAction(event -> {
-                    Export ex = getTableView().getItems().get(getIndex());
-                    if (ex.getStatus() == 0) {
-                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("CONFIRMATION");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Are you cancel?");
-                        alert.showAndWait().ifPresent(responsive -> {
-                            if (responsive == ButtonType.CLOSE) {
-                                alert.close();
-                            }
-                            if (responsive == ButtonType.OK) {
-                                try {
-                                    MongoCollection<Document> order = DBConnection.getConnection().getCollection("Order");
-                                    Document filter = new Document("_id", ex.getIdOrder());
-                                    Document update = new Document("$set", new Document("status", 2));
-                                    order.updateOne(filter, update);
-                                    ListExport();
-                                } catch (Exception e) {
-                                }
-                            }
-                        });
-                    } else {
-                        DialogAlert.DialogError("canceled");
-                    }
-
-                });
-            }
-
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                button.getStyleClass().add("button-error");
-                if (item != null || !empty) {
-                    if (item == 1) {
-                        setGraphic(button);
-                        button.setDisable(true);
-
-                    } else {
-                        setGraphic(button);
-                    }
-                }
-            }
-
-        });
     }
 
     @Override
