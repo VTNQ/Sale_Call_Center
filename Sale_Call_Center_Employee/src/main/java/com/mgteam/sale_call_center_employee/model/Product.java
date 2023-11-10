@@ -8,7 +8,15 @@ public class Product {
     private ObjectId id_category;
     private Integer Price;
     private String customer;
+private int totalQuality;
 
+    public int getTotalQuality() {
+        return totalQuality;
+    }
+
+    public void setTotalQuality(int totalQuality) {
+        this.totalQuality = totalQuality;
+    }
     public String getCustomer() {
         return customer;
     }

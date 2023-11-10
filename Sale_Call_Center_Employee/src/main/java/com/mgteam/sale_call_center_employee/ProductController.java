@@ -5,14 +5,12 @@
 package com.mgteam.sale_call_center_employee;
 
 import com.mgteam.sale_call_center_employee.dialog.DialogAlert;
-import com.mgteam.sale_call_center_employee.model.Import;
 import com.mgteam.sale_call_center_employee.model.Product;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mgteam.sale_call_center_employee.util.daodb;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.UpdateResult;
-import io.github.palexdev.materialfx.controls.MFXButton;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -106,12 +104,17 @@ public class ProductController implements Initializable {
                     if (count > 0) {
                         DialogAlert.DialogError("Can not update");
                     } else {
-                        Document filter = new Document("_id", idProduct);
+                        if(!isNameExists(EditName.getText(), product)){
+                             Document filter = new Document("_id", idProduct);
                         Document update = new Document("$set", new Document("Name", EditName.getText()).append("Price", priceValue).append("ID_Category", getCategoryIDByName(EditnameCategory.getValue())));
                         UpdateResult updateresult = product.updateOne(filter, update);
                         if (updateresult.getModifiedCount() > 0) {
                             DialogAlert.DialogSuccess("Update successfully");
                         }
+                        }else{
+                            DialogAlert.DialogError("Name product is exists");
+                        }
+                       
                     }
 
                 } else {
@@ -371,13 +374,18 @@ public class ProductController implements Initializable {
 
                 if (priceValue >= 0) {
                     MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Product");
-                    Document document = new Document("Name", NameProduct.getText())
+                    if(!isNameExists(NameProduct.getText(), categoryCollection)){
+                          Document document = new Document("Name", NameProduct.getText())
                             .append("Price", priceValue)
                             .append("ID_Category", getCategoryIDByName(Namecategory.getValue()));
                     categoryCollection.insertOne(document);
                     DialogAlert.DialogSuccess("Add product successfully");
                     NameProduct.setText("");
                     Price.setText("");
+                    }else{
+                        DialogAlert.DialogError("Name Product is Exists");
+                    }
+                  
 
                 } else {
                     DialogAlert.DialogError("Price must be a non-negative number");
@@ -391,6 +399,11 @@ public class ProductController implements Initializable {
             DialogAlert.DialogError("You must enter enough information");
         }
 
+    }
+
+    private boolean isNameExists(String Name, MongoCollection<Document> collection) {
+        Document existingDocument = collection.find(new Document("Name", Name)).first();
+        return existingDocument != null;
     }
 
     public Map<String, ObjectId> getCategoryNameToIdMap() {
@@ -420,11 +433,11 @@ public class ProductController implements Initializable {
         ListProduct();
         pagination.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             currentPageIndex = newIndex.intValue();
-           if(displaymode==1){
-               ListProduct();
-           }else if(displaymode==2){
-               SearchlistProduct(textfield.getText(), currentPageIndex);
-           }
+            if (displaymode == 1) {
+                ListProduct();
+            } else if (displaymode == 2) {
+                SearchlistProduct(textfield.getText(), currentPageIndex);
+            }
         });
         MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Category");
         ObservableList<String> categoryList = FXCollections.observableArrayList();

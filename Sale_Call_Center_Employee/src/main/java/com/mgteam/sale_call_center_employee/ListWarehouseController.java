@@ -10,6 +10,7 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mgteam.sale_call_center_employee.util.daodb;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Sorts;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -55,7 +56,7 @@ public class ListWarehouseController implements Initializable {
     @FXML
     private ComboBox<String> Nameproduct = new ComboBox<>();
     @FXML
-    private TextField Namesupply;
+    private ComboBox<String> Namesupply = new ComboBox<>();
     private int itemsperPage = 5;
 
     @FXML
@@ -345,14 +346,17 @@ public class ListWarehouseController implements Initializable {
         ObservableList<Warehouse> productList = tblAddlist.getItems();
 
         String qualityString = Quality.getText();
-        String nameSupply = Namesupply.getText();
+        String nameSupply = Namesupply.getValue();
 
         // Kiểm tra xem Namesupply và Quality đã được nhập chưa
-        if (nameSupply.isEmpty() && qualityString.isEmpty()) {
+        if (Namesupply.getValue() == null && qualityString.isEmpty()) {
             // Nếu một trong hai trường không hợp lệ, đặt biến isDataValid thành false
             DialogAlert.DialogError("Please enter in full");
             return;
             // Hiển thị cảnh báo cho người dùng hoặc thực hiện xử lý cần thiết
+        } else if (Namesupply == null || Quality.getText().isEmpty()) {
+            DialogAlert.DialogError("Please enter in full");
+            return;
         }
         try {
             int quality = Integer.parseInt(qualityString);
@@ -377,10 +381,13 @@ public class ListWarehouseController implements Initializable {
                         warehouse.setNameProduct(nameValue);
                         warehouse.setQuality(quality);
                         warehouse.setId(Math.abs(getproductName(nameValue).hashCode()));
+
                         warehouse.setPrice(getFormattedPrice(nameValue));
                         warehouse.setSuppliers(nameSupply);
+                        warehouse.setIdsupply(getsupplyName(Namesupply.getValue()));
+                        warehouse.setIdProduct(getproductName(Nameproduct.getValue()));
                         isNamesupplySet = true;
-                        Namesupply.setEditable(false);
+                        Namesupply.setDisable(true);
                         productList.add(warehouse);
                     } else {
                         Warehouse warehouse = new Warehouse();
@@ -390,6 +397,7 @@ public class ListWarehouseController implements Initializable {
                         warehouse.setPrice(getFormattedPrice(nameValue));
                         warehouse.setSuppliers(nameSupply);
                         warehouse.setIdProduct(getproductName(nameValue));
+                        warehouse.setIdsupply(getsupplyName(Namesupply.getValue()));
                         isNamesupplySet = false;
                         productList.add(warehouse);
                     }
@@ -397,8 +405,7 @@ public class ListWarehouseController implements Initializable {
                 }
 
                 if (isDataValid) {
-                    // Chỉ khi dữ liệu là hợp lệ, bạn mới thực hiện các thay đổi liên quan đến TableView và cột
-                    // Refresh TableView và các cột
+
                     tblAddlist.setItems(FXCollections.observableArrayList(productList));
                     tblAddlist.getItems().setAll(productList);
                     colidproduct.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -411,18 +418,18 @@ public class ListWarehouseController implements Initializable {
 
                         {
                             button.setOnAction(event -> {
-                        Warehouse selectedProduct = getTableView().getItems().get(getIndex());
-                        tblAddlist.getItems().remove(selectedProduct);
-                        ObservableList<Warehouse> productList = tblAddlist.getItems();
-                        for (Warehouse originalProduct :  productList) {
-                            if (originalProduct.getNameProduct().equals(selectedProduct.getNameProduct())) {
-                                
-                                originalProduct.setQuality(0);
-                                originalProduct.setQuality(originalProduct.getQuality() + selectedProduct.getQuality());
-                                break;
-                            }
-                        }
-                    });
+                                Warehouse selectedProduct = getTableView().getItems().get(getIndex());
+                                tblAddlist.getItems().remove(selectedProduct);
+                                ObservableList<Warehouse> productList = tblAddlist.getItems();
+                                for (Warehouse originalProduct : productList) {
+                                    if (originalProduct.getNameProduct().equals(selectedProduct.getNameProduct())) {
+
+                                        originalProduct.setQuality(0);
+                                        originalProduct.setQuality(originalProduct.getQuality() + selectedProduct.getQuality());
+                                        break;
+                                    }
+                                }
+                            });
                         }
 
                         @Override
@@ -440,19 +447,22 @@ public class ListWarehouseController implements Initializable {
             }
 
         } catch (NumberFormatException e) {
-             DialogAlert.DialogError("Quality must be a valid non-negative integer");
+            DialogAlert.DialogError("Quality must be a valid non-negative integer");
         }
 
     }
 
     @FXML
     void Create(ActionEvent event) {
+        List<ObjectId> idProductList = new ArrayList<>();
         ObservableList<Warehouse> productList = tblAddlist.getItems();
+
         if (productList.isEmpty()) {
             DialogAlert.DialogError("Not entered yet to add");
         } else {
             MongoCollection<Document> IncomingOrder = DBConnection.getConnection().getCollection("InComingOrder");
             MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("WareHouse");
+            MongoCollection<Document> WareHouse_InComingOrder = DBConnection.getConnection().getCollection("WareHouse_InComingOrder");
             boolean isboolean = true;
             ObjectId insertedId = null;
             Document productDetails = new Document();
@@ -460,13 +470,16 @@ public class ListWarehouseController implements Initializable {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = currentDate.format(formatter);
             for (Warehouse warehouse : productList) {
+                ObjectId idproduct = warehouse.getIdProduct();
+                idProductList.add(idproduct);
                 if (isboolean) {
                     Document document = new Document("Id_Employee", LoginController.id_employee)
-                            .append("Supplier", warehouse.getSuppliers())
+                            .append("id_Supplier", warehouse.getIdsupply())
                             .append("status", 0);
                     IncomingOrder.insertOne(document);
                     insertedId = document.get("_id", ObjectId.class);
                     isboolean = false;
+
                 }
 
                 Document productDetail = new Document();
@@ -480,12 +493,17 @@ public class ListWarehouseController implements Initializable {
             warehouseDocument.append("ID_InComingOrder", insertedId);
             warehouseDocument.append("Date", formattedDate);
             Warehouse.insertOne(warehouseDocument);
+            ObjectId idWarehouse = Warehouse.find().sort(Sorts.descending("_id")).limit(1).first().getObjectId("_id");
+            for (ObjectId objectId : idProductList) {
+                Document warehouseincoming = new Document("ID_WareHouse", idWarehouse).append("ID_InComingOrder", insertedId).append("ID_Product", objectId);
+                WareHouse_InComingOrder.insertOne(warehouseincoming);
+            }
+
             DialogAlert.DialogSuccess("Add successfully");
-            Namesupply.setText("");
             Quality.setText("");
             productList.clear();
             tblAddlist.setItems(FXCollections.observableArrayList(productList));
-            Namesupply.setEditable(true);
+            Namesupply.setDisable(false);
         }
 
     }
@@ -540,9 +558,26 @@ public class ListWarehouseController implements Initializable {
         return categoryNameToIdMap;
     }
 
+    public Map<String, ObjectId> getSupplyNametomap() {
+        MongoCollection<Document> Supply = DBConnection.getConnection().getCollection("Supply");
+        Map<String, ObjectId> SupplyNameToidMap = new HashMap<>();
+        FindIterable<Document> result = Supply.find();
+        for (Document document : result) {
+            String Name = document.getString("Name");
+            ObjectId idsupply = document.getObjectId("_id");
+            SupplyNameToidMap.put(Name, idsupply);
+        }
+        return SupplyNameToidMap;
+    }
+
     public String getFormattedPrice(String productName) {
         Map<String, String> priceMap = getproductPriceToIdMap();
         return priceMap.get(productName);
+    }
+
+    public ObjectId getsupplyName(String supply) {
+        Map<String, ObjectId> supplyNametoIDMap = getSupplyNametomap();
+        return supplyNametoIDMap.get(supply);
     }
 
     public ObjectId getproductName(String productName) {
@@ -604,6 +639,17 @@ public class ListWarehouseController implements Initializable {
         for (Document document : result) {
             String categoryName = document.getString("Name");
             categoryList.add(categoryName);
+        }
+        MongoCollection<Document> Supply = DBConnection.getConnection().getCollection("Supply");
+        ObservableList<String> supplies = FXCollections.observableArrayList();
+        FindIterable<Document> supp = Supply.find();
+        for (Document document : supp) {
+            String Namesupply = document.getString("Name");
+            supplies.add(Namesupply);
+        }
+        Namesupply.setItems(supplies);
+        if (!supplies.isEmpty()) {
+            Namesupply.setValue(supplies.get(0));
         }
         Nameproduct.setItems(categoryList);
         if (!categoryList.isEmpty()) {

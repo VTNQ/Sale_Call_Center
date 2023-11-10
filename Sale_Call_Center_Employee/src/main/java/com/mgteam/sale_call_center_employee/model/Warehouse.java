@@ -15,7 +15,15 @@ import org.bson.types.ObjectId;
 public class Warehouse {
     private ObjectId idwarehouse;
     private ObjectId idProduct;
+    private ObjectId idsupply;
+    
+    public ObjectId getIdsupply() {
+        return idsupply;
+    }
 
+    public void setIdsupply(ObjectId idsupply) {
+        this.idsupply = idsupply;
+    }
     public ObjectId getIdProduct() {
         return idProduct;
     }

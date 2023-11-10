@@ -311,7 +311,7 @@ public class ListCategoryController implements Initializable {
                         DialogAlert.DialogSuccess("Update successfully");
                     }
                 } else {
-                    DialogAlert.DialogError("Mame is EXISTS");
+                    DialogAlert.DialogError("Name is EXISTS");
                 }
             } else {
                 DialogAlert.DialogError("Update failed");

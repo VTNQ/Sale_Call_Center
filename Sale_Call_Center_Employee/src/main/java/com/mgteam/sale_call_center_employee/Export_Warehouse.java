@@ -18,17 +18,11 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,7 +31,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -138,6 +131,8 @@ public class Export_Warehouse implements Initializable {
     private String getcustomer() {
         return Customer;
     }
+    @FXML
+    private TableColumn<Export, Integer> Qualityremaning=new TableColumn<>();
 
     @FXML
     private TableColumn<?, ?> colprice = new TableColumn<>();
@@ -272,11 +267,35 @@ public class Export_Warehouse implements Initializable {
         colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
         colprice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colNameCategory.setCellValueFactory(new PropertyValueFactory<>("NameCategory"));
+        Qualityremaning.setCellValueFactory(new PropertyValueFactory<>("totalQuality"));
+        Qualityremaning.setCellFactory(column -> new TableCell<Export, Integer>() {
+    @Override
+    protected void updateItem(Integer item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || item == null) {
+            setText(null);
+            setStyle("");
+        } else {
+            Export export = getTableView().getItems().get(getIndex());
+            int totalQuality = export.getTotalQuality();
+            int quality = export.getQuality();
+
+            if (totalQuality < quality) {
+                setText("Not Enough");
+                setStyle("-fx-text-fill: red;"); 
+            } else {
+                setText(String.valueOf(totalQuality));
+                setStyle(""); // Reset style
+            }
+        }
+    }
+});
     }
 
     private void Detailexportproduct(String Name, ObjectId idOrder) {
         displaymode = 1;
-        List<Export> export = daodb.DetailExportProduct(Name, idOrder);
+        List<Export> export = daodb.detailExportProduct(Name, idOrder);
         ObservableList<Export> obserable = FXCollections.observableArrayList(export);
         totalItems = obserable.size();
         int pageCounts = (totalItems + itemsperPage - 1) / itemsperPage;
@@ -291,6 +310,30 @@ public class Export_Warehouse implements Initializable {
         colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
         colprice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colNameCategory.setCellValueFactory(new PropertyValueFactory<>("NameCategory"));
+        Qualityremaning.setCellValueFactory(new PropertyValueFactory<>("totalQuality"));
+        Qualityremaning.setCellFactory(column -> new TableCell<Export, Integer>() {
+    @Override
+    protected void updateItem(Integer item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || item == null) {
+            setText(null);
+            setStyle("");
+        } else {
+            Export export = getTableView().getItems().get(getIndex());
+            int totalQuality = export.getTotalQuality();
+            int quality = export.getQuality();
+
+            if (totalQuality < quality) {
+                setText("Not Enough");
+                setStyle("-fx-text-fill: red;"); 
+            } else {
+                setText(String.valueOf(totalQuality));
+                setStyle(""); // Reset style
+            }
+        }
+    }
+});
     }
 
     private List<ObjectId> displayIdProduct(ObjectId id) {

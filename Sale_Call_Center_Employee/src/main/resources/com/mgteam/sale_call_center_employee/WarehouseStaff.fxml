@@ -37,7 +37,7 @@
                               </Label>
                               <Button layoutX="6.0" layoutY="196.0" mnemonicParsing="false" onAction="#Homewarehouse" prefHeight="28.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Dashboard" />
                               <Button layoutX="7.0" layoutY="234.0" mnemonicParsing="false" onAction="#Change" prefHeight="30.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="ChangePassword" />
-                              <Button layoutX="6.0" layoutY="271.0" mnemonicParsing="false" onAction="#Import" prefHeight="30.0" prefWidth="170.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Import" />
+                              <Button layoutX="6.0" layoutY="271.0" mnemonicParsing="false" onAction="#Supply" prefHeight="30.0" prefWidth="170.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Supply" />
                               <Button layoutX="7.0" layoutY="313.0" mnemonicParsing="false" onAction="#Export" prefHeight="27.0" prefWidth="167.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Export" />
                               <Line endX="81.4000244140625" endY="3.0517578125E-5" layoutX="101.0" layoutY="188.0" startX="-100.0" stroke="WHITE" />
                               <Button layoutX="7.0" layoutY="348.0" mnemonicParsing="false" onAction="#Product" prefHeight="27.0" prefWidth="169.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Product" />

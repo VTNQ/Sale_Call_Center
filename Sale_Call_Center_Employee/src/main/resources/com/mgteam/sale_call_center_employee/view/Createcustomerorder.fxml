@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainOrderController">
+   <children>
+      <Label layoutX="106.0" text="Create Customer">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="74.0" layoutY="62.0" text="Name" />
+      <MFXTextField fx:id="name" layoutX="159.0" layoutY="57.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
+      <Label layoutX="79.0" layoutY="122.0" text="Age" />
+      <Label layoutX="73.0" layoutY="178.0" text="Phone" />
+      <MFXTextField fx:id="phone" layoutX="159.0" layoutY="173.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
+      <Label layoutX="76.0" layoutY="232.0" text="Address" />
+      <MFXTextField fx:id="address" layoutX="159.0" layoutY="227.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-text-field" stylesheets="@../css/application.css" />
+      <MFXButton layoutX="173.0" layoutY="260.0" onAction="#Addcus" styleClass="mfx-button" stylesheets="@../css/application.css" text="ADD" />
+      <MFXDatePicker fx:id="age" layoutX="159.0" layoutY="117.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="134.0" styleClass="mfx-date-picker" stylesheets="@../css/application.css" />
+   </children>
+</AnchorPane>

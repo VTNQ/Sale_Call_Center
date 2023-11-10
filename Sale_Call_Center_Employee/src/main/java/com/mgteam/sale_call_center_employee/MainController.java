@@ -151,9 +151,9 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    public void Import(ActionEvent event) {
+    public void Supply(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/ImportWarehouse.fxml"));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/Supply.fxml"));
             AnchorPane newPane = loader.load();
             FadeTransition fadeIn = new FadeTransition(Duration.millis(1000), newPane);
             fadeIn.setFromValue(0.0);

@@ -37,7 +37,6 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="Namesupply" layoutX="279.0" layoutY="165.0" />
       <Label alignment="CENTER" layoutX="141.0" layoutY="191.0" prefHeight="50.0" prefWidth="118.0" text="Quality">
          <font>
             <Font size="18.0" />
@@ -57,5 +56,6 @@
         </columns>
       </TableView>
       <Button layoutX="576.0" layoutY="535.0" mnemonicParsing="false" onAction="#Create" prefHeight="43.0" prefWidth="79.0" styleClass="button-design" stylesheets="@../css/application.css" text="Create" />
+      <ComboBox fx:id="Namesupply" layoutX="283.0" layoutY="165.0" prefWidth="150.0" />
    </children>
 </AnchorPane>

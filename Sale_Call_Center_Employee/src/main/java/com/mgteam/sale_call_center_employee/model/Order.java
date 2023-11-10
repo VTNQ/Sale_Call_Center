@@ -6,7 +6,15 @@ public class Order {
     private ObjectId _id;
     private boolean Product;
     private int id_order;
+private int totalprice;
 
+    public int getTotalprice() {
+        return totalprice;
+    }
+
+    public void setTotalprice(int totalprice) {
+        this.totalprice = totalprice;
+    }
     public int getId_order() {
         return id_order;
     }

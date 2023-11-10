@@ -3,7 +3,6 @@ package com.mgteam.sale_call_center_employee;
 import com.mgteam.sale_call_center_employee.dialog.DialogAlert;
 import com.mgteam.sale_call_center_employee.model.Order;
 import com.mgteam.sale_call_center_employee.model.Product;
-import com.mgteam.sale_call_center_employee.model.Warehouse;
 import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -11,6 +10,7 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Filters;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXPagination;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import java.io.FileNotFoundException;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +36,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -57,6 +59,17 @@ import org.bson.types.ObjectId;
 public class MainOrderController extends MainController implements Initializable {
 
     private static int id_order;
+    @FXML
+    private MFXTextField address;
+
+    @FXML
+    private MFXDatePicker age;
+
+    @FXML
+    private MFXTextField name;
+
+    @FXML
+    private MFXTextField phone;
 
     @FXML
     private TableColumn<?, ?> IdOrder = new TableColumn<>();
@@ -95,7 +108,7 @@ public class MainOrderController extends MainController implements Initializable
     private TableColumn<?, ?> ShipDay = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> StatusOrder = new TableColumn<>();
+    private TableColumn<Order, String> StatusOrder = new TableColumn<>();
     @FXML
     private TableView<Order> tblOrder = new TableView<>();
 
@@ -193,7 +206,6 @@ public class MainOrderController extends MainController implements Initializable
             int totalPrice = 0;
             String totalstring = null;
 
-            // Tạo danh sách sản phẩm, chất lượng và giá
             for (int i = 0; i < idList.size(); i++) {
                 String product = idList.get(i);
                 Integer quality = Quality.get(i);
@@ -221,7 +233,6 @@ public class MainOrderController extends MainController implements Initializable
                 spaceRun.addBreak();
             }
 
-            // Tạo tổng số tiền (nếu cần)
             XWPFParagraph total = document.createParagraph();
             total.setAlignment(ParagraphAlignment.RIGHT);  // Căn phải tổng số tiền
             XWPFRun totalRun = total.createRun();
@@ -308,13 +319,40 @@ public class MainOrderController extends MainController implements Initializable
     }
 
     @FXML
+    void Addcus(ActionEvent event) {
+        if (!name.getText().isEmpty() && age.getValue() != null && !phone.getText().isEmpty() && !address.getText().isEmpty()) {
+            boolean isFound = false;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String YearOfSince = age.getValue().format(formatter);
+            MongoCollection<Document> ListCustomer = DBConnection.getConnection().getCollection("Customer");
+            MongoIterable<Document> iterable = ListCustomer.find(Filters.and(Filters.eq("Name", name.getText()), Filters.eq("Phone", phone.getText())));
+            for (Document customer : iterable) {
+                isFound = true;
+                DialogAlert.DialogError("Customer Is Exist");
+            }
+            if (isFound == false) {
+                MongoCollection<Document> Customers = DBConnection.getConnection().getCollection("Customer");
+                Customers.insertOne(new Document("Name", name.getText()).append("Age", YearOfSince).append("Phone", phone.getText()).append("Address", address.getText()));
+                DialogAlert.DialogSuccess("Add Customer Success");
+                name.setText("");
+                age.setValue(null);
+                phone.setText("");
+                address.setText("");
+            }
+
+        } else {
+            DialogAlert.DialogError("Please enter all!");
+        }
+    }
+
+    @FXML
     void AddCustomer(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/AddCustomer.fxml"));
             AnchorPane anchorPane = loader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(anchorPane, 600, 400));
+            stage.setScene(new Scene(anchorPane));
 
             stage.setResizable(false);
             stage.showAndWait();
@@ -322,6 +360,15 @@ public class MainOrderController extends MainController implements Initializable
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void updateAndDisplayTotalPrice() {
+        int totalPrice = 0;
+        for (Product product : list) {
+            totalPrice += product.getTotalQuality();
+        }
+
+        this.totalPrice.setText(Integer.toString(totalPrice));
     }
 
     @FXML
@@ -350,6 +397,10 @@ public class MainOrderController extends MainController implements Initializable
                 newProduct.setQuality(Integer.parseInt(quantity.getText()));
                 newProduct.setId_product(Math.abs(document.getObjectId("_id").hashCode()));
                 newProduct.setPrice(document.get("Price").hashCode());
+                int price = document.get("Price").hashCode();
+                int Quality = Integer.parseInt(quantity.getText());
+                int total = +price * Quality;
+                newProduct.setTotalQuality(total);
                 list.add(newProduct);
                 listCustomer.setDisable(true);
 
@@ -357,7 +408,10 @@ public class MainOrderController extends MainController implements Initializable
                 Product product = list.get(index);
                 int oldQuantity = product.getQuality();
                 int newQuantity = Integer.parseInt(quantity.getText()) + oldQuantity;
+                int price = document.get("Price").hashCode();
                 product.setQuality(newQuantity);
+                int total = +price * newQuantity;
+                product.setTotalQuality(total);
 
             }
             ObservableList<Product> observableList = FXCollections.observableArrayList(list);
@@ -368,6 +422,7 @@ public class MainOrderController extends MainController implements Initializable
             colNameProduct.setCellValueFactory(new PropertyValueFactory<>("Name"));
             colQuantity.setCellValueFactory(new PropertyValueFactory<>("Quality"));
             col_Price.setCellValueFactory(new PropertyValueFactory<>("Price"));
+            colTotalPrice.setCellValueFactory(new PropertyValueFactory<>("totalQuality"));
             colDelete.setCellFactory(column -> new TableCell<Product, Boolean>() {
                 private Button button = new Button("Delete");
 
@@ -377,7 +432,7 @@ public class MainOrderController extends MainController implements Initializable
                         listProductOrder.getItems().remove(selectedProduct);
                         for (Product originalProduct : list) {
                             if (originalProduct.getName().equals(selectedProduct.getName())) {
-                                
+
                                 originalProduct.setQuality(0);
                                 originalProduct.setQuality(originalProduct.getQuality() + selectedProduct.getQuality());
                                 break;
@@ -398,6 +453,7 @@ public class MainOrderController extends MainController implements Initializable
                 }
             });
         }
+        updateAndDisplayTotalPrice();
 
     }
 
@@ -648,9 +704,81 @@ public class MainOrderController extends MainController implements Initializable
 
         });
         StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
+        Map<String, Integer> statusMappings = new HashMap<>();
+        statusMappings.put("Waiting for delivery", 1);
+        statusMappings.put("Ongoing deliveries", 2);
+        statusMappings.put("Delivered", 3);
+        statusMappings.put("Cancelled", 4);
+
+        StatusOrder.setCellFactory(column -> new TableCell<Order, String>() {
+            private ComboBox<String> statusComboBox = new ComboBox<>();
+
+            {
+                statusComboBox.getItems().addAll("pending", "Waiting for delivery", "Ongoing deliveries", "Delivered", "Cancelled");
+
+                statusComboBox.setOnAction(event -> {
+                    Order order = getTableView().getItems().get(getIndex());
+                    String newStatus = statusComboBox.getValue();
+                    LocalDate currentDate = LocalDate.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    String formattedDate = currentDate.format(formatter);
+
+                    String currentStatus = order.getStatus();
+
+                    if (canChangeStatus(currentStatus, newStatus)) {
+
+                        statusComboBox.setValue(newStatus);
+
+                        int mappedValue = statusMappings.getOrDefault(newStatus, 0);
+                        MongoCollection<Document> orderUpdate = DBConnection.getConnection().getCollection("Order");
+                        Document filter = new Document("_id", order.getId());
+
+                        Document update = new Document("$set", new Document("status", mappedValue).append("Ship_date", formattedDate));
+                        orderUpdate.updateOne(filter, update);
+                        ListOrderCustomer();
+
+                    }  else {
+                        Platform.runLater(() -> {
+                            DialogAlert.DialogError("Unable to change pregnancy:" + currentStatus + " to " + newStatus);
+                            statusComboBox.setValue(currentStatus);
+                        });
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    if ("pending".equals(item) || "Waiting for delivery".equals(item) || "Ongoing deliveries".equals(item)) {
+                        statusComboBox.setValue(item);
+                        setGraphic(statusComboBox);
+                    } else {
+                        Label label = new Label();
+                        label.setText(item);
+                        setGraphic(label);
+                    }
+                }
+            }
+        });
         pagination.setCurrentPage(0);
         pagination.setMaxPage(OrderCustomer.size());
     }
+
+   private boolean canChangeStatus(String currentStatus, String newStatus) {
+    if ("Ongoing deliveries".equals(currentStatus) && "Waiting for delivery".equals(newStatus)) {
+        return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
+    } else if ("Waiting for delivery".equals(currentStatus) &&   ("Pending".equals(newStatus))) {
+        return false; // Disallow changing from "Waiting for delivery" to "Ongoing deliveries" or "Pending"
+    } else if ("Ongoing deliveries".equals(currentStatus) && "Waiting for delivery".equals(newStatus)) {
+        return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
+    }
+
+    return true;
+}
 
     private void ListOrderCustomerWithKey() {
         List<Order> OrderCustomer = ListOrderWithKey(txtSearch.getText());
@@ -731,7 +859,68 @@ public class MainOrderController extends MainController implements Initializable
             }
 
         });
-        StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
+       
+          StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
+        Map<String, Integer> statusMappings = new HashMap<>();
+        statusMappings.put("Waiting for delivery", 1);
+        statusMappings.put("Ongoing deliveries", 2);
+        statusMappings.put("Delivered", 3);
+        statusMappings.put("Cancelled", 4);
+
+        StatusOrder.setCellFactory(column -> new TableCell<Order, String>() {
+            private ComboBox<String> statusComboBox = new ComboBox<>();
+
+            {
+                statusComboBox.getItems().addAll("pending", "Waiting for delivery", "Ongoing deliveries", "Delivered", "Cancelled");
+
+                statusComboBox.setOnAction(event -> {
+                    Order order = getTableView().getItems().get(getIndex());
+                    String newStatus = statusComboBox.getValue();
+                    LocalDate currentDate = LocalDate.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    String formattedDate = currentDate.format(formatter);
+
+                    String currentStatus = order.getStatus();
+
+                    if (canChangeStatus(currentStatus, newStatus)) {
+
+                        statusComboBox.setValue(newStatus);
+
+                        int mappedValue = statusMappings.getOrDefault(newStatus, 0);
+                        MongoCollection<Document> orderUpdate = DBConnection.getConnection().getCollection("Order");
+                        Document filter = new Document("_id", order.getId());
+
+                        Document update = new Document("$set", new Document("status", mappedValue).append("Ship_date", formattedDate));
+                        orderUpdate.updateOne(filter, update);
+                        ListOrderCustomer();
+
+                    }  else {
+                        Platform.runLater(() -> {
+                            DialogAlert.DialogError("Unable to change pregnancy:" + currentStatus + " to " + newStatus);
+                            statusComboBox.setValue(currentStatus);
+                        });
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    if ("pending".equals(item) || "Waiting for delivery".equals(item) || "Ongoing deliveries".equals(item)) {
+                        statusComboBox.setValue(item);
+                        setGraphic(statusComboBox);
+                    } else {
+                        Label label = new Label();
+                        label.setText(item);
+                        setGraphic(label);
+                    }
+                }
+            }
+        });
         pagination.setCurrentPage(0);
         pagination.setMaxPage(OrderCustomer.size());
     }
@@ -789,12 +978,16 @@ public class MainOrderController extends MainController implements Initializable
     @FXML
     void popupcustomer(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/AddCustomer.fxml"));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("view/Createcustomerorder.fxml"));
             AnchorPane anchorPane = loader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(anchorPane));
             stage.setResizable(false);
+            stage.setOnCloseRequest(closeEvent -> {
+                listCustomer.getItems().clear();
+                listCustomer.getItems().addAll(ListCustomerAll());
+            });
             stage.showAndWait();
 
         } catch (IOException ex) {
@@ -868,5 +1061,6 @@ public class MainOrderController extends MainController implements Initializable
         ListOrderCustomer();
         listProduct.getItems().addAll(ListProductAll());
         listCustomer.getItems().addAll(ListCustomerAll());
+
     }
 }

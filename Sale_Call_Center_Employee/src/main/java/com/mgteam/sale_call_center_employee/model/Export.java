@@ -22,6 +22,15 @@ private ObjectId idEmployee;
 private ObjectId idOrder;
 private ObjectId idWarehouse;
 private int status;
+private int totalQuality;
+
+    public int getTotalQuality() {
+        return totalQuality;
+    }
+
+    public void setTotalQuality(int totalQuality) {
+        this.totalQuality = totalQuality;
+    }
 private ObjectId idProduct;
 
     public ObjectId getIdProduct() {
@@ -69,6 +78,14 @@ private String NameProduct;
         this.NameCategory = NameCategory;
         this.Quality = Quality;
         this.price = price;
+        this.NameProduct = NameProduct;
+    }
+
+    public Export(String NameCategory, int Quality, String price, int totalQuality, String NameProduct) {
+        this.NameCategory = NameCategory;
+        this.Quality = Quality;
+        this.price = price;
+        this.totalQuality = totalQuality;
         this.NameProduct = NameProduct;
     }
 
