@@ -123,8 +123,9 @@ public class LoginController implements Initializable {
                 vbox.setAlignment(Pos.CENTER);
 
                 Scene scene = new Scene(vbox, 200, 60);
-
+                
                 Stage progressDialogStage = new Stage();
+                 progressDialogStage.setResizable(false);
                 progressDialogStage.setScene(scene);
 
                 Task<Void> loginTask = new Task<Void>() {
