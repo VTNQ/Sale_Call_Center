@@ -733,11 +733,16 @@ public class MainOrderController extends MainController implements Initializable
                         MongoCollection<Document> orderUpdate = DBConnection.getConnection().getCollection("Order");
                         Document filter = new Document("_id", order.getId());
 
-                        Document update = new Document("$set", new Document("status", mappedValue).append("Ship_date", formattedDate));
+                        Document update = new Document("$set", new Document("status", mappedValue));
+
+                        if ("Delivered".equals(newStatus)) {
+                           update.append("$set", new Document("Ship_date", formattedDate).append("status", mappedValue));
+                        }
+
                         orderUpdate.updateOne(filter, update);
                         ListOrderCustomer();
 
-                    }  else {
+                    } else {
                         Platform.runLater(() -> {
                             DialogAlert.DialogError("Unable to change pregnancy:" + currentStatus + " to " + newStatus);
                             statusComboBox.setValue(currentStatus);
@@ -753,7 +758,7 @@ public class MainOrderController extends MainController implements Initializable
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    if ("pending".equals(item) || "Waiting for delivery".equals(item) || "Ongoing deliveries".equals(item)) {
+                    if ("Waiting for delivery".equals(item) || "Ongoing deliveries".equals(item)) {
                         statusComboBox.setValue(item);
                         setGraphic(statusComboBox);
                     } else {
@@ -768,17 +773,17 @@ public class MainOrderController extends MainController implements Initializable
         pagination.setMaxPage(OrderCustomer.size());
     }
 
-   private boolean canChangeStatus(String currentStatus, String newStatus) {
-    if ("Ongoing deliveries".equals(currentStatus) && "Waiting for delivery".equals(newStatus)) {
-        return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
-    } else if ("Waiting for delivery".equals(currentStatus) &&   ("Pending".equals(newStatus))) {
-        return false; // Disallow changing from "Waiting for delivery" to "Ongoing deliveries" or "Pending"
-    } else if ("Ongoing deliveries".equals(currentStatus) && "Waiting for delivery".equals(newStatus)) {
-        return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
-    }
+    private boolean canChangeStatus(String currentStatus, String newStatus) {
+        if ("Ongoing deliveries".equals(currentStatus) && "Waiting for delivery".equals(newStatus)) {
+            return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
+        } else if ("Waiting for delivery".equals(currentStatus) && ("Pending".equals(newStatus))) {
+            return false; // Disallow changing from "Waiting for delivery" to "Ongoing deliveries" or "Pending"
+        } else if ("Ongoing deliveries".equals(currentStatus) && ("Waiting for delivery".equals(newStatus) || "pending".equals(newStatus))) {
+            return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
+        }
 
-    return true;
-}
+        return true;
+    }
 
     private void ListOrderCustomerWithKey() {
         List<Order> OrderCustomer = ListOrderWithKey(txtSearch.getText());
@@ -859,8 +864,8 @@ public class MainOrderController extends MainController implements Initializable
             }
 
         });
-       
-          StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
+
+        StatusOrder.setCellValueFactory(new PropertyValueFactory<>("Status"));
         Map<String, Integer> statusMappings = new HashMap<>();
         statusMappings.put("Waiting for delivery", 1);
         statusMappings.put("Ongoing deliveries", 2);
@@ -890,11 +895,16 @@ public class MainOrderController extends MainController implements Initializable
                         MongoCollection<Document> orderUpdate = DBConnection.getConnection().getCollection("Order");
                         Document filter = new Document("_id", order.getId());
 
-                        Document update = new Document("$set", new Document("status", mappedValue).append("Ship_date", formattedDate));
+                        Document update = new Document("$set", new Document("status", mappedValue));
+
+                        if ("Delivered".equals(newStatus)) {
+                           update.append("$set", new Document("Ship_date", formattedDate).append("status", mappedValue));
+                        }
+
                         orderUpdate.updateOne(filter, update);
                         ListOrderCustomer();
 
-                    }  else {
+                    } else {
                         Platform.runLater(() -> {
                             DialogAlert.DialogError("Unable to change pregnancy:" + currentStatus + " to " + newStatus);
                             statusComboBox.setValue(currentStatus);
@@ -910,7 +920,7 @@ public class MainOrderController extends MainController implements Initializable
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    if ("pending".equals(item) || "Waiting for delivery".equals(item) || "Ongoing deliveries".equals(item)) {
+                    if ("Waiting for delivery".equals(item) || "Ongoing deliveries".equals(item)) {
                         statusComboBox.setValue(item);
                         setGraphic(statusComboBox);
                     } else {
