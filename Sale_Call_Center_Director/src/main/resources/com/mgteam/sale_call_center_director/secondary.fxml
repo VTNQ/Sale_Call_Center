@@ -39,8 +39,8 @@
                      </styleClass>
                      <children>
                         <Button mnemonicParsing="false" onAction="#home" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="Dashboard" />
-                        <Button layoutX="2.0" layoutY="55.0" mnemonicParsing="false" onAction="#change" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="Change Password" />
-                        <Button layoutX="3.0" layoutY="109.0" mnemonicParsing="false" onAction="#revenue_statistics" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="revenue statistics" />
+                        <Button layoutX="2.0" layoutY="216.0" mnemonicParsing="false" onAction="#change" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="Change Password" />
+                        <Button layoutY="55.0" mnemonicParsing="false" onAction="#revenue_statistics" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="revenue statistics" />
                         <Button layoutX="14.0" layoutY="268.0" mnemonicParsing="false" onAction="#logout" styleClass="signout" stylesheets="@css/director.css">
                            <graphic>
                               <ImageView fitHeight="21.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
@@ -51,8 +51,8 @@
                            </graphic>
                         </Button>
                         <Label layoutX="74.0" layoutY="273.0" prefHeight="18.0" prefWidth="57.0" text="Sign out" />
-                        <Button layoutY="162.0" mnemonicParsing="false" onAction="#revenue_Employee" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="revenue Employee" />
-                        <Button layoutY="214.0" mnemonicParsing="false" onAction="#product" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="revenue product" />
+                        <Button layoutX="3.0" layoutY="111.0" mnemonicParsing="false" onAction="#revenue_Employee" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="revenue Employee" />
+                        <Button layoutX="2.0" layoutY="166.0" mnemonicParsing="false" onAction="#product" prefHeight="42.0" prefWidth="200.0" styleClass="nav-btn" stylesheets="@css/director.css" text="revenue product" />
                      </children>
                   </AnchorPane>
                </children>
