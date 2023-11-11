@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/20.0.1" fx:controller="com.mgteam.sale_call_center_employee.MainCustomerController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mgteam.sale_call_center_employee.MainCustomerController">
    <children>
       <AnchorPane prefHeight="115.0" prefWidth="600.0" style="-fx-background-color: #e2772f;">
          <children>
@@ -25,8 +24,8 @@
             </Label>
          </children>
       </AnchorPane>
-      <TextField fx:id="UpdateAddrees" layoutX="206.0" layoutY="164.0" />
-      <Label layoutX="140.0" layoutY="168.0" text="Address" />
-      <Button layoutX="229.0" layoutY="235.0" mnemonicParsing="false" onAction="#update" styleClass="button-design" stylesheets="@../css/application.css" text="Update" />
+      <TextField fx:id="UpdateAddrees" layoutX="287.0" layoutY="164.0" />
+      <Label layoutX="185.0" layoutY="168.0" text="Address" />
+      <Button layoutX="258.0" layoutY="292.0" mnemonicParsing="false" onAction="#update" styleClass="button-design" stylesheets="@../css/application.css" text="Update" />
    </children>
 </AnchorPane>

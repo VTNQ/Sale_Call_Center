@@ -36,13 +36,13 @@
                                  </font>
                               </Label>
                               <Button layoutX="6.0" layoutY="196.0" mnemonicParsing="false" onAction="#Homewarehouse" prefHeight="28.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Dashboard" />
-                              <Button layoutX="7.0" layoutY="234.0" mnemonicParsing="false" onAction="#Change" prefHeight="30.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="ChangePassword" />
-                              <Button layoutX="6.0" layoutY="271.0" mnemonicParsing="false" onAction="#Supply" prefHeight="30.0" prefWidth="170.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Supply" />
-                              <Button layoutX="7.0" layoutY="313.0" mnemonicParsing="false" onAction="#Export" prefHeight="27.0" prefWidth="167.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Export" />
+                              <Button layoutX="7.0" layoutY="420.0" mnemonicParsing="false" onAction="#Change" prefHeight="30.0" prefWidth="171.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Change Password" />
+                              <Button layoutX="7.0" layoutY="232.0" mnemonicParsing="false" onAction="#Supply" prefHeight="30.0" prefWidth="170.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Supply" />
+                              <Button layoutX="9.0" layoutY="272.0" mnemonicParsing="false" onAction="#Export" prefHeight="27.0" prefWidth="167.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Export" />
                               <Line endX="81.4000244140625" endY="3.0517578125E-5" layoutX="101.0" layoutY="188.0" startX="-100.0" stroke="WHITE" />
-                              <Button layoutX="7.0" layoutY="348.0" mnemonicParsing="false" onAction="#Product" prefHeight="27.0" prefWidth="169.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Product" />
-                              <Button layoutX="7.0" layoutY="387.0" mnemonicParsing="false" onAction="#Category" prefHeight="27.0" prefWidth="166.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Category" />
-                              <Button layoutX="9.0" layoutY="424.0" mnemonicParsing="false" onAction="#Warehouse" prefHeight="27.0" prefWidth="166.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Warehouse" />
+                              <Button layoutX="8.0" layoutY="309.0" mnemonicParsing="false" onAction="#Product" prefHeight="27.0" prefWidth="169.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Product" />
+                              <Button layoutX="9.0" layoutY="348.0" mnemonicParsing="false" onAction="#Category" prefHeight="27.0" prefWidth="166.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Category" />
+                              <Button layoutX="9.0" layoutY="385.0" mnemonicParsing="false" onAction="#Warehouse" prefHeight="27.0" prefWidth="166.0" styleClass="nav-btn" stylesheets="@css/application.css" text="Warehouse" />
                               <Button layoutX="43.0" layoutY="461.0" mnemonicParsing="false" onAction="#logout" prefHeight="26.0" prefWidth="23.0" styleClass="logout" stylesheets="@css/application.css">
                                  <graphic>
                                     <ImageView fitHeight="19.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -85,11 +85,11 @@
                            <children>
                               <AnchorPane fx:id="mainWarehouse" layoutY="1.0" prefHeight="491.0" prefWidth="615.0">
                                  <children>
-                                    <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="137.0" prefWidth="598.0">
+                                    <ScrollPane hbarPolicy="NEVER" layoutX="14.0" layoutY="14.0" prefHeight="137.0" prefWidth="598.0" vbarPolicy="NEVER">
                                       <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="122.0" prefWidth="702.0">
                                              <children>
-                                                <AnchorPane layoutY="3.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
+                                                <AnchorPane layoutX="52.0" layoutY="3.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
                                                    <styleClass>
                                                       <String fx:value="main-bg" />
                                                       <String fx:value="radius" />
@@ -112,7 +112,7 @@
                                                       </Label>
                                                    </children>
                                                 </AnchorPane>
-                                                <AnchorPane layoutX="251.0" layoutY="3.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
+                                                <AnchorPane layoutX="351.0" layoutY="3.0" prefHeight="115.0" prefWidth="200.0" stylesheets="@css/application.css">
                                                    <styleClass>
                                                       <String fx:value="main-bg" />
                                                       <String fx:value="radius" />

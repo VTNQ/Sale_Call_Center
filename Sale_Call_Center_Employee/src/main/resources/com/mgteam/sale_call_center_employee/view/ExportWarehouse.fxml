@@ -27,7 +27,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <TableView fx:id="tblExport" layoutX="8.0" layoutY="183.0" prefHeight="207.0" prefWidth="598.0" styleClass="table-view1" stylesheets="@../css/application.css">
+      <TableView fx:id="tblExport" layoutX="8.0" layoutY="183.0" prefHeight="257.0" prefWidth="598.0" styleClass="table-view1" stylesheets="@../css/application.css">
         <columns>
           <TableColumn fx:id="colOrder" prefWidth="84.800048828125" text="Order" />
           <TableColumn fx:id="colCustomer" prefWidth="91.199951171875" text="Customer" />
@@ -40,7 +40,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Pagination fx:id="pagination" layoutX="189.0" layoutY="397.0" prefHeight="15.0" prefWidth="200.0" />
+      <Pagination fx:id="pagination" layoutX="190.0" layoutY="441.0" prefHeight="15.0" prefWidth="200.0" />
       <Label layoutX="290.0" layoutY="150.0" text="Search" />
       <TextField fx:id="textsearch" layoutX="334.0" layoutY="146.0" />
       <Button layoutX="498.0" layoutY="142.0" mnemonicParsing="false" onAction="#Search" styleClass="button-design" stylesheets="@../css/application.css" text="Search" />

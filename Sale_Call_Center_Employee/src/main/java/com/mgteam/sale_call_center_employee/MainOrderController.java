@@ -776,7 +776,7 @@ public class MainOrderController extends MainController implements Initializable
     private boolean canChangeStatus(String currentStatus, String newStatus) {
         if ("Ongoing deliveries".equals(currentStatus) && "Waiting for delivery".equals(newStatus)) {
             return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
-        } else if ("Waiting for delivery".equals(currentStatus) && ("Pending".equals(newStatus))) {
+        } else if ("Waiting for delivery".equals(currentStatus) && ("pending".equals(newStatus))) {
             return false; // Disallow changing from "Waiting for delivery" to "Ongoing deliveries" or "Pending"
         } else if ("Ongoing deliveries".equals(currentStatus) && ("Waiting for delivery".equals(newStatus) || "pending".equals(newStatus))) {
             return false; // Disallow changing from "Ongoing deliveries" to "Waiting for delivery"
