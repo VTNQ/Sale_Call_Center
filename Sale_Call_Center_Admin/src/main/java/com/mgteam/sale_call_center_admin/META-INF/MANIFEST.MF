@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: com.mgteam.sale_call_center_admin.App
+
