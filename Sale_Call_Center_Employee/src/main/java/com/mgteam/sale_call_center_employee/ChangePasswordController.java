@@ -58,7 +58,7 @@ public class ChangePasswordController {
             }else if(!newPassword.getText().equals(rePassword.getText())){
                 DialogAlert.DialogError("New Password and Re-ented Password not match");
             }else{
-                if(newPassword.getText().length()>=8&&rePassword.getText().length()>=8){
+                if(newPassword.getText().length()<=8&&rePassword.getText().length()<=8){
                     DialogAlert.DialogError("Password must be over 8 characters and have at least 1 lowercase, uppercase and number");
                 }else{
                     Bson Find=Filters.eq("_id",LoginController.id_employee);
