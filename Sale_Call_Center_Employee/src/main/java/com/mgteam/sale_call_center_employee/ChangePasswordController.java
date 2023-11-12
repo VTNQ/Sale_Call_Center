@@ -58,8 +58,8 @@ public class ChangePasswordController {
             }else if(!newPassword.getText().equals(rePassword.getText())){
                 DialogAlert.DialogError("New Password and Re-ented Password not match");
             }else{
-                if(Regax.isValidPassword(newPassword.getText())==false&&Regax.isValidPassword(rePassword.getText())==false&&newPassword.getText().length()>=8&&rePassword.getText().length()>=8){
-                    DialogAlert.DialogError("PPassword must be over 8 characters and have at least 1 lowercase, uppercase and number");
+                if(newPassword.getText().length()>=8&&rePassword.getText().length()>=8){
+                    DialogAlert.DialogError("Password must be over 8 characters and have at least 1 lowercase, uppercase and number");
                 }else{
                     Bson Find=Filters.eq("_id",LoginController.id_employee);
                     Bson Update=Updates.set("Password", MD5.Md5(newPassword.getText()));
