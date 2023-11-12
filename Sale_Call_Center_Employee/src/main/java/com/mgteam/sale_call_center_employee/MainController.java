@@ -253,9 +253,9 @@ public class MainController implements Initializable {
         }
         btnChangePassword.getStyleClass().remove("bg-active");
         btnHome.getStyleClass().remove("bg-active");
-        btnOrder.getStyleClass().remove("bg-active");
-        btnCustomer.getStyleClass().add("bg-active");
+        btnOrder.getStyleClass().remove("bg-active");     
         btnProfile.getStyleClass().remove("bg-active");
+        btnCustomer.getStyleClass().add("bg-active");
     }
 
     @FXML
@@ -274,10 +274,10 @@ public class MainController implements Initializable {
             ex.printStackTrace();
         }
         btnChangePassword.getStyleClass().remove("bg-active");
-        btnHome.getStyleClass().add("bg-active");
         btnOrder.getStyleClass().remove("bg-active");
         btnCustomer.getStyleClass().remove("bg-active");
         btnProfile.getStyleClass().remove("bg-active");
+        btnHome.getStyleClass().add("bg-active");
     }
 
     @FXML
@@ -313,9 +313,9 @@ public class MainController implements Initializable {
         }
         btnChangePassword.getStyleClass().remove("bg-active");
         btnHome.getStyleClass().remove("bg-active");
-        btnOrder.getStyleClass().add("bg-active");
         btnCustomer.getStyleClass().remove("bg-active");
         btnProfile.getStyleClass().remove("bg-active");
+        btnOrder.getStyleClass().add("bg-active");
     }
 
     @FXML
@@ -359,8 +359,6 @@ public class MainController implements Initializable {
         try {
 
             MongoCollection<Document> ordersCollection = DBConnection.getConnection().getCollection("OutGoingOrder");
-            MongoCollection<Document> warehouseOrdersCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
-
             // Chuyển đổi tên tháng thành số
             DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
             Month month = Month.from(monthFormatter.parse(selectedMonth));
@@ -374,11 +372,7 @@ public class MainController implements Initializable {
 
             FindIterable<Document> outgoing = ordersCollection.find(and(gte("Date", startDate.toString()), lte("Date", endDate.toString())));
             for (Document document : outgoing) {
-                ObjectId id = document.getObjectId("_id");
-                Document ware = warehouseOrdersCollection.find(eq("ID_OutGoingOrder", id)).first();
-                if (ware != null) {
-                    totalCount++;
-                }
+                totalCount++;
             }
 
             // Cập nhật biểu đồ với số lượng tổng cộng

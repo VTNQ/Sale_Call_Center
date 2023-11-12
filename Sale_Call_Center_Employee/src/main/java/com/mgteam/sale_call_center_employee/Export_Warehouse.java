@@ -84,7 +84,7 @@ public class Export_Warehouse implements Initializable {
     private TableColumn<Export, Boolean> colprint = new TableColumn<>();
 
     @FXML
-    private TableColumn<Export, Boolean> colproduct = new TableColumn<>();
+private TableColumn<Export, Boolean> colproduct = new TableColumn<>();
 
     @FXML
     private TableView<Export> tblExport = new TableView<>();
@@ -187,7 +187,7 @@ public class Export_Warehouse implements Initializable {
             FileOutputStream out = new FileOutputStream(output + "\\Warehouse.docx");
 
             // Create title paragraph
-            XWPFParagraph title = document.createParagraph();
+XWPFParagraph title = document.createParagraph();
             title.setAlignment(ParagraphAlignment.CENTER);
             XWPFRun titleRun = title.createRun();
             titleRun.setText("Call Center");
@@ -256,7 +256,7 @@ public class Export_Warehouse implements Initializable {
             return;
         }
         int startIndex = pageindex * itemsperPage;
-        int endIndex = Math.min(startIndex + itemsperPage, totalItems);
+int endIndex = Math.min(startIndex + itemsperPage, totalItems);
         startIndex = Math.min(startIndex, totalItems);
         List<Export> Ass = obserable.subList(startIndex, endIndex);
         tbldetail.setItems(FXCollections.observableArrayList(Ass));
@@ -310,7 +310,7 @@ public class Export_Warehouse implements Initializable {
         Qualityremaning.setCellValueFactory(new PropertyValueFactory<>("totalQuality"));
         Qualityremaning.setCellFactory(column -> new TableCell<Export, Integer>() {
             @Override
-            protected void updateItem(Integer item, boolean empty) {
+protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
 
                 if (empty || item == null) {
@@ -380,7 +380,7 @@ public class Export_Warehouse implements Initializable {
     }
 
     private List<String> displayIdProducts(ObjectId id) {
-        List<String> idList = new ArrayList<>();
+List<String> idList = new ArrayList<>();
         MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
         MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("Order");
         FindIterable<Document> productWarehouse = Product.find(new Document());
@@ -432,7 +432,7 @@ public class Export_Warehouse implements Initializable {
                         popupStage.setScene(new Scene(newpopup));
                         export.Detailexportproduct(ex.getCustomer(), ex.getIdOrder());
                         String idorder = String.valueOf(ex.getOrder());
-                        export.customer.setText(idorder);
+export.customer.setText(idorder);
                         export.setcustomer(ex.getCustomer());
                         export.setidorder(ex.getIdOrder());
                         popupStage.setResizable(false);
@@ -506,8 +506,7 @@ public class Export_Warehouse implements Initializable {
         colApprove.setCellValueFactory(new PropertyValueFactory<>("status"));
         colApprove.setCellFactory(column -> new TableCell<Export, Integer>() {
             private MFXButton button = new MFXButton("Approve");
-
-            {
+{
                 button.setOnAction(event -> {
                     Export ex = getTableView().getItems().get(getIndex());
                     List<ObjectId> idList = displayIdProduct(ex.getIdOrder());
@@ -550,8 +549,7 @@ public class Export_Warehouse implements Initializable {
 
                                         int quality = detailProduct.getInteger("Quality");
                                         ObjectId id = warehouseDocument.getObjectId("_id");
-
-                                        if (lastWarehouseId != null) {
+if (lastWarehouseId != null) {
                                             // Update Warehouse_OutGoingOrder collection
 
                                         }
@@ -614,7 +612,7 @@ public class Export_Warehouse implements Initializable {
             List<Integer> quality = displayQuality(productId, ex.getIdOrder());
 
             for (Integer integer : quality) {
-                Document query1 = new Document("Detail." + String.valueOf(productId), new Document("$exists", true));
+Document query1 = new Document("Detail." + String.valueOf(productId), new Document("$exists", true));
 
                 // Find the document with the earliest date and quality above or equal to integer
                 Document warehouse = Warehouse.find(query1).sort(Sorts.ascending("Date")).filter(Filters.gte("Detail." + String.valueOf(productId) + ".Quality", integer)).first();
@@ -669,8 +667,7 @@ public class Export_Warehouse implements Initializable {
                     } catch (IOException ex1) {
                         ex1.printStackTrace();
                     }
-
-                });
+});
             }
 
             @Override
@@ -744,7 +741,7 @@ public class Export_Warehouse implements Initializable {
 
                     if (ex.getStatus() == 0) {
                         LocalDate currentDate = LocalDate.now();
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                         String formattedDate = currentDate.format(formatter);
                         MongoCollection<Document> warehouseCollection = DBConnection.getConnection().getCollection("WareHouse");
 
@@ -785,7 +782,7 @@ public class Export_Warehouse implements Initializable {
                                             // Update Warehouse_OutGoingOrder collection
 
                                         }
-                                        MongoCollection<Document> warehouseOutgoingCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
+MongoCollection<Document> warehouseOutgoingCollection = DBConnection.getConnection().getCollection("WareHouse_OutGoingOrder");
                                         Document document = new Document("ID_WareHouse", id)
                                                 .append("ID_OutGoingOrder", idGoing)
                                                 .append("ID_Product", productId)
@@ -851,7 +848,7 @@ public class Export_Warehouse implements Initializable {
         pagination1.currentPageIndexProperty().addListener((obs, oldIndex, newIndex) -> {
             currentPageIndex = newIndex.intValue();
             if (displaymode == 1) {
-                Detailexportproduct(getcustomer(), getidorder());
+Detailexportproduct(getcustomer(), getidorder());
             } else if (displaymode == 2) {
                 SearchDetailExportproduct(getcustomer(), idorder, detailtxt.getText(), currentPageIndex);
             }

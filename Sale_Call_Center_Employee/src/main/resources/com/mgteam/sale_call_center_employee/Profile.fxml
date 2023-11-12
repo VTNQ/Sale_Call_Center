@@ -13,13 +13,13 @@
             <Font name="System Bold" size="36.0" />
          </font>
       </Label>
-      <TextField fx:id="username" alignment="CENTER" editable="false" layoutX="231.0" layoutY="117.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css">
+      <TextField fx:id="name" alignment="CENTER" editable="false" layoutX="231.0" layoutY="117.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css">
          <font>
             <Font name="System Bold Italic" size="13.0" />
          </font>
       </TextField>
-      <Label layoutX="171.0" layoutY="144.0" text="Name" />
-      <TextField fx:id="name" alignment="CENTER" editable="false" layoutX="231.0" layoutY="140.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
+      <Label layoutX="171.0" layoutY="144.0" text="Username" />
+      <TextField fx:id="username" alignment="CENTER" editable="false" layoutX="231.0" layoutY="140.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
       <Label layoutX="173.0" layoutY="191.0" text="Email" />
       <TextField fx:id="email" alignment="CENTER" editable="false" layoutX="231.0" layoutY="187.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="163.0" styleClass="bg_tranparent" stylesheets="@css/application.css" />
       <Label layoutX="173.0" layoutY="241.0" text="Phone" />

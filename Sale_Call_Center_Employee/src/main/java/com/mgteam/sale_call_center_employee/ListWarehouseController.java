@@ -93,7 +93,7 @@ public class ListWarehouseController implements Initializable {
     private TableColumn<Warehouse, Boolean> coldelete = new TableColumn<>();
 
     @FXML
-    private TableColumn<?, ?> colidproduct = new TableColumn<>();
+private TableColumn<?, ?> colidproduct = new TableColumn<>();
 
     @FXML
     private TableView<Warehouse> tblAddlist = new TableView<>();
@@ -168,7 +168,7 @@ public class ListWarehouseController implements Initializable {
             {
                 button.setOnAction(event -> {
                     Warehouse ware = getTableView().getItems().get(getIndex());
-                    try {
+try {
                         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/mgteam/sale_call_center_employee/view/detailProductWarehouse.fxml"));
                         AnchorPane newpopup;
                         newpopup = loader.load();
@@ -229,7 +229,7 @@ public class ListWarehouseController implements Initializable {
         ObservableList<Warehouse> obserable = FXCollections.observableArrayList(warehouse);
         totalItems = obserable.size();
         int pageCount = (totalItems + itemsperPage - 1) / itemsperPage;
-        pagination1.setPageCount(pageCount);
+pagination1.setPageCount(pageCount);
         if (obserable.isEmpty()) {
             pagination1.setPageCount(1);
             tblWarehouse.setItems(FXCollections.observableArrayList());
@@ -282,7 +282,7 @@ public class ListWarehouseController implements Initializable {
             colid.setCellValueFactory(new PropertyValueFactory<>("id"));
             coldate.setCellValueFactory(new PropertyValueFactory<>("Date"));
             colstatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-            colstatus.setCellFactory(column -> new TableCell<Warehouse, String>() {
+colstatus.setCellFactory(column -> new TableCell<Warehouse, String>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
@@ -348,7 +348,7 @@ public class ListWarehouseController implements Initializable {
         String nameSupply = Namesupply.getValue();
 
         // Kiểm tra xem Namesupply và Quality đã được nhập chưa
-        if (Namesupply.getValue() == null && qualityString.isEmpty()) {
+if (Namesupply.getValue() == null && qualityString.isEmpty()) {
             // Nếu một trong hai trường không hợp lệ, đặt biến isDataValid thành false
             DialogAlert.DialogError("Please enter in full");
             return;
@@ -407,7 +407,7 @@ public class ListWarehouseController implements Initializable {
 
                     tblAddlist.setItems(FXCollections.observableArrayList(productList));
                     tblAddlist.getItems().setAll(productList);
-                    colidproduct.setCellValueFactory(new PropertyValueFactory<>("id"));
+colidproduct.setCellValueFactory(new PropertyValueFactory<>("id"));
                     colNamproduct.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
                     colQuality.setCellValueFactory(new PropertyValueFactory<>("quality"));
                     colProce.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -464,7 +464,7 @@ public class ListWarehouseController implements Initializable {
             MongoCollection<Document> WareHouse_InComingOrder = DBConnection.getConnection().getCollection("WareHouse_InComingOrder");
             boolean isboolean = true;
             ObjectId insertedId = null;
-            Document productDetails = new Document();
+Document productDetails = new Document();
             LocalDate currentDate = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = currentDate.format(formatter);
@@ -532,7 +532,7 @@ public class ListWarehouseController implements Initializable {
     }
 
     public Map<String, ObjectId> getproductNameToIdMap() {
-        MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Product");
+MongoCollection<Document> categoryCollection = DBConnection.getConnection().getCollection("Product");
         Map<String, ObjectId> categoryNameToIdMap = new HashMap<>();
 
         FindIterable<Document> result = categoryCollection.find();
@@ -609,7 +609,7 @@ public class ListWarehouseController implements Initializable {
         searchdisplay(txtsearch.getText(), currentPageIndex);
         if (currentPageIndex != 0) {
             currentPageIndex = 0;
-            pagination.setCurrentPageIndex(currentPageIndex);
+pagination.setCurrentPageIndex(currentPageIndex);
         } else if (currentPageIndex == 0) {
             currentPageIndex = 0;
             pagination.setCurrentPageIndex(currentPageIndex);
