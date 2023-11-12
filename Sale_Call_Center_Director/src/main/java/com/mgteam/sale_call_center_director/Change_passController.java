@@ -34,7 +34,7 @@ public class Change_passController {
     void change(ActionEvent event) {
 if (!oldpass.getText().isEmpty() && !newpass.getText().isEmpty() && !renewpass.getText().isEmpty()) {
             MongoCollection<Document> collection = DBConnect.getConnection().getCollection("Admin");
-            Bson filter = Filters.and(Filters.eq("Password", MD5.Md5(oldpass.getText())), Filters.eq("Username", LoginController.user),Filters.eq("Usertype",2));
+            Bson filter = Filters.and(Filters.eq("Password", MD5.Md5(oldpass.getText())), Filters.eq("Username", LoginController.user),Filters.eq("Usertype",3));
             Document result = collection.find(filter).first();
             if (result != null) {
                 if (newpass.getText().equals(renewpass.getText()) && !oldpass.getText().equals(newpass.getText())) {
