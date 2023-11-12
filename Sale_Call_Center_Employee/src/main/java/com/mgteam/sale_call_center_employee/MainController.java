@@ -4,6 +4,7 @@ import com.mgteam.sale_call_center_employee.util.DBConnection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.gte;
@@ -337,7 +338,17 @@ public class MainController implements Initializable {
     private int TotalCustomer() {
         int count = 0;
         MongoCollection<Document> totalCustomer = DBConnection.getConnection().getCollection("Customer");
-        MongoIterable<Document> result = totalCustomer.find();
+        MongoIterable<Document> result = totalCustomer.find(Filters.eq("id_employee", LoginController.id_employee));
+        for (Document document : result) {
+            count++;
+        }
+        return count;
+    }
+    
+    private int TotalOrder() {
+        int count = 0;
+        MongoCollection<Document> totalCustomer = DBConnection.getConnection().getCollection("Order");
+        MongoIterable<Document> result = totalCustomer.find(Filters.eq("id_Employee", LoginController.id_employee));
         for (Document document : result) {
             count++;
         }
@@ -387,6 +398,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         TotalCustomer.setText(String.valueOf(TotalCustomer()));
+        TotalOrder.setText(String.valueOf(TotalOrder()));
         username.setText(LoginController.username);
         user.setText("Welcome," + LoginController.username);
         totalgoing.setText(countTotalOrder());
