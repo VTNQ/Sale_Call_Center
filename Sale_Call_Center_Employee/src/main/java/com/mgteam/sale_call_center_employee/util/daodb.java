@@ -113,7 +113,7 @@ public class daodb {
     public static List<Category> ListCategory() {
         ArrayList<Category> category = new ArrayList<>();
         MongoCollection<Document> cate = DBConnection.getConnection().getCollection("Category");
-        FindIterable<Document> categorycollection = cate.find().sort(Sorts.descending("_id"));
+        FindIterable<Document> categorycollection = cate.find();
         for (Document document : categorycollection) {
             String name = document.getString("Name");
             ObjectId idcategory = document.getObjectId("_id");

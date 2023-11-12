@@ -211,10 +211,11 @@ public class Export_Warehouse implements Initializable {
             if (idList != null && !idList.isEmpty()) {
                 for (String id : idList) {
                     idStringBuilder.append(id).append(", ");
+                    System.out.println(id);
                 }
             }
             String idString = idStringBuilder.length() > 0 ? idStringBuilder.substring(0, idStringBuilder.length() - 2) : "";
-
+            System.out.println(idString);
             String[] values = {
                 String.valueOf(Math.abs(getidorder().hashCode())),
                 Customer,
@@ -381,6 +382,7 @@ public class Export_Warehouse implements Initializable {
 
     private List<String> displayIdProducts(ObjectId id) {
         List<String> idList = new ArrayList<>();
+        
         MongoCollection<Document> Product = DBConnection.getConnection().getCollection("Product");
         MongoCollection<Document> Warehouse = DBConnection.getConnection().getCollection("Order");
         FindIterable<Document> productWarehouse = Product.find(new Document());
@@ -388,10 +390,17 @@ public class Export_Warehouse implements Initializable {
             ObjectId id_product = document.getObjectId("_id");
             String Name = document.getString("Name");
             Document query = new Document("DetailOrder." + id_product, new Document("$exists", true));
-            Document WarehouseQuery = Warehouse.find(query).first();
-            if (WarehouseQuery != null && WarehouseQuery.getObjectId("_id").equals(id) && !idList.contains(id_product)) {
-                idList.add(Name);
+            FindIterable<Document>wareHousequery=Warehouse.find(query);
+            for (Document document1 : wareHousequery) {
+                 ObjectId idorder=document1.getObjectId("_id");
+                if(idorder.equals(id)){
+                    idList.add(Name);
+                }
+                
             }
+       
+               
+            
         }
         return idList;
     }
@@ -719,9 +728,9 @@ public class Export_Warehouse implements Initializable {
                 button.getStyleClass().add("button_class");
                 if (item != null || !empty) {
                     int status = getTableView().getItems().get(getIndex()).getStatus();
-                    if (status == 1) {
+                    if (status == 1 || status==2 || status==3 || status==4) {
                         setGraphic(button);
-                    } else {
+                    } else  if(status==0){
                         setGraphic(button);
                         button.setDisable(true);
                     }
