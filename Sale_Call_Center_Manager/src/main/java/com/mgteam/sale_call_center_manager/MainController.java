@@ -1,8 +1,10 @@
 package com.mgteam.sale_call_center_manager;
 
 import com.mgteam.sale_call_center_manager.connect.DBconnect;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.sun.mail.imap.IdleManager;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -35,6 +37,7 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 public class MainController implements Initializable {
 
@@ -60,6 +63,8 @@ public class MainController implements Initializable {
 
     @FXML
     private Label User = new Label();
+    
+    public static ObjectId IdManager;
 
     @FXML
     private AnchorPane maindisplay;
@@ -170,9 +175,19 @@ public class MainController implements Initializable {
     }
 
     private String totalCustomer() {
+        int count=0;
         MongoCollection<Document> Customer = DBconnect.getdatabase().getCollection("Customer");
-        long totalorders = Customer.countDocuments();
-        return String.valueOf(totalorders);
+        MongoCollection<Document> Employee = DBconnect.getdatabase().getCollection("Employee");
+        MongoCollection<Document> Manager = DBconnect.getdatabase().getCollection("Admin");
+        FindIterable<Document>findIterable=Employee.find(Filters.eq("id_Manager",LoginController.idEmployee));
+        for (Document document : findIterable) {
+            ObjectId id_employee=document.getObjectId("_id");
+            FindIterable<Document>documents=Customer.find(Filters.eq("id_employee", id_employee));
+            for (Document customer : documents) {
+                count++;
+            }
+        }
+        return String.valueOf(count);
     }
 
     @FXML
@@ -236,7 +251,7 @@ public class MainController implements Initializable {
         String formattedMonth = String.format("%02d", monthValue);
 
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), monthValue, 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        LocalDate endDate = startDate.plusMonths(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("Order");
@@ -278,7 +293,7 @@ public class MainController implements Initializable {
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), monthvalue, 1);
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("WareHouse");
+        MongoCollection<Document> orders = DBconnect.getdatabase().getCollection("Order");
         XYChart.Series<String, Number> seris = new XYChart.Series<>();
 
         List<String> dateStrings = new ArrayList<>();
@@ -287,15 +302,15 @@ public class MainController implements Initializable {
         }
 
         List<Bson> filters = new ArrayList<>();
-        filters.add(Filters.in("Date", dateStrings));
-        filters.add(Filters.exists("_id"));
+        filters.add(Filters.in("Order_date", dateStrings));
 
         long[] counts = new long[dateStrings.size()];
         int index = 0;
 
         for (String dateString : dateStrings) {
-            filters.set(0, Filters.eq("Date", dateString));
+            filters.set(0, Filters.eq("Order_date", dateString));
             long count = orders.countDocuments(Filters.and(filters));
+            
             counts[index++] = count;
         }
 

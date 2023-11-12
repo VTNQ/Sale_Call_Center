@@ -116,7 +116,7 @@
                   <String fx:value="shadow" />
                </styleClass>
                <children>
-                  <ScrollPane layoutY="2.0" prefHeight="126.0" prefWidth="646.0">
+                  <ScrollPane hbarPolicy="NEVER" layoutY="2.0" prefHeight="126.0" prefWidth="646.0" vbarPolicy="NEVER">
                      <content>
                         <AnchorPane prefHeight="111.0" prefWidth="711.0">
                            <children>
@@ -139,26 +139,26 @@
                                     </Label>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane layoutX="472.0" layoutY="6.0" prefHeight="100.0" prefWidth="238.0" styleClass="nav" stylesheets="@css/Employee.css">
+                              <AnchorPane layoutX="446.0" layoutY="8.0" prefHeight="100.0" prefWidth="181.0" styleClass="nav" stylesheets="@css/Employee.css">
                                  <children>
                                     <ImageView fitHeight="66.0" fitWidth="63.0" layoutX="17.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@asset/inventory.png" />
                                        </image>
                                     </ImageView>
-                                    <Label layoutX="147.0" layoutY="14.0" text="Inventory" textFill="WHITE">
+                                    <Label layoutX="123.0" layoutY="14.0" text="Inventory" textFill="WHITE">
                                        <font>
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="inventory" alignment="TOP_RIGHT" layoutX="86.0" layoutY="63.0" prefHeight="22.0" prefWidth="122.0" text="0" textFill="WHITE">
+                                    <Label fx:id="inventory" alignment="TOP_RIGHT" layoutX="72.0" layoutY="63.0" prefHeight="22.0" prefWidth="122.0" text="0" textFill="WHITE">
                                        <font>
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
                                  </children>
                               </AnchorPane>
-                              <AnchorPane layoutX="246.0" layoutY="8.0" prefHeight="100.0" prefWidth="191.0" styleClass="nav" stylesheets="@css/Employee.css">
+                              <AnchorPane layoutX="235.0" layoutY="6.0" prefHeight="100.0" prefWidth="191.0" styleClass="nav" stylesheets="@css/Employee.css">
                                  <children>
                                     <ImageView fitHeight="66.0" fitWidth="63.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -197,7 +197,7 @@
                         <String fx:value="shadow" />
                      </styleClass>
                      <children>
-                        <LineChart fx:id="chartOrder" layoutX="-169.0" layoutY="39.0" prefHeight="159.0" prefWidth="267.0" title="Number of order" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="39.0">
+                        <LineChart fx:id="chartOrder" layoutX="-169.0" layoutY="39.0" prefHeight="360.0" prefWidth="626.0" title="Number of order" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="39.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>

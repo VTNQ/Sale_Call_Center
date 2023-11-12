@@ -33,12 +33,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.xml.transform.Result;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -126,6 +128,7 @@ public class LoginController implements Initializable {
                 
                 Stage progressDialogStage = new Stage();
                  progressDialogStage.setResizable(false);
+                 progressDialogStage.initStyle(StageStyle.TRANSPARENT);
                 progressDialogStage.setScene(scene);
 
                 Task<Void> loginTask = new Task<Void>() {
@@ -141,8 +144,8 @@ public class LoginController implements Initializable {
                             }
 
                             if (progressDialogStage.isShowing()) {
-                                App.setRoot("secondary");
                                 idEmployee = result.getObjectId("_id");
+                                App.setRoot("secondary");
                                 Platform.runLater(() -> progressDialogStage.close());
                                 break;
                             }
