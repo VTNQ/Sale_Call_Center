@@ -123,13 +123,14 @@ public class LoginController implements Initializable {
                 VBox vbox = new VBox(progressBar);
                 vbox.setSpacing(10);
                 vbox.setAlignment(Pos.CENTER);
-
+                
                 Scene scene = new Scene(vbox, 200, 60);
                 
                 Stage progressDialogStage = new Stage();
                  progressDialogStage.setResizable(false);
                  progressDialogStage.initStyle(StageStyle.TRANSPARENT);
                 progressDialogStage.setScene(scene);
+                
 
                 Task<Void> loginTask = new Task<Void>() {
                     @Override

@@ -437,7 +437,7 @@ public class AccountManagerController implements Initializable{
                                     if (postion.getValue().equals("Warehouse")) {
                                         DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                         String since = Since.getValue().format(local);
-                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 1).append("status", 0).append("Phone", Phone.getText()).append("id_Manager", LoginController.idEmployee);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 2).append("status", 0).append("Phone", Phone.getText()).append("id_Manager", LoginController.idEmployee);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee Successfully");
                                         sendConfirmationEmailEmployee(Email.getText());
@@ -450,7 +450,7 @@ public class AccountManagerController implements Initializable{
                                     } else if (postion.getValue().equals("SalePerson")) {
                                         DateTimeFormatter local = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                         String since = Since.getValue().format(local);
-                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 2).append("status", 0).append("Phone", Phone.getText()).append("id_Manager", LoginController.idEmployee);
+                                        Document doc1 = new Document("Name", Name.getText()).append("Email", Email.getText()).append("Username", MD5.encryPassword(Username.getText())).append("Since", since).append("Password", MD5.encryPassword(Username.getText())).append("usertype", 1).append("status", 0).append("Phone", Phone.getText()).append("id_Manager", LoginController.idEmployee);
                                         InsertOneResult result = collection.insertOne(doc1);
                                         Alert.DialogSuccess("Add Employee Successfully");
                                         sendConfirmationEmailEmployee(Email.getText());
